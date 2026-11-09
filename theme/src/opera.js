@@ -368,7 +368,7 @@
     return '<article class="oc-deal" data-end="' + end.getTime() + '">' +
       '<a class="oc-deal__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(p.image && p.image.url) + '" alt="' + esc(p.name) + '"></a>' +
       (off ? '<span class="oc-badge">خصم ' + num(off) + '٪</span>' : '') +
-      '<div class="oc-deal__body"><span class="oc-card__cat">' + esc(p.category && p.category.name) + '</span>' +
+      '<div class="oc-deal__body"><span class="oc-card__cat">' + esc((p.category && p.category.name) || 'عرض لفترة محدودة') + '</span>' +
       '<a class="oc-card__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
       '<div class="oc-price"><b>' + num(price) + ' ' + SAR + '</b>' + (reg ? '<s>' + num(reg) + ' ' + SAR + '</s>' : '') + '</div>' +
       '<div class="oc-timer"><span><b data-u="d">٠</b><small>يوم</small></span><span><b data-u="h">٠</b><small>ساعة</small></span><span><b data-u="m">٠</b><small>دقيقة</small></span><span><b data-u="s">٠</b><small>ثانية</small></span></div>' +
@@ -384,7 +384,7 @@
     });
   }
   function dealsSection() {
-    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية', 'خصومات لفترة محدودة الحق عليها قبل نهاية العداد', '/search?q=' + encodeURIComponent('خط'), 'كل العروض') +
+    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية', 'خصومات لفترة محدودة الحق عليها قبل نهاية العداد') +
       '<div class="oc-slider"><div class="oc-track oc-track--deals"><div class="oc-skel oc-skel--wide"></div><div class="oc-skel oc-skel--wide"></div></div>' +
       '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
       '</div></section>');
