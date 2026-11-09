@@ -797,12 +797,14 @@
     var wrap = c.closest('.container') || c; wrap.parentNode.insertBefore(host, wrap.nextSibling);
     return host;
   }
+  var CARIMG = { 'لاندكروزر': 'car_lc.webp', 'برادو': 'car_prado.webp', 'هايلوكس وفورشنر': 'car_hilux.webp', 'شاص وربع': 'car_shas.webp', 'اف جي كروزر': 'car_fj.webp', 'كامري': 'car_camry.webp', 'كورولا ويارس': 'car_corolla.webp' };
   function storePage(host) {
     var cats = []; TREE.forEach(function (t) { t.s.forEach(function (x) { cats.push(x); }); });
     host.appendChild(h('<section class="oc-sec oc-storecats"><div class="oc-container">' +
       '<div class="oc-storetop">' + TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + ' <em>(' + num(t.c) + ')</em></a>'; }).join('') + '</div>' +
       '<div class="oc-storegrid">' + cats.map(function (x) {
-        return '<a class="oc-scat" href="' + x.u + '" data-cid="' + (catId(x.u) || '') + '"><span class="oc-scat__img"><span class="oc-skel"></span></span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
+        var car = CARIMG[x.n];
+        return '<a class="oc-scat" href="' + x.u + '"' + (car ? '' : ' data-cid="' + (catId(x.u) || '') + '"') + '><span class="oc-scat__img">' + (car ? '<img loading="lazy" src="' + IMG + car + '" alt="">' : '<span class="oc-skel"></span>') + '</span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
       }).join('') + '</div></div></section>'));
     $$('.oc-scat', host).forEach(function (a) {
       var id = a.dataset.cid; if (!id) return;

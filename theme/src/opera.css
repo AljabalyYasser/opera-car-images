@@ -707,7 +707,7 @@ salla-products-list[data-oc-view="1"] .s-product-card-content { border-top: 0; m
 }
 
 /* cart drawer */
-.oc-drawer { position: fixed; inset: 0; z-index: 1000; visibility: hidden; }
+.oc-drawer { position: fixed; inset: 0; z-index: 100000; visibility: hidden; }
 .oc-drawer.is-open { visibility: visible; }
 .oc-drawer__bg { position: absolute; inset: 0; background: rgba(10, 11, 13, .55); opacity: 0; transition: opacity .3s; }
 .oc-drawer.is-open .oc-drawer__bg { opacity: 1; }
