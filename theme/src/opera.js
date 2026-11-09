@@ -10,7 +10,7 @@
   var C = __CATS__;
 
   var FEATURED = [593183742, 409846871, 1329966651, 120273226, 460404849, 1111030895, 280449386, 1735559028];
-  var DEALS_FALLBACK = [1066815594, 672729945, 764516204, 1495234900, 362051691, 1100551877];
+  var DEALS_FALLBACK = [672729945, 1100551877, 1495234900, 362051691, 1313445899, 432426207];
 
   var root = document.documentElement;
 
@@ -444,6 +444,24 @@
     }).join('') + '</div></div></div>'), footer);
   }
 
+  /* ---------- footer additions ---------- */
+  function footerExtras() {
+    var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
+    var menu = $('salla-menu', f);
+    if (menu) {
+      var add = function () {
+        if ($('.oc-flinks', f)) return;
+        var hasLinks = $$('a', menu).length > 0;
+        if (hasLinks) return;
+        menu.parentNode.appendChild(h('<div class="oc-flinks"><a href="' + C['الخطوط'] + '">الخطوط</a><a href="' + C['قطع الغيار والاكسسوارات'] + '">قطع الغيار والاكسسوارات</a><a href="' + C['اكسسوارات تويوتا عامة'] + '">اكسسوارات تويوتا</a><a href="/#oc-finder">اختر سيارتك</a><a href="/#oc-deals">العروض</a></div>'));
+      };
+      setTimeout(add, 1500);
+    }
+    var pays = $('salla-payments', f);
+    var pill = h('<div class="oc-pay" aria-label="طرق الدفع"><span>مدى</span><span>VISA</span><span>Mastercard</span><span>Apple Pay</span><span class="t">tabby</span><span class="m">tamara</span></div>');
+    if (pays) { if (!$('li', pays)) { pays.style.display = 'none'; pays.parentNode.insertBefore(pill, pays); } }
+  }
+
   /* ---------- home assembly ---------- */
   function buildHome() {
     if (!document.body.classList.contains('index')) return;
@@ -498,6 +516,7 @@
     buildBottomBar();
     buildHome();
     featuresBar();
+    footerExtras();
     cartBar();
     document.body.classList.add('oc-ready');
   }

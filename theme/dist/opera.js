@@ -10,7 +10,7 @@
   var C = {"قطع الغيار والاكسسوارات": "https://operacar.store/قطع-الغيار-والاكسسوارات/c1104165103", "لاندكروزر": "https://operacar.store/لاندكروزر/c1838835433", "برادو": "https://operacar.store/برادو/c1529529332", "هايلوكس وفورشنر": "https://operacar.store/هايلوكس-وفورشنر/c156083435", "شاص وربع": "https://operacar.store/شاص-وربع/c1063290346", "اف جي كروزر": "https://operacar.store/اف-جي-كروزر/c888660725", "كامري": "https://operacar.store/كامري/c579227632", "كورولا ويارس": "https://operacar.store/كورولا-ويارس/c1354309879", "اكسسوارات تويوتا عامة": "https://operacar.store/اكسسوارات-تويوتا-عامة/c2086891249", "الخطوط": "https://operacar.store/الخطوط/c997204374", "خطوط لاندكروزر": "https://operacar.store/خطوط-لاندكروزر/c358432919", "لاندكروزر حتى 2007": "https://operacar.store/لاندكروزر-حتى-2007/c822120081", "لاندكروزر 2008 إلى 2015": "https://operacar.store/لاندكروزر-2008-إلى-2015/c1731882896", "لاندكروزر 2016 إلى 2025": "https://operacar.store/لاندكروزر-2016-إلى-2025/c49130898", "خطوط برادو": "https://operacar.store/خطوط-برادو/c1247357342", "خطوط هايلوكس": "https://operacar.store/خطوط-هايلوكس/c2021395101", "هايلوكس حتى 2004": "https://operacar.store/هايلوكس-حتى-2004/c2120531171", "هايلوكس 2005 إلى 2015": "https://operacar.store/هايلوكس-2005-إلى-2015/c1212275692", "هايلوكس 2016 إلى 2025": "https://operacar.store/هايلوكس-2016-إلى-2025/c439286509", "خطوط شاص": "https://operacar.store/خطوط-شاص/c781708188", "شاص حتى 2006": "https://operacar.store/شاص-حتى-2006/c13918176", "شاص 2007 إلى 2015": "https://operacar.store/شاص-2007-إلى-2015/c1387364065", "شاص 2016 إلى 2025": "https://operacar.store/شاص-2016-إلى-2025/c923742439", "خطوط ربع": "https://operacar.store/خطوط-ربع/c1556794515", "ربع حتى 2006": "https://operacar.store/ربع-حتى-2006/c964219876", "ربع 2007 إلى 2015": "https://operacar.store/ربع-2007-إلى-2015/c1871951003", "ربع 2016 إلى 2025": "https://operacar.store/ربع-2016-إلى-2025/c189133541"};
 
   var FEATURED = [593183742, 409846871, 1329966651, 120273226, 460404849, 1111030895, 280449386, 1735559028];
-  var DEALS_FALLBACK = [1066815594, 672729945, 764516204, 1495234900, 362051691, 1100551877];
+  var DEALS_FALLBACK = [672729945, 1100551877, 1495234900, 362051691, 1313445899, 432426207];
 
   var root = document.documentElement;
 
@@ -444,6 +444,24 @@
     }).join('') + '</div></div></div>'), footer);
   }
 
+  /* ---------- footer additions ---------- */
+  function footerExtras() {
+    var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
+    var menu = $('salla-menu', f);
+    if (menu) {
+      var add = function () {
+        if ($('.oc-flinks', f)) return;
+        var hasLinks = $$('a', menu).length > 0;
+        if (hasLinks) return;
+        menu.parentNode.appendChild(h('<div class="oc-flinks"><a href="' + C['الخطوط'] + '">الخطوط</a><a href="' + C['قطع الغيار والاكسسوارات'] + '">قطع الغيار والاكسسوارات</a><a href="' + C['اكسسوارات تويوتا عامة'] + '">اكسسوارات تويوتا</a><a href="/#oc-finder">اختر سيارتك</a><a href="/#oc-deals">العروض</a></div>'));
+      };
+      setTimeout(add, 1500);
+    }
+    var pays = $('salla-payments', f);
+    var pill = h('<div class="oc-pay" aria-label="طرق الدفع"><span>مدى</span><span>VISA</span><span>Mastercard</span><span>Apple Pay</span><span class="t">tabby</span><span class="m">tamara</span></div>');
+    if (pays) { if (!$('li', pays)) { pays.style.display = 'none'; pays.parentNode.insertBefore(pill, pays); } }
+  }
+
   /* ---------- home assembly ---------- */
   function buildHome() {
     if (!document.body.classList.contains('index')) return;
@@ -498,6 +516,7 @@
     buildBottomBar();
     buildHome();
     featuresBar();
+    footerExtras();
     cartBar();
     document.body.classList.add('oc-ready');
   }
