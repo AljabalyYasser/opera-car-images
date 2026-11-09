@@ -521,9 +521,14 @@
     var artIds = ARTICLES.map(function (a) { return a.id; });
     var hideArts = function () { $$('a', f).forEach(function (a) { var href = a.getAttribute('href') || ''; if (artIds.some(function (id) { return href.indexOf('page-' + id) > -1; })) { var li = a.closest('li') || a; li.style.display = 'none'; } }); };
     hideArts(); setTimeout(hideArts, 1500); setTimeout(hideArts, 4000);
-    var brand = $('.store-footer__inner a[href]', f);
-    var logo = window.salla && salla.config && salla.config.get('store.logo');
-    if (brand && logo && !$('.oc-flogo', f)) { var h3 = $('h3', brand); if (h3) h3.style.display = 'none'; brand.insertBefore(h('<img class="oc-flogo" src="' + logo + '" alt="أوبرا كار">'), brand.firstChild); }
+    var putLogo = function () {
+      var h3 = $$('h3', f).filter(function (x) { return x.parentNode && x.parentNode.tagName === 'A'; })[0];
+      var logo = window.salla && salla.config && salla.config.get('store.logo');
+      if (!h3 || !logo || $('.oc-flogo', f)) return;
+      h3.style.display = 'none';
+      h3.parentNode.insertBefore(h('<img class="oc-flogo" src="' + logo + '" alt="أوبرا كار">'), h3);
+    };
+    putLogo(); setTimeout(putLogo, 1500); setTimeout(putLogo, 4000);
     var pays = $('salla-payments', f);
     if (pays && !$('li', pays)) {
       pays.style.display = 'none';
