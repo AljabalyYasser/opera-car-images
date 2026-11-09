@@ -161,6 +161,8 @@
   I.okc = '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>';
   I.phone = '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>';
   I.mail = '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>';
+  I.up = '<path d="m6 15 6-6 6 6"/>';
+  I.x = '<path d="M6 6l12 12M18 6 6 18"/>';
   I.minus = '<path d="M6 12h12"/>';
   I.plus = '<path d="M12 6v12M6 12h12"/>';
   I.cal = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
@@ -605,6 +607,120 @@
     if (location.hash && /^#oc-/.test(location.hash)) { var t2 = $(location.hash); if (t2) setTimeout(function () { t2.scrollIntoView({ behavior: 'smooth' }); }, 300); }
   }
 
+
+  /* ================= inner pages ================= */
+  var TREE = __TREE__;
+  function bodyIs(c) { return document.body.classList.contains(c); }
+  function crumbs() { return $$('#main-content .breadcrumbs .s-breadcrumb-item').map(function (li) { var a = $('a', li); return [li.textContent.trim(), a ? a.getAttribute('href') : null]; }).filter(function (x) { return x[0]; }); }
+
+  /* page banner like the reference: dark band with the page title and the trail */
+  function pageBanner() {
+    if (bodyIs('index') || $('.oc-pbanner')) return;
+    var main = $('#main-content'); if (!main) return;
+    var cr = crumbs(), title = '';
+    var h1 = $('#page-main-title');
+    if (bodyIs('product-index') && h1) title = (h1.childNodes[0] && h1.childNodes[0].textContent || '').replace(/[-–]\s*$/, '').trim();
+    else if (bodyIs('product-single')) title = cr.length > 1 ? cr[cr.length - 2][0] : 'المنتجات';
+    else if (/\/cart(\/|$)/.test(location.pathname)) title = 'سلة المشتريات';
+    else title = cr.length ? cr[cr.length - 1][0] : (document.title.split('|')[0] || '').trim();
+    if (!title) title = (document.title.split('|')[0] || '').trim();
+    var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
+    var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
+    main.insertBefore(b, main.firstChild);
+    document.body.classList.add('oc-has-banner');
+  }
+
+  /* back to top */
+  function toTop() {
+    if ($('.oc-top')) return;
+    var b = h('<button type="button" class="oc-top" aria-label="العودة لأعلى الصفحة">' + ic('up') + '</button>');
+    document.body.appendChild(b);
+    b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    var on = function () { b.classList.toggle('is-on', window.scrollY > 500); };
+    window.addEventListener('scroll', on, { passive: true }); on();
+  }
+
+  /* category page: parts strip, sidebar, grid switcher */
+  var VIEW_KEY = 'oc-view';
+  function categoryPage() {
+    if (!bodyIs('product-index') || $('.oc-cat-aside')) return;
+    var main = $('#main-content'); var wrap = $('.main-content', main); if (!wrap) return;
+    var row = wrap.parentNode;
+    // parts strip under the banner
+    var strip = h('<section class="oc-catstrip"><div class="oc-container"><div class="oc-kinds__row">' + KINDS.map(function (k) {
+      return '<a class="oc-kind" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-kind__img"><img loading="lazy" src="' + k[3] + '" alt=""></span><b>' + k[0] + '</b><small>' + num(k[2]) + ' منتج</small></a>';
+    }).join('') + '</div></div></section>');
+    var banner = $('.oc-pbanner', main);
+    main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
+    // sidebar
+    var here = decodeURIComponent(location.pathname);
+    var link = function (n) { var on = here === decodeURIComponent(n.u) ? ' is-on' : ''; return '<a class="oc-acat' + on + '" href="' + n.u + '"><span>' + esc(n.n) + '</span><em>(' + num(n.c) + ')</em></a>'; };
+    var cats = TREE.map(function (t) { return '<div class="oc-acat-group">' + link(t) + '<div class="oc-acat-subs">' + t.s.map(link).join('') + '</div></div>'; }).join('');
+    var models = MODELS.filter(function (m, i) { return MODELS.findIndex(function (x) { return x.parts === m.parts; }) === i; })
+      .map(function (m) { return '<a class="oc-chip" href="' + m.parts + '">' + m.n + '</a>'; }).join('');
+    var aside = h('<aside class="oc-cat-aside">' +
+      '<form class="oc-abox oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-asq">ابحث في المتجر</label><input id="oc-asq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
+      '<div class="oc-abox"><h3>الأقسام</h3>' + cats + '</div>' +
+      '<div class="oc-abox"><h3>تسوق حسب الموديل</h3><div class="oc-chips">' + models + '</div></div>' +
+      '<a class="oc-apromo" href="/#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><b>عروض حصرية</b><small><em>وفر ١٥٪</em> على مختارات من القطع</small><span>تسوق الآن</span></a>' +
+      '</aside>');
+    row.insertBefore(aside, row.firstChild);
+    row.classList.add('oc-cat-row');
+    // toolbar: count and view switcher
+    var head = wrap.firstElementChild, h1 = $('#page-main-title', wrap);
+    if (h1) { var sp = $('span', h1); h1.innerHTML = (sp ? sp.outerHTML : '') + ' منتج'; h1.classList.add('oc-count'); }
+    var views = [[2, 'عمودين'], [3, 'ثلاثة أعمدة'], [4, 'أربعة أعمدة'], [1, 'قائمة']];
+    var cur = 3; try { cur = +localStorage.getItem(VIEW_KEY) || 3; } catch (e) {}
+    var sw = h('<div class="oc-views" role="group" aria-label="طريقة العرض">' + views.map(function (v) {
+      return '<button type="button" data-v="' + v[0] + '" aria-label="' + v[1] + '"><i class="oc-vic oc-vic--' + v[0] + '"></i></button>';
+    }).join('') + '</div>');
+    var tools = head && head.lastElementChild; if (tools) tools.insertBefore(sw, tools.firstChild);
+    var list = $('salla-products-list', wrap);
+    var apply = function (v) {
+      cur = v; if (list) list.setAttribute('data-oc-view', v);
+      $$('button', sw).forEach(function (b) { b.classList.toggle('is-on', +b.dataset.v === v); });
+      try { localStorage.setItem(VIEW_KEY, v); } catch (e) {}
+    };
+    sw.addEventListener('click', function (e) { var b = e.target.closest('button[data-v]'); if (b) apply(+b.dataset.v); });
+    apply(cur);
+  }
+
+  /* cart drawer opened after adding to cart */
+  function cartDrawer() {
+    if ($('.oc-drawer')) return;
+    var d = h('<div class="oc-drawer" aria-hidden="true"><div class="oc-drawer__bg" data-close></div>' +
+      '<aside class="oc-drawer__panel" role="dialog" aria-modal="true" aria-label="سلة المشتريات"><div class="oc-drawer__head"><b>سلة المشتريات</b><button type="button" data-close aria-label="إغلاق">' + ic('x') + '</button></div>' +
+      '<div class="oc-drawer__items"></div>' +
+      '<div class="oc-drawer__foot"><div class="oc-ship oc-ship--mini"><div class="oc-ship__txt">' + ic('truck') + '<span></span></div><div class="oc-ship__track"><i></i></div></div>' +
+      '<div class="oc-drawer__sum"><span>المجموع</span><b></b></div>' +
+      '<a class="oc-btn oc-btn--dark" href="/cart">عرض السلة</a><a class="oc-btn oc-btn--primary" href="/cart" data-checkout>إتمام الطلب</a></div></aside></div>');
+    document.body.appendChild(d);
+    var close = function () { d.classList.remove('is-open'); d.setAttribute('aria-hidden', 'true'); };
+    d.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    $('[data-checkout]', d).addEventListener('click', function (e) {
+      try { if (salla.cart && salla.cart.api && salla.cart.api.submit) { e.preventDefault(); salla.cart.api.submit(); } } catch (x) {}
+    });
+    function render(c) {
+      var items = (c && (c.items || c.products)) || [];
+      $('.oc-drawer__items', d).innerHTML = items.length ? items.map(function (it) {
+        var img = it.product_image || (it.image && it.image.url) || it.image || '';
+        var price = it.price && it.price.amount != null ? it.price.amount : (it.total && it.total.amount != null ? it.total.amount : it.price);
+        return '<div class="oc-ditem"><img src="' + esc(img) + '" alt=""><div><a href="' + esc(it.url || '#') + '">' + esc(it.product_name || it.name) + '</a><small>' + num(it.quantity) + ' × ' + num(price) + ' ' + SAR + '</small></div></div>';
+      }).join('') : '<p class="oc-empty">سلتك فاضية</p>';
+      var total = +(c && (c.sub_total || c.total)) || 0;
+      $('.oc-drawer__sum b', d).innerHTML = num(total) + ' ' + SAR;
+      var left = Math.max(0, FREE_SHIP - total);
+      $('.oc-ship__track i', d).style.width = Math.min(100, total / FREE_SHIP * 100) + '%';
+      $('.oc-ship__txt span', d).innerHTML = left > 0 ? 'باقي لك <b>' + num(left) + ' ' + SAR + '</b> وتحصل على <b>شحن مجاني</b>' : 'مبروك طلبك صار عليه <b>شحن مجاني</b>';
+    }
+    window.ocOpenCart = function () {
+      d.classList.add('is-open'); d.setAttribute('aria-hidden', 'false');
+      try { salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); render(c); }).catch(function () { render(null); }); } catch (e) { render(null); }
+    };
+    try { salla.event.on('cart::item.added', function () { window.ocOpenCart(); }); } catch (e) {}
+  }
+
   /* ---------- cart: free shipping progress ---------- */
   function cartBar() {
     if (!/\/cart(\/|$)/.test(location.pathname) || $('.oc-ship')) return;
@@ -637,6 +753,10 @@
     featuresBar();
     footerExtras();
     cartBar();
+    pageBanner();
+    categoryPage();
+    toTop();
+    cartDrawer();
     document.body.classList.add('oc-ready');
   }
   ready(function () {
