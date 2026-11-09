@@ -776,8 +776,8 @@
     // sticky add to cart bar when the main button scrolls away
     var addBtn = $('salla-add-product-button', box);
     if (addBtn && !$('.oc-pbar')) {
-      var im0 = $('.swiper-slide img', box), price = $('.part-price', info);
-      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.textContent.replace(/\s+/g, ' ').trim() : '') + '</span></div></div><button type="button" class="oc-btn oc-btn--primary">' + ic('bag') + 'أضف للسلة</button></div></div>');
+      var im0 = $('.swiper-slide img', box), price = $$('.part-price h2, .part-price h4', info).filter(function (x) { return x.offsetParent; })[0];
+      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.innerHTML : '') + '</span></div></div><button type="button" class="oc-btn oc-btn--primary">' + ic('bag') + 'أضف للسلة</button></div></div>');
       document.body.appendChild(pbar);
       $('button', pbar).addEventListener('click', function () { var b = $('button', addBtn); if (b) b.click(); });
       var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
