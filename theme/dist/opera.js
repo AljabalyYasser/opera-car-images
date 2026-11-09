@@ -495,7 +495,7 @@
   var ARTICLES = [{"title": "كيف تختار الخط المناسب لسيارتك", "url": "https://operacar.store/كيف-تختار-الخط-المناسب-لسيارتك/page-144732245", "img": "art_choose.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "144732245"}, {"title": "الفرق بين القطع الأصلية والبديلة", "url": "https://operacar.store/الفرق-بين-القطع-الأصلية-والبديلة/page-1519296342", "img": "art_orig.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "1519296342"}, {"title": "طريقة تركيب الخطوط بدون فقاعات", "url": "https://operacar.store/طريقة-تركيب-الخطوط-بدون-فقاعات/page-879476311", "img": "art_install.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "879476311"}, {"title": "العناية بالخطوط في حر الصيف", "url": "https://operacar.store/العناية-بالخطوط-في-حر-الصيف/page-103865680", "img": "art_summer.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "103865680"}];
   function articlesSection() {
     if (!ARTICLES.length) return null;
-    return h('<section class="oc-sec oc-articles"><div class="oc-container">' + head('مقالات ونصائح', ARTICLES.all || null, 'كل المقالات') +
+    return h('<section class="oc-sec oc-articles" id="oc-articles"><div class="oc-container">' + head('مقالات ونصائح', ARTICLES.all || null, 'كل المقالات') +
       '<div class="oc-articles__row">' + ARTICLES.map(function (a) {
         return '<article class="oc-article"><a class="oc-article__img" href="' + a.url + '"><img loading="lazy" src="' + IMG + a.img + '" alt=""><span>' + a.tag + '</span></a>' +
           '<div class="oc-article__body"><small>' + ic('cal') + a.date + ' <i></i> أوبرا كار</small><a class="oc-article__title" href="' + a.url + '">' + a.title + '</a><a class="oc-article__more" href="' + a.url + '">اقرأ المزيد</a></div></article>';
@@ -516,13 +516,14 @@
   /* ---------- footer additions ---------- */
   var PAY = ['mada', 'apple_pay', 'visa', 'master', 'tabby', 'tamara'];
   var PAGES = [];
+  var ABOUT_URL = '/%D9%85%D9%86-%D9%86%D8%AD%D9%86/page-1058176407';
   function footerExtras() {
     var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
     var menu = $('salla-menu', f);
     if (menu) {
       setTimeout(function () {
         if ($('.oc-flinks', f) || $$('a', menu).length) return;
-        var links = [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '/#oc-finder'], ['العروض', '/#oc-deals']].concat(PAGES);
+        var links = [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '/#oc-finder'], ['العروض', '/#oc-deals'], ['من نحن', ABOUT_URL]].concat(PAGES);
         menu.parentNode.appendChild(h('<div class="oc-flinks">' + links.map(function (l) { return '<a href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div>'));
       }, 1500);
     }
@@ -538,6 +539,21 @@
       h3.parentNode.insertBefore(h('<img class="oc-flogo" src="' + logo + '" alt="أوبرا كار">'), h3);
     };
     putLogo(); setTimeout(putLogo, 1500); setTimeout(putLogo, 4000);
+    // store links column next to the brand column
+    var grid = $('.store-footer__inner .container.grid', f) || $('.store-footer__inner .grid', f);
+    if (grid && !$('.oc-fcol', f)) {
+      var SL = [['الرئيسية', '/'], ['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['العروض', '/#oc-deals'], ['اختر سيارتك', '/#oc-finder'], ['من نحن', ABOUT_URL], ['مقالات ونصائح', '/#oc-articles']];
+      var col = h('<div class="oc-fcol"><h3>المتجر</h3><div class="s-menu-footer-list">' + SL.map(function (l) { return '<a class="s-menu-footer-item" href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div></div>');
+      grid.insertBefore(col, grid.children[1] || null);
+    }
+    // credit line
+    var credit = function () {
+      var c = $('.copyright-text', f);
+      if (!c || c.dataset.oc) return;
+      c.dataset.oc = '1';
+      c.innerHTML = '<p>صنع بإتقان بواسطة <a class="oc-credit" href="https://yasforcode.com/" target="_blank" rel="noopener">Yasforcode</a></p>';
+    };
+    credit(); setTimeout(credit, 1500); setTimeout(credit, 4000);
     var pays = $('salla-payments', f);
     if (pays && !$('li', pays)) {
       pays.style.display = 'none';
