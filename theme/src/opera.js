@@ -13,6 +13,11 @@
   var DEALS_FALLBACK = [672729945, 1100551877, 1495234900, 362051691, 1313445899, 432426207];
 
   var root = document.documentElement;
+  if (!document.getElementById('oc-fonts')) {
+    var lf = document.createElement('link'); lf.id = 'oc-fonts'; lf.rel = 'stylesheet';
+    lf.href = 'https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap';
+    document.head.appendChild(lf);
+  }
 
   /* ---------- color mode ---------- */
   function getSaved() { try { return localStorage.getItem('oc-mode'); } catch (e) { return null; } }
