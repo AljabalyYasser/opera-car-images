@@ -88,7 +88,7 @@ h1, h2, h3, h4, .s-block__title h2, .oc-head h2 { font-family: var(--oc-head); }
 #part-store-header.oc-scrolled { box-shadow: 0 8px 24px -16px rgba(0, 0, 0, .35); }
 #part-store-header .top-navbar { background: var(--oc-surface) !important; border: 0 !important; }
 #part-store-header .navbar-brand img { max-height: 54px; width: auto; }
-html.oc-dark #part-store-header .navbar-brand img { filter: drop-shadow(0 0 1px rgba(255, 255, 255, .5)) brightness(1.15); }
+html.oc-dark #part-store-header .navbar-brand img { background: linear-gradient(180deg, #F4F5F7, #D9DCE0); border-radius: 10px; padding: 3px 8px; }
 #part-store-header .header-btn, #part-store-header .header-btn i, #part-store-header .header-btn span { color: var(--oc-ink) !important; }
 #part-store-header .header-btn:hover i, #part-store-header .header-btn:hover span { color: var(--oc-red) !important; }
 #part-store-header .s-cart-summary-wrapper, #part-store-header .s-cart-summary-wrapper i, #part-store-header .s-cart-summary-wrapper span, #part-store-header .s-cart-summary-total { color: var(--oc-ink) !important; }
@@ -491,3 +491,13 @@ html.oc-dark .s-block--bundle-personalized-shoppers-who-bought * { color: var(--
 .oc-bb-count[hidden] { display: none !important; }
 #part-store-header .s-cart-summary-count.oc-zero { display: none !important; }
 footer.store-footer > *:not(.store-footer__inner) { background: #08090B !important; }
+
+/* buttons in dark mode */
+html.oc-dark .oc-add:not(.oc-add--line), html.oc-dark .s-product-card-content-footer .s-button-element, html.oc-dark .s-product-card-content-footer button.s-button-btn { background: #262A30 !important; color: #fff !important; }
+html.oc-dark .oc-add:not(.oc-add--line):hover, html.oc-dark .s-product-card-content-footer .s-button-element:hover { background: var(--oc-red) !important; }
+html.oc-dark .oc-btn--ghost { border-color: #C9CDD2; color: #F2F3F5; }
+/* product page main action */
+body.product-single salla-add-product-button .s-button-element.s-button-primary,
+body.product-single salla-add-product-button .s-button-btn.s-button-primary { background: var(--oc-red) !important; color: #fff !important; border-color: var(--oc-red) !important; border-radius: 10px !important; height: 50px !important; font-weight: 700 !important; box-shadow: 0 10px 24px -12px rgba(210, 31, 43, .8); }
+body.product-single salla-add-product-button .s-button-element.s-button-primary:hover { background: var(--oc-red-d) !important; }
+body.product-single salla-add-product-button .s-button-element.s-button-primary * { color: #fff !important; }
