@@ -3,7 +3,7 @@
   if (window.__OC_LOADED) return;
   window.__OC_LOADED = true;
 
-  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@1a07c93/theme/img/';
+  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@f069424/theme/img/';
   var API = 'https://api.salla.dev/store/v1/';
   var SID = '1590934287';
   var FREE_SHIP = 600;
@@ -151,88 +151,107 @@
     if (cc) new MutationObserver(syncCount).observe(cc, { childList: true, characterData: true, subtree: true });
   }
 
-  /* ---------- product cards ---------- */
+  /* ---------- extra icons ---------- */
+  I.heart = '<path d="M12 20s-7.5-4.4-9-9.3C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.2C19.5 15.6 12 20 12 20z"/>';
+  I.eye = '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+  I.check = '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>';
+  I.minus = '<path d="M6 12h12"/>';
+  I.plus = '<path d="M12 6v12M6 12h12"/>';
+  I.cal = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
+  I.headset = '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 1.5-2 2.5-5 2.5"/>';
+  var AVATAR = '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="currentColor" opacity=".12"/><circle cx="32" cy="25" r="11" fill="currentColor" opacity=".55"/><path d="M11 60c2.5-12 11-18 21-18s18.5 6 21 18z" fill="currentColor" opacity=".55"/></svg>';
+
+  /* ---------- product cards (same layout as the reference) ---------- */
   function isOriginal(name) { return /اصلي|أصلي/.test(name); }
-  function card(p) {
-    var price = p.sale_price && p.is_on_sale ? p.sale_price : p.price;
+  function priceOf(p) {
+    var price = p.is_on_sale && p.sale_price ? p.sale_price : p.price;
     var reg = p.regular_price && p.regular_price > price ? p.regular_price : 0;
-    var off = reg ? Math.round((1 - price / reg) * 100) : 0;
-    var img = (p.image && p.image.url) || p.thumbnail || '';
-    var cat = (p.category && p.category.name) || '';
-    return '<article class="oc-card" data-id="' + p.id + '">' +
-      '<a class="oc-card__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(img) + '" alt="' + esc(p.name) + '"></a>' +
-      (off ? '<span class="oc-badge">خصم ' + num(off) + '٪</span>' : '') +
-      (isOriginal(p.name) ? '<span class="oc-tag">أصلي</span>' : '') +
-      '<div class="oc-card__body">' +
-      '<span class="oc-card__cat">' + esc(cat) + '</span>' +
-      '<a class="oc-card__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
-      '<div class="oc-price"><b>' + num(price) + ' ' + SAR + '</b>' + (reg ? '<s>' + num(reg) + ' ' + SAR + '</s>' : '') + '</div>' +
-      '<button type="button" class="oc-add" data-id="' + p.id + '">' + ic('bag') + '<span>أضف للسلة</span></button>' +
-      '</div></article>';
+    return { price: price, reg: reg, off: reg ? Math.round((1 - price / reg) * 100) : 0 };
   }
-  function addSecondImages(scope) {
-    $$('.oc-card', scope).forEach(function (el) {
-      var id = el.dataset.id;
-      api('products/' + id + '/details').then(function (r) {
-        var imgs = (r && r.data && r.data.images) || [];
-        if (imgs.length > 1 && imgs[1].url) {
-          var a = $('.oc-card__img', el);
-          a.appendChild(h('<img class="oc-card__img2" loading="lazy" src="' + esc(imgs[1].url) + '" alt="">'));
-          a.classList.add('has-2');
-        }
-      }).catch(function () {});
-    });
+  function catName(p) { return (p.category && p.category.name) || (isOriginal(p.name) ? 'قطع أصلية' : 'قطع وإكسسوارات'); }
+  function card(p) {
+    var pr = priceOf(p);
+    var img = (p.image && p.image.url) || p.thumbnail || '';
+    return '<div class="oc-slide-item"><article class="oc-card" data-id="' + p.id + '">' +
+      '<div class="oc-card__media">' +
+      '<a class="oc-card__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(img) + '" alt="' + esc(p.name) + '"></a>' +
+      (pr.off ? '<span class="oc-badge">-' + num(pr.off) + '٪</span>' : '') +
+      '<div class="oc-card__tools">' +
+      '<button type="button" class="oc-tool oc-wish" data-id="' + p.id + '" aria-label="أضف للمفضلة">' + ic('heart') + '<span>أضف للمفضلة</span></button>' +
+      '<a class="oc-tool" href="' + esc(p.url) + '" aria-label="عرض المنتج">' + ic('eye') + '<span>عرض المنتج</span></a>' +
+      '</div></div>' +
+      '<div class="oc-card__body">' +
+      '<span class="oc-card__cat">' + esc(catName(p)) + '</span>' +
+      '<a class="oc-card__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
+      '<div class="oc-price"><b>' + num(pr.price) + ' ' + SAR + '</b>' + (pr.reg ? '<s>' + num(pr.reg) + ' ' + SAR + '</s>' : '') + '</div>' +
+      '<div class="oc-card__foot">' +
+      '<div class="oc-qty"><button type="button" data-q="1" aria-label="زيادة">' + ic('plus') + '</button><input type="text" inputmode="numeric" value="1" aria-label="الكمية"><button type="button" data-q="-1" aria-label="نقص">' + ic('minus') + '</button></div>' +
+      '<button type="button" class="oc-cartbtn oc-add" data-id="' + p.id + '" aria-label="أضف للسلة">' + ic('bag') + '</button>' +
+      '</div></div></article></div>';
   }
   document.addEventListener('click', function (e) {
+    var q = e.target.closest('.oc-qty button');
+    if (q) {
+      var inp = q.parentNode.querySelector('input');
+      inp.value = Math.max(1, (parseInt(inp.value, 10) || 1) + (+q.dataset.q));
+      return;
+    }
+    var w = e.target.closest('.oc-wish');
+    if (w) {
+      e.preventDefault();
+      try { if (window.salla && salla.wishlist) { (salla.wishlist.add || salla.wishlist.toggle).call(salla.wishlist, +w.dataset.id); w.classList.add('is-on'); } } catch (err) {}
+      return;
+    }
     var b = e.target.closest('.oc-add'); if (!b) return;
     e.preventDefault();
     var id = +b.dataset.id;
+    var qi = b.closest('.oc-card, .oc-deal'); qi = qi && qi.querySelector('.oc-qty input');
+    var qty = qi ? Math.max(1, parseInt(qi.value, 10) || 1) : 1;
     b.classList.add('is-busy');
     var done = function () { b.classList.remove('is-busy'); b.classList.add('is-done'); setTimeout(function () { b.classList.remove('is-done'); }, 1600); };
     try {
       var capi = window.salla && salla.cart && (salla.cart.api || salla.cart);
-      var pr = capi && (capi.quickAdd ? capi.quickAdd(id) : capi.addItem({ id: id, quantity: 1 }));
+      var pr = capi && (qty === 1 && capi.quickAdd ? capi.quickAdd(id) : capi.addItem({ id: id, quantity: qty }));
       if (pr && pr.then) pr.then(done, function () { b.classList.remove('is-busy'); }); else done();
     } catch (err) { b.classList.remove('is-busy'); }
   });
 
-  function slider(track, prev, next) {
-    var step = function () { var c = track.querySelector(':scope > *'); return c ? c.getBoundingClientRect().width + 20 : 300; };
+  function slider(wrap) {
+    var track = $('.oc-track', wrap), prev = $('.oc-arrow--prev', wrap), next = $('.oc-arrow--next', wrap);
+    if (!track || !prev) return;
+    var step = function () { var c = track.querySelector(':scope > *'); return c ? c.getBoundingClientRect().width : 300; };
     prev.addEventListener('click', function () { track.scrollBy({ left: step(), behavior: 'smooth' }); });
     next.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
   }
-  function head(title, sub, link, linkText) {
-    return '<div class="oc-head"><div><h2>' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' +
-      (link ? '<a class="oc-more" href="' + link + '">' + (linkText || 'عرض الكل') + ic('left') + '</a>' : '') + '</div>';
+  function arrows() { return '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button>'; }
+  function head(title, link, linkText) {
+    return '<div class="oc-head"><h2>' + title + '</h2>' + (link ? '<a class="oc-more" href="' + link + '">' + (linkText || 'عرض الكل') + '</a>' : '') + '</div>';
   }
+  function skeleton(n) { var s = ''; for (var i = 0; i < n; i++) s += '<div class="oc-slide-item"><div class="oc-skel"></div></div>'; return s; }
 
-  /* ---------- home: hero ---------- */
+  /* ---------- 1 hero ---------- */
   var SLIDES = [
     { k: 'خطوط تويوتا بتصاميم حصرية', t: ['خطوط تعطي سيارتك', 'هوية جديدة'], p: 'تصاميم لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_lc.webp', a: [['تسوق الخطوط', C['الخطوط']], ['اختر سيارتك', '#oc-finder']] },
     { k: 'قطع غيار واكسسوارات', t: ['كل ما تحتاجه سيارتك', 'في مكان واحد'], p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts.webp', a: [['تسوق القطع', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '#oc-finder']] },
-    { k: 'عروض أوبرا كار', t: ['عروض حصرية', 'لفترة محدودة'], p: 'خصومات على مختارات من الخطوط والقطع وشحن مجاني للطلبات فوق ٦٠٠&nbsp;ريال', img: 'hero_hilux.webp', a: [['شاهد العروض', '#oc-deals'], ['تسوق الخطوط', C['الخطوط']]] }
+    { k: 'عروض أوبرا كار', t: ['عروض حصرية', 'لفترة محدودة'], p: 'خصومات على مختارات من القطع والإكسسوارات وشحن مجاني للطلبات فوق ٦٠٠&nbsp;ريال', img: 'hero_hilux.webp', a: [['شاهد العروض', '#oc-deals'], ['تسوق الخطوط', C['الخطوط']]] }
   ];
   var SERVICES = [
-    ['truck', 'شحن سريع', 'لكل مناطق المملكة'],
-    ['bolt', 'توصيل سريع', 'داخل جدة'],
+    ['truck', 'شحن سريع', 'لكل المملكة وتوصيل سريع داخل جدة'],
     ['gift', 'شحن مجاني', 'للطلبات فوق ٦٠٠&nbsp;ريال'],
-    ['card', 'قسّطها', 'مع تابي وتمارا']
+    ['card', 'قسّطها', 'مع تابي وتمارا'],
+    ['check', 'نتأكد من المطابقة', 'قبل الشحن لموديل سيارتك']
   ];
-
   function heroSection() {
     var s = h('<section class="oc-hero" aria-label="الواجهة">' +
-      '<div class="oc-hero__bg"><i></i><i></i><i></i></div>' +
       '<div class="oc-container oc-hero__in">' +
       '<div class="oc-hero__slides">' + SLIDES.map(function (sl, i) {
         return '<div class="oc-slide' + (i === 0 ? ' is-active' : '') + '">' +
           '<div class="oc-slide__text"><span class="oc-kicker">' + sl.k + '</span><h2><span class="oc-l">' + sl.t[0] + '</span><em class="oc-l">' + sl.t[1] + '</em></h2><p>' + sl.p + '</p>' +
-          '<div class="oc-btns"><a class="oc-btn oc-btn--primary" href="' + sl.a[0][1] + '">' + sl.a[0][0] + ic('left') + '</a><a class="oc-btn oc-btn--ghost" href="' + sl.a[1][1] + '">' + sl.a[1][0] + '</a></div></div>' +
-          '<div class="oc-slide__media"><span class="oc-slide__ring"></span><img src="' + IMG + sl.img + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + '></div>' +
+          '<div class="oc-btns"><a class="oc-btn oc-btn--primary" href="' + sl.a[0][1] + '">' + sl.a[0][0] + '</a><a class="oc-btn oc-btn--ghost" href="' + sl.a[1][1] + '">' + sl.a[1][0] + '</a></div></div>' +
+          '<div class="oc-slide__media"><img src="' + IMG + sl.img + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + '></div>' +
           '</div>';
       }).join('') + '</div>' +
-      '<div class="oc-hero__ctrl"><button type="button" class="oc-hero__arrow" data-d="-1" aria-label="السابق">' + ic('right') + '</button>' +
-      '<div class="oc-hero__dots">' + SLIDES.map(function (_, i) { return '<button type="button" aria-label="شريحة ' + (i + 1) + '" class="' + (i === 0 ? 'is-on' : '') + '"><i></i></button>'; }).join('') + '</div>' +
-      '<button type="button" class="oc-hero__arrow" data-d="1" aria-label="التالي">' + ic('left') + '</button></div>' +
+      '<div class="oc-hero__dots">' + SLIDES.map(function (_, i) { return '<button type="button" aria-label="شريحة ' + (i + 1) + '" class="' + (i === 0 ? 'is-on' : '') + '"></button>'; }).join('') + '</div>' +
       '</div>' +
       '<div class="oc-container"><div class="oc-services">' + SERVICES.map(function (x) {
         return '<div class="oc-service"><span class="oc-service__ic">' + ic(x[0]) + '</span><div><b>' + x[1] + '</b><small>' + x[2] + '</small></div></div>';
@@ -247,7 +266,6 @@
     }
     function restart() { clearInterval(timer); timer = setInterval(function () { go(cur + 1); }, 6500); }
     dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); }); });
-    $$('.oc-hero__arrow', s).forEach(function (b) { b.addEventListener('click', function () { go(cur + (+b.dataset.d)); }); });
     var x0 = null;
     s.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
     s.addEventListener('touchend', function (e) { if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) go(cur + (dx > 0 ? 1 : -1)); x0 = null; });
@@ -255,7 +273,7 @@
     return s;
   }
 
-  /* ---------- home: vehicle finder ---------- */
+  /* ---------- 2 vehicle finder with results on the page ---------- */
   var MODELS = [
     { n: 'لاندكروزر', parts: C['لاندكروزر'], st: [[0, 2007, C['لاندكروزر حتى 2007']], [2008, 2015, C['لاندكروزر 2008 إلى 2015']], [2016, 2100, C['لاندكروزر 2016 إلى 2025']]] },
     { n: 'برادو', parts: C['برادو'], st: [[0, 2100, C['خطوط برادو']]] },
@@ -268,6 +286,7 @@
     { n: 'كورولا', parts: C['كورولا ويارس'] },
     { n: 'يارس', parts: C['كورولا ويارس'] }
   ];
+  function catId(url) { var m = /\/c(\d+)/.exec(url || ''); return m ? m[1] : null; }
   function finderSection() {
     var years = []; for (var y = 2026; y >= 1990; y--) years.push(y);
     var s = h('<section class="oc-finder-wrap" id="oc-finder"><div class="oc-container"><div class="oc-finder">' +
@@ -277,69 +296,89 @@
       '<label class="oc-field"><span>تبحث عن</span><select data-f="t"><option value="parts">قطع الغيار والاكسسوارات</option><option value="st">الخطوط</option></select></label>' +
       '<button type="button" class="oc-btn oc-btn--primary oc-finder__go">' + ic('search') + 'اعرض المنتجات</button>' +
       '<p class="oc-finder__msg" hidden></p>' +
-      '</div></div></section>');
-    var fm = $('[data-f=m]', s), fy = $('[data-f=y]', s), ft = $('[data-f=t]', s), msg = $('.oc-finder__msg', s);
-    function sync() {
-      var m = MODELS[fm.value]; var opt = ft.querySelector('[value=st]');
+      '</div>' +
+      '<div class="oc-finder__res" hidden><div class="oc-head oc-head--sm"><h3></h3><a class="oc-more" href="#">عرض كل المنتجات</a></div>' +
+      '<div class="oc-slider"><div class="oc-track"></div>' + arrows() + '</div></div>' +
+      '</div></section>');
+    var fm = $('[data-f=m]', s), fy = $('[data-f=y]', s), ft = $('[data-f=t]', s), msg = $('.oc-finder__msg', s), res = $('.oc-finder__res', s);
+    slider(res);
+    fm.addEventListener('change', function () {
+      var m = MODELS[fm.value], opt = ft.querySelector('[value=st]');
       opt.disabled = !!(m && !m.st);
       if (opt.disabled && ft.value === 'st') ft.value = 'parts';
       msg.hidden = true;
-    }
-    fm.addEventListener('change', sync);
+    });
     $('.oc-finder__go', s).addEventListener('click', function () {
       var m = MODELS[fm.value];
       if (!m) { msg.textContent = 'اختر موديل سيارتك أولا'; msg.hidden = false; fm.focus(); return; }
-      var url = m.parts;
+      var url = m.parts, label = 'قطع غيار واكسسوارات ' + m.n;
       if (ft.value === 'st' && m.st) {
         var y = +fy.value;
         if (!y && m.st.length > 1) { msg.textContent = 'اختر سنة الصنع عشان نعرض لك الخطوط المناسبة'; msg.hidden = false; fy.focus(); return; }
-        m.st.forEach(function (r) { if (!y || (y >= r[0] && y <= r[1])) url = url === m.parts ? r[2] : url; });
+        for (var i = 0; i < m.st.length; i++) { if (!y || (y >= m.st[i][0] && y <= m.st[i][1])) { url = m.st[i][2]; break; } }
+        label = 'خطوط ' + m.n + (y ? ' ' + y : '');
       }
-      location.href = url;
+      msg.hidden = true;
+      var track = $('.oc-track', res);
+      $('h3', res).textContent = label;
+      $('.oc-more', res).href = url;
+      track.innerHTML = skeleton(4);
+      res.hidden = false;
+      res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      var id = catId(url);
+      api('products?source=categories&source_value[]=' + id + '&per_page=12').then(function (r) {
+        var list = (r && r.data) || [];
+        track.innerHTML = list.length ? list.map(card).join('') : '<p class="oc-empty">ما فيه منتجات لهذا الاختيار حاليا</p>';
+      }).catch(function () { location.href = url; });
     });
     return s;
   }
 
-  /* ---------- home: shop by category ---------- */
+  /* ---------- 3 shop by category ---------- */
   var KINDS = [
-    ['الشمعات والكشافات', 'شمعات', 'https://cdn.salla.sa/azeyQR/09fbd581-ed7d-4845-87e8-f1cf6851b87b-500x500-PgcGfy8EBN05LydUnxjyOhTQOJF1IV3jVMZoyR5o.jpg'],
-    ['الشبك', 'شبك', 'https://cdn.salla.sa/azeyQR/49dd4ee2-36a6-4e36-86b4-872d52ac4b18-500x500-Jrsl76LbVFKRf85Z11gXLftbyYeCFBQ6wLD5kUw0.jpg'],
-    ['الصدامات', 'صدام', 'https://cdn.salla.sa/azeyQR/417f3092-00dc-43e6-85ae-f477352b2187-500x500-LcKrzMVsSmz6ROeo2Pq5X14xH5qxGM9bXltqjODw.jpg'],
-    ['المرايات', 'مراية', 'https://cdn.salla.sa/azeyQR/73f70e75-7dd8-42e2-9196-c2cceeb3a265-500x500-VD1Fq0GqRTp826NH6A0AKigZPCgg4xx1vfXK1B2O.jpg'],
-    ['الدعسات', 'دعسات', 'https://cdn.salla.sa/azeyQR/af27cda8-20d7-4096-bc4b-76293c878412-500x500-u289EM7vucDlVAqFyI9fAcPSw3U5DsOZo6B5fsKy.jpg'],
-    ['الديكورات', 'ديكور', 'https://cdn.salla.sa/azeyQR/ea1cc8c4-c4ef-45cb-a095-1b36a9322d48-500x500-ckZvWCSAgO8jqz8Iy6SKfyKnWDEDF7g71Iwe1I5f.jpg'],
-    ['الفرشات', 'فرشات', 'https://cdn.salla.sa/azeyQR/64c3b49a-7da1-4e79-8e71-2a9a83dfd966-500x500-Lh1pTRRNLV0xEW88qZLe1vgcr0YSU9ZciJPnsUED.jpg'],
-    ['الدركسونات', 'دركسون', 'https://cdn.salla.sa/azeyQR/908a35d8-4a1f-4be7-8cfb-a2b56392bf7a-500x500-KI79WXKHjxjCToKskET0PYjXCEOeuy3uTezITqIV.jpg'],
-    ['المسجلات', 'مسجل', 'https://cdn.salla.sa/azeyQR/880b1ea5-6b1a-4724-aabf-16f05c5a1720-500x500-szfDZ9TQzmIOyFiURX9SkekD1PG6kbgCE2JCJ9Rj.jpg'],
-    ['العلامات', 'علامة', 'https://cdn.salla.sa/azeyQR/e1ce7dd2-fe3b-4102-831d-944fe333e449-500x500-Ar01PnblryNHtCnIeAPj0dg5EYEYOEKjjv8ii1HM.jpg']
+    ['الشمعات', 'شمعات', 37, 'https://cdn.salla.sa/azeyQR/09fbd581-ed7d-4845-87e8-f1cf6851b87b-500x500-PgcGfy8EBN05LydUnxjyOhTQOJF1IV3jVMZoyR5o.jpg'],
+    ['الشبك', 'شبك', 46, 'https://cdn.salla.sa/azeyQR/49dd4ee2-36a6-4e36-86b4-872d52ac4b18-500x500-Jrsl76LbVFKRf85Z11gXLftbyYeCFBQ6wLD5kUw0.jpg'],
+    ['الصدامات', 'صدام', 92, 'https://cdn.salla.sa/azeyQR/417f3092-00dc-43e6-85ae-f477352b2187-500x500-LcKrzMVsSmz6ROeo2Pq5X14xH5qxGM9bXltqjODw.jpg'],
+    ['المرايات', 'مراية', 48, 'https://cdn.salla.sa/azeyQR/73f70e75-7dd8-42e2-9196-c2cceeb3a265-500x500-VD1Fq0GqRTp826NH6A0AKigZPCgg4xx1vfXK1B2O.jpg'],
+    ['الدعسات', 'دعسات', 34, 'https://cdn.salla.sa/azeyQR/af27cda8-20d7-4096-bc4b-76293c878412-500x500-u289EM7vucDlVAqFyI9fAcPSw3U5DsOZo6B5fsKy.jpg'],
+    ['الديكورات', 'ديكور', 84, 'https://cdn.salla.sa/azeyQR/ea1cc8c4-c4ef-45cb-a095-1b36a9322d48-500x500-ckZvWCSAgO8jqz8Iy6SKfyKnWDEDF7g71Iwe1I5f.jpg'],
+    ['الفرشات', 'فرشات', 16, 'https://cdn.salla.sa/azeyQR/64c3b49a-7da1-4e79-8e71-2a9a83dfd966-500x500-Lh1pTRRNLV0xEW88qZLe1vgcr0YSU9ZciJPnsUED.jpg'],
+    ['الدركسونات', 'دركسون', 16, 'https://cdn.salla.sa/azeyQR/908a35d8-4a1f-4be7-8cfb-a2b56392bf7a-500x500-KI79WXKHjxjCToKskET0PYjXCEOeuy3uTezITqIV.jpg'],
+    ['المسجلات', 'مسجل', 14, 'https://cdn.salla.sa/azeyQR/880b1ea5-6b1a-4724-aabf-16f05c5a1720-500x500-szfDZ9TQzmIOyFiURX9SkekD1PG6kbgCE2JCJ9Rj.jpg'],
+    ['العلامات', 'علامة', 64, 'https://cdn.salla.sa/azeyQR/e1ce7dd2-fe3b-4102-831d-944fe333e449-500x500-Ar01PnblryNHtCnIeAPj0dg5EYEYOEKjjv8ii1HM.jpg']
   ];
   function kindsSection() {
-    return h('<section class="oc-sec oc-kinds"><div class="oc-container">' + head('تسوق حسب القسم', 'اختر نوع القطعة اللي تدور عليها') +
+    return h('<section class="oc-sec oc-kinds"><div class="oc-container">' + head('تسوق حسب القسم') +
       '<div class="oc-kinds__row">' + KINDS.map(function (k) {
-        return '<a class="oc-kind" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-kind__img"><img loading="lazy" src="' + k[2] + '" alt=""></span><b>' + k[0] + '</b></a>';
+        return '<a class="oc-kind" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-kind__img"><img loading="lazy" src="' + k[3] + '" alt=""></span><b>' + k[0] + '</b><small>' + num(k[2]) + ' منتج</small></a>';
       }).join('') + '</div></div></section>');
   }
 
-  /* ---------- home: featured ---------- */
-  function featuredSection() {
-    var s = h('<section class="oc-sec oc-featured"><div class="oc-container">' + head('الأكثر طلبا', 'مختارات من أكثر الخطوط والقطع طلبا عند عملائنا', C['قطع الغيار والاكسسوارات']) +
-      '<div class="oc-featured__grid">' +
-      '<a class="oc-promo" href="#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><span class="oc-kicker">عروض حصرية</span><b>خصومات ١٥٪</b><small>على مختارات من الخطوط والقطع</small><span class="oc-btn oc-btn--light">تسوق الآن</span></a>' +
-      '<div class="oc-slider"><div class="oc-track"><div class="oc-skel"></div><div class="oc-skel"></div><div class="oc-skel"></div><div class="oc-skel"></div></div>' +
-      '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
-      '</div></div></section>');
+  /* ---------- 4 and 6 product rows with promo card ---------- */
+  function productRow(opts) {
+    var promo = '<a class="oc-promo" href="' + opts.promoLink + '" style="background-image:url(' + IMG + opts.promoImg + ')"><b>' + opts.promoTitle + '</b><small>' + opts.promoText + '</small><span class="oc-promo__btn">تسوق الآن</span></a>';
+    var s = h('<section class="oc-sec oc-row' + (opts.end ? ' oc-row--end' : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + '><div class="oc-container">' + head(opts.title, opts.link, opts.linkText) +
+      '<div class="oc-row__grid">' + promo + '<div class="oc-slider"><div class="oc-track">' + skeleton(4) + '</div>' + arrows() + '</div></div>' +
+      '</div></section>');
     var track = $('.oc-track', s);
-    slider(track, $('.oc-arrow--prev', s), $('.oc-arrow--next', s));
-    api('products?source=selected&' + FEATURED.map(function (id) { return 'source_value[]=' + id; }).join('&')).then(function (r) {
+    slider(s);
+    api(opts.query).then(function (r) {
       var list = (r && r.data) || [];
-      list.sort(function (a, b) { return FEATURED.indexOf(+a.id) - FEATURED.indexOf(+b.id); });
+      if (opts.order) list.sort(function (a, b) { return opts.order.indexOf(+a.id) - opts.order.indexOf(+b.id); });
       track.innerHTML = list.map(card).join('');
-      addSecondImages(track);
     }).catch(function () { s.remove(); });
     return s;
   }
+  function featuredSection() {
+    return productRow({ title: 'الأكثر طلبا', link: C['قطع الغيار والاكسسوارات'], linkText: 'عرض كل المنتجات', promoImg: 'deals_tall.webp', promoTitle: 'عروض حصرية', promoText: '<em>وفر ١٥٪</em> على مختارات من القطع', promoLink: '#oc-deals',
+      query: 'products?source=selected&' + FEATURED.map(function (id) { return 'source_value[]=' + id; }).join('&'), order: FEATURED });
+  }
+  function latestSection() {
+    return productRow({ end: true, title: 'وصل حديثا', link: C['قطع الغيار والاكسسوارات'], linkText: 'عرض كل المنتجات', promoImg: 'promo2_tall.webp', promoTitle: 'خطوط الهايلوكس', promoText: '<em>تصاميم جديدة</em> لكل الموديلات', promoLink: C['خطوط هايلوكس'],
+      query: 'products?source=latest&per_page=10' });
+  }
 
-  /* ---------- home: banners ---------- */
+  /* ---------- 5 banners ---------- */
   function bannersSection() {
     var B = [
       ['لاندكروزر هايلوكس شاص ربع', 'الخطوط', 'تبدأ من ١٤٩&nbsp;ريال', C['الخطوط'], 'ban_stripes.webp'],
@@ -347,33 +386,28 @@
       ['ديكورات ومسجلات وفرشات', 'الاكسسوارات', 'لمسات تفرق في سيارتك', C['اكسسوارات تويوتا عامة'], 'ban_acc.webp']
     ];
     return h('<section class="oc-sec oc-banners"><div class="oc-container"><div class="oc-banners__row">' + B.map(function (b) {
-      return '<a class="oc-banner" href="' + b[3] + '"><span class="oc-banner__bg" style="background-image:url(' + IMG + b[4] + ')"></span><span class="oc-banner__txt"><span class="oc-kicker">' + b[0] + '</span><b>' + b[1] + '</b><small>' + b[2] + '</small><span class="oc-btn oc-btn--light">تسوق الآن</span></span></a>';
+      return '<a class="oc-banner" href="' + b[3] + '"><span class="oc-banner__bg" style="background-image:url(' + IMG + b[4] + ')"></span><span class="oc-banner__txt"><span class="oc-banner__k">' + b[0] + '</span><b>' + b[1] + '</b><small>' + b[2] + '</small><span class="oc-banner__btn">تسوق الآن</span></span></a>';
     }).join('') + '</div></div></section>');
   }
 
-  /* ---------- home: deals with countdown ---------- */
+  /* ---------- 7 deals with countdown ---------- */
   function endDate(v) {
     if (!v) return null;
     var d = typeof v === 'number' || /^\d+$/.test(String(v)) ? new Date(+v * (+v < 1e12 ? 1000 : 1)) : new Date(String(v).replace(' ', 'T'));
     return isNaN(d) || d < new Date() ? null : d;
   }
-  function nextFriday() {
-    var d = new Date(); var add = (5 - d.getDay() + 7) % 7 || 7;
-    d.setDate(d.getDate() + add); d.setHours(23, 59, 59, 0); return d;
-  }
+  function nextFriday() { var d = new Date(); var add = (5 - d.getDay() + 7) % 7 || 7; d.setDate(d.getDate() + add); d.setHours(23, 59, 59, 0); return d; }
   function dealCard(p, end) {
-    var price = p.is_on_sale && p.sale_price ? p.sale_price : p.price;
-    var reg = p.regular_price > price ? p.regular_price : 0;
-    var off = reg ? Math.round((1 - price / reg) * 100) : 0;
-    return '<article class="oc-deal" data-end="' + end.getTime() + '">' +
+    var pr = priceOf(p);
+    return '<div class="oc-slide-item"><article class="oc-deal" data-end="' + end.getTime() + '">' +
       '<a class="oc-deal__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(p.image && p.image.url) + '" alt="' + esc(p.name) + '"></a>' +
-      (off ? '<span class="oc-badge">خصم ' + num(off) + '٪</span>' : '') +
-      '<div class="oc-deal__body"><span class="oc-card__cat">' + esc((p.category && p.category.name) || 'عرض لفترة محدودة') + '</span>' +
-      '<a class="oc-card__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
-      '<div class="oc-price"><b>' + num(price) + ' ' + SAR + '</b>' + (reg ? '<s>' + num(reg) + ' ' + SAR + '</s>' : '') + '</div>' +
+      (pr.off ? '<span class="oc-badge">-' + num(pr.off) + '٪</span>' : '') +
+      '<div class="oc-deal__body"><span class="oc-card__cat">' + esc(catName(p)) + '</span>' +
+      '<a class="oc-deal__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
+      '<div class="oc-price oc-price--lg"><b>' + num(pr.price) + ' ' + SAR + '</b>' + (pr.reg ? '<s>' + num(pr.reg) + ' ' + SAR + '</s>' : '') + '</div>' +
       '<div class="oc-timer"><span><b data-u="d">٠</b><small>يوم</small></span><span><b data-u="h">٠</b><small>ساعة</small></span><span><b data-u="m">٠</b><small>دقيقة</small></span><span><b data-u="s">٠</b><small>ثانية</small></span></div>' +
-      '<button type="button" class="oc-add oc-add--line" data-id="' + p.id + '">' + ic('bag') + '<span>أضف للسلة</span></button>' +
-      '</div></article>';
+      '<button type="button" class="oc-dealbtn oc-add" data-id="' + p.id + '">أضف للسلة</button>' +
+      '</div></article></div>';
   }
   function tick(scope) {
     var now = Date.now();
@@ -384,12 +418,11 @@
     });
   }
   function dealsSection() {
-    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية', 'خصومات لفترة محدودة الحق عليها قبل نهاية العداد') +
-      '<div class="oc-slider"><div class="oc-track oc-track--deals"><div class="oc-skel oc-skel--wide"></div><div class="oc-skel oc-skel--wide"></div></div>' +
-      '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
+    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية') +
+      '<div class="oc-slider"><div class="oc-track oc-track--deals">' + skeleton(2) + '</div>' + arrows() + '</div>' +
       '</div></section>');
     var track = $('.oc-track', s);
-    slider(track, $('.oc-arrow--prev', s), $('.oc-arrow--next', s));
+    slider(s);
     api('products?source=offers&per_page=10').then(function (r) {
       var list = (r && r.data) || [];
       if (list.length >= 2) return list;
@@ -402,19 +435,19 @@
     return s;
   }
 
-  /* ---------- home: models strip ---------- */
+  /* ---------- 8 models strip (in place of the brands row) ---------- */
   var CARS = [
     ['لاندكروزر', 'car_lc.webp', C['لاندكروزر']], ['برادو', 'car_prado.webp', C['برادو']], ['هايلوكس', 'car_hilux.webp', C['هايلوكس وفورشنر']],
     ['شاص', 'car_shas.webp', C['شاص وربع']], ['ربع', 'car_rab3.webp', C['شاص وربع']], ['اف جي كروزر', 'car_fj.webp', C['اف جي كروزر']],
     ['كامري', 'car_camry.webp', C['كامري']], ['كورولا', 'car_corolla.webp', C['كورولا ويارس']]
   ];
   function modelsSection() {
-    var items = CARS.map(function (c) { return '<a class="oc-model" href="' + c[2] + '"><img loading="lazy" src="' + IMG + c[1] + '" alt=""><b>' + c[0] + '</b></a>'; }).join('');
-    return h('<section class="oc-sec oc-models"><div class="oc-container">' + head('تسوق حسب موديل سيارتك', 'قطع وخطوط مخصصة لكل موديل من تويوتا') + '</div>' +
+    var items = CARS.map(function (c) { return '<a class="oc-model" href="' + c[2] + '"><span class="oc-model__stage"><i class="oc-model__ring"></i><img loading="lazy" src="' + IMG + c[1] + '" alt=""></span><b>' + c[0] + '</b></a>'; }).join('');
+    return h('<section class="oc-sec oc-models"><div class="oc-container">' + head('تسوق حسب موديل سيارتك') + '</div>' +
       '<div class="oc-marquee"><div class="oc-marquee__track">' + items + items + '</div></div></section>');
   }
 
-  /* ---------- home: testimonials ---------- */
+  /* ---------- 9 testimonials ---------- */
   var REVIEWS = [
     ['عبدالله الحربي', 'جدة', 5, 'ركبت خط لاندكروزر على سيارتي وطلع نفس الصورة بالضبط والقص نظيف ووصلني ثاني يوم'],
     ['فهد العتيبي', 'الرياض', 5, 'طلبت شبك كامري واستغربت من سرعة الشحن والقطعة ركبت بدون أي تعديل'],
@@ -428,19 +461,17 @@
     ['سعود الشمري', 'تبوك', 5, 'ثاني مرة أطلب منهم وكل مرة أسرع من اللي قبلها أنصح فيهم']
   ];
   function reviewCard(r) {
-    var initials = r[0].split(' ').map(function (w) { return w.replace(/^ال/, '').charAt(0); }).slice(0, 2).join('');
     var stars = ''; for (var i = 0; i < 5; i++) stars += '<span class="' + (i < r[2] ? 'on' : '') + '">' + STAR + '</span>';
-    return '<article class="oc-review"><div class="oc-review__top"><span class="oc-avatar">' + esc(initials) + '</span><div><b>' + esc(r[0]) + '</b><small>' + ic('pin') + esc(r[1]) + '</small></div><span class="oc-quote">”</span></div>' +
-      '<div class="oc-stars">' + stars + '</div><p>' + esc(r[3]) + '</p></article>';
+    return '<div class="oc-slide-item"><article class="oc-review"><span class="oc-quote" aria-hidden="true">”</span>' +
+      '<div class="oc-review__top"><span class="oc-avatar">' + AVATAR + '</span><div><div class="oc-stars">' + stars + '</div><b>' + esc(r[0]) + '</b><small>عميل من ' + esc(r[1]) + '</small></div></div>' +
+      '<p>' + esc(r[3]) + '</p></article></div>';
   }
   function reviewsSection() {
-    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا', 'تجارب عملاء أوبرا كار في مختلف مدن المملكة') +
-      '<div class="oc-slider"><div class="oc-track oc-track--reviews">' + REVIEWS.map(reviewCard).join('') + '</div>' +
-      '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
+    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا') +
+      '<div class="oc-slider"><div class="oc-track oc-track--reviews">' + REVIEWS.map(reviewCard).join('') + '</div>' + arrows() + '</div>' +
       '</div></section>');
     var track = $('.oc-track', s);
-    slider(track, $('.oc-arrow--prev', s), $('.oc-arrow--next', s));
-    // live Salla reviews take over once the store has enough of them
+    slider(s);
     api('reviews?per_page=12').then(function (r) {
       var list = ((r && r.data) || []).filter(function (x) { return x && (x.content || x.comment); });
       if (list.length < 3) return;
@@ -452,8 +483,19 @@
     return s;
   }
 
+  /* ---------- 10 articles ---------- */
+  var ARTICLES = [];
+  function articlesSection() {
+    if (!ARTICLES.length) return null;
+    return h('<section class="oc-sec oc-articles"><div class="oc-container">' + head('مقالات ونصائح', ARTICLES.all || null, 'كل المقالات') +
+      '<div class="oc-articles__row">' + ARTICLES.map(function (a) {
+        return '<article class="oc-article"><a class="oc-article__img" href="' + a.url + '"><img loading="lazy" src="' + IMG + a.img + '" alt=""><span>' + a.tag + '</span></a>' +
+          '<div class="oc-article__body"><small>' + ic('cal') + a.date + ' <i></i> أوبرا كار</small><a class="oc-article__title" href="' + a.url + '">' + a.title + '</a><a class="oc-article__more" href="' + a.url + '">اقرأ المزيد</a></div></article>';
+      }).join('') + '</div></div></section>');
+  }
+
   /* ---------- features bar (all pages, above footer) ---------- */
-  var FEATS = [['shield', 'قطع أصلية وبديلة', 'جودة مضمونة لكل موديل'], ['lock', 'دفع آمن', 'مدى وأبل باي والبطاقات'], ['chat', 'دعم مباشر', 'نتأكد لك من مطابقة القطعة'], ['ret', 'استبدال واسترجاع', 'حسب سياسة المتجر']];
+  var FEATS = [['shield', 'قطع أصلية وبديلة', 'جودة مضمونة لكل موديل'], ['lock', 'دفع آمن', 'مدى وأبل باي والبطاقات'], ['headset', 'دعم مباشر', 'نرد على استفساراتك بسرعة'], ['ret', 'استبدال واسترجاع', 'حسب سياسة المتجر']];
   function featuresBar() {
     var footer = $('footer.store-footer');
     if (!footer || $('.oc-feats')) return;
@@ -463,41 +505,36 @@
   }
 
   /* ---------- footer additions ---------- */
+  var PAY = ['mada', 'apple_pay', 'visa', 'master', 'tabby', 'tamara'];
+  var PAGES = [];
   function footerExtras() {
     var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
     var menu = $('salla-menu', f);
     if (menu) {
-      var add = function () {
-        if ($('.oc-flinks', f)) return;
-        var hasLinks = $$('a', menu).length > 0;
-        if (hasLinks) return;
-        menu.parentNode.appendChild(h('<div class="oc-flinks"><a href="' + C['الخطوط'] + '">الخطوط</a><a href="' + C['قطع الغيار والاكسسوارات'] + '">قطع الغيار والاكسسوارات</a><a href="' + C['اكسسوارات تويوتا عامة'] + '">اكسسوارات تويوتا</a><a href="/#oc-finder">اختر سيارتك</a><a href="/#oc-deals">العروض</a></div>'));
-      };
-      setTimeout(add, 1500);
+      setTimeout(function () {
+        if ($('.oc-flinks', f) || $$('a', menu).length) return;
+        var links = [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '/#oc-finder'], ['العروض', '/#oc-deals']].concat(PAGES);
+        menu.parentNode.appendChild(h('<div class="oc-flinks">' + links.map(function (l) { return '<a href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div>'));
+      }, 1500);
     }
     var pays = $('salla-payments', f);
-    var pill = h('<div class="oc-pay" aria-label="طرق الدفع"><span>مدى</span><span>VISA</span><span>Mastercard</span><span>Apple Pay</span><span class="t">tabby</span><span class="m">tamara</span></div>');
-    if (pays) { if (!$('li', pays)) { pays.style.display = 'none'; pays.parentNode.insertBefore(pill, pays); } }
+    if (pays && !$('li', pays)) {
+      pays.style.display = 'none';
+      pays.parentNode.insertBefore(h('<div class="oc-pay" aria-label="طرق الدفع">' + PAY.map(function (p) { return '<img src="' + IMG + 'pay/' + p + '.svg" alt="' + p + '" loading="lazy">'; }).join('') + '</div>'), pays);
+    }
   }
 
-  /* ---------- home assembly ---------- */
+  /* ---------- home assembly (same order as the reference) ---------- */
   function buildHome() {
     if (!document.body.classList.contains('index')) return;
     var main = $('#main-content');
     if (!main || main.dataset.oc) return;
     main.dataset.oc = '1';
     var latest = $('.s-block--latest-products', main);
+    if (latest) latest.classList.add('oc-hidden');
     var anchor = latest || main.firstChild;
-    [heroSection(), finderSection(), kindsSection(), featuredSection(), bannersSection(), dealsSection(), modelsSection()].forEach(function (el) { main.insertBefore(el, anchor); });
-    if (latest) {
-      latest.classList.add('oc-latest');
-      var t = $('.s-block__title', latest);
-      if (t) t.innerHTML = head('وصل حديثا', 'آخر ما أضفناه من قطع وخطوط');
-      latest.parentNode.insertBefore(reviewsSection(), latest.nextSibling);
-    } else {
-      main.appendChild(reviewsSection());
-    }
-    // reveal on scroll
+    [heroSection(), finderSection(), kindsSection(), featuredSection(), bannersSection(), latestSection(), dealsSection(), modelsSection(), reviewsSection(), articlesSection()]
+      .forEach(function (el) { if (el) main.insertBefore(el, anchor); });
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
       $$('.oc-sec', main).forEach(function (el) { el.classList.add('oc-reveal'); io.observe(el); });
