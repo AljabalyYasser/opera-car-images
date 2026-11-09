@@ -78,6 +78,19 @@
     return b;
   }
 
+  function addNavExtras() {
+    var header = $('#part-store-header'); if (!header || $('.oc-nav-extra', header)) return;
+    var rootLi = $('custom-main-menu li.root-level', header);
+    if (rootLi && rootLi.parentNode) {
+      var ul = rootLi.parentNode;
+      var home = h('<li class="oc-nav-extra root-level"><a href="/">الرئيسية</a></li>');
+      ul.insertBefore(home, ul.firstChild);
+      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="/#oc-finder">' + ic('car') + 'اختر سيارتك</a></li>'));
+      ul.appendChild(h('<li class="oc-nav-extra oc-nav-hot root-level"><a href="/#oc-deals">' + ic('fire') + 'العروض</a></li>'));
+    }
+
+  }
+
   function buildHeader() {
     var header = $('#part-store-header');
     if (!header || header.dataset.oc) return;
@@ -99,15 +112,7 @@
     var menuLink = $('a[href="#mobile-menu"]', header);
     if (menuLink && menuLink.parentNode) menuLink.parentNode.insertBefore(modeBtn('oc-mode--mob'), menuLink);
 
-    // extra nav links
-    var rootLi = $('custom-main-menu li.root-level', header);
-    if (rootLi && rootLi.parentNode) {
-      var ul = rootLi.parentNode;
-      var home = h('<li class="oc-nav-extra root-level"><a href="/">الرئيسية</a></li>');
-      ul.insertBefore(home, ul.firstChild);
-      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="/#oc-finder">' + ic('car') + 'اختر سيارتك</a></li>'));
-      ul.appendChild(h('<li class="oc-nav-extra oc-nav-hot root-level"><a href="/#oc-deals">' + ic('fire') + 'العروض</a></li>'));
-    }
+    addNavExtras();
 
     // sticky shadow
     var onScroll = function () { header.classList.toggle('oc-scrolled', window.scrollY > 40); };
@@ -185,7 +190,8 @@
     b.classList.add('is-busy');
     var done = function () { b.classList.remove('is-busy'); b.classList.add('is-done'); setTimeout(function () { b.classList.remove('is-done'); }, 1600); };
     try {
-      var pr = window.salla && salla.cart && (salla.cart.quickAdd ? salla.cart.quickAdd(id) : salla.cart.addItem({ id: id, quantity: 1 }));
+      var capi = window.salla && salla.cart && (salla.cart.api || salla.cart);
+      var pr = capi && (capi.quickAdd ? capi.quickAdd(id) : capi.addItem({ id: id, quantity: 1 }));
       if (pr && pr.then) pr.then(done, function () { b.classList.remove('is-busy'); }); else done();
     } catch (err) { b.classList.remove('is-busy'); }
   });
@@ -507,9 +513,10 @@
       bar.querySelector('.oc-ship').classList.toggle('is-done', left <= 0);
     }
     function read() {
+      update(0);
       try {
         if (window.salla && salla.cart && salla.cart.api && salla.cart.api.details) {
-          return salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); update(+(c && (c.sub_total || c.total)) || 0); });
+          return salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); update(+(c && (c.sub_total || c.total)) || 0); }).catch(function () {});
         }
       } catch (e) {}
       update(0);
@@ -530,6 +537,6 @@
   ready(function () {
     init();
     // Salla web components hydrate late; retry header pieces once
-    setTimeout(buildHeader, 1200);
+    setTimeout(addNavExtras, 1200); setTimeout(addNavExtras, 3500);
   });
 })();
