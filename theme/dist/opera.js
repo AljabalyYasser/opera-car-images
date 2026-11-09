@@ -132,7 +132,9 @@
       var c = $('.s-cart-summary-count'), b = $('.oc-bb-count', bar);
       if (!c || !b) return;
       var t = c.textContent.trim();
-      b.textContent = t; b.hidden = !t || t === '0' || t === '٠';
+      var zero = !t || t === '0' || t === '٠';
+      b.textContent = t; b.hidden = zero;
+      $$('#part-store-header .s-cart-summary-count').forEach(function (x) { x.classList.toggle('oc-zero', zero); });
     }
     syncCount();
     var cc = $('.s-cart-summary-count');
