@@ -619,3 +619,18 @@ custom-main-menu .sub-menu a { line-height: 1.7; }
 .oc-about, .oc-articles, #oc-deals { scroll-margin-top: 120px; }
 .oc-fcol .s-menu-footer-item { display: block; color: #fff; font-size: 15px; font-weight: 400; line-height: 1.9; margin-bottom: 20px; transition: color .2s; }
 .oc-fcol .s-menu-footer-item:hover { color: var(--oc-red); }
+.store-footer .oc-hidden { display: none !important; }
+.oc-social { display: flex; gap: 10px; margin-top: 22px; }
+.oc-social a { width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, .08); color: #fff; display: inline-flex; align-items: center; justify-content: center; transition: background-color .2s, transform .2s; }
+.oc-social a:hover { background: var(--oc-red); transform: translateY(-2px); }
+.oc-bic { width: 18px; height: 18px; }
+.oc-fcontact { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 140px; }
+.oc-fcontact h3 { margin-bottom: 4px; }
+.oc-fc { display: inline-flex; align-items: center; gap: 12px; color: #fff; font-size: 15px; line-height: 1.6; transition: color .2s; }
+.oc-fc:hover { color: var(--oc-red); }
+.oc-fc__ic { width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, .08); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.oc-fc__ic .oc-ic, .oc-fc__ic .oc-bic { width: 18px; height: 18px; }
+.oc-fc__ic--wa { background: #25D366; color: #fff; }
+@media (max-width: 1023px) {
+  .oc-fcol { min-width: 0; }
+}
