@@ -158,14 +158,15 @@ html.oc-dark .oc-mode__moon { transform: translateY(-26px) rotate(-90deg); opaci
 @keyframes oc-streak { from { transform: translateX(-30%) skewX(-30deg); } to { transform: translateX(60%) skewX(-30deg); } }
 .oc-hero__in { position: relative; }
 .oc-hero__slides { position: relative; min-height: 480px; }
-.oc-slide { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1.15fr; align-items: center; gap: 24px; visibility: hidden; }
+.oc-slide { position: absolute; inset: 0; display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 24px; visibility: hidden; }
 .oc-slide.is-active { visibility: visible; z-index: 1; }
 .oc-slide__text > * { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
 .oc-slide.is-active .oc-slide__text > * { opacity: 1; transform: none; }
 .oc-slide.is-active .oc-slide__text > :nth-child(2) { transition-delay: .1s; }
 .oc-slide.is-active .oc-slide__text > :nth-child(3) { transition-delay: .2s; }
 .oc-slide.is-active .oc-slide__text > :nth-child(4) { transition-delay: .3s; }
-.oc-slide__text h2 { font-size: clamp(32px, 4.6vw, 58px); line-height: 1.22; font-weight: 800; color: var(--oc-ink); margin: 14px 0 16px; }
+.oc-slide__text h2 .oc-l { display: block; white-space: nowrap; }
+.oc-slide__text h2 { font-size: clamp(26px, 3.9vw, 54px); line-height: 1.22; font-weight: 800; color: var(--oc-ink); margin: 14px 0 16px; }
 .oc-slide__text h2 em { font-style: normal; color: var(--oc-red); }
 .oc-slide__text p { font-size: 17px; color: var(--oc-muted); max-width: 480px; margin: 0 0 30px; line-height: 1.9; }
 .oc-slide__text .oc-kicker { background: var(--oc-red-soft); padding: 6px 14px; border-radius: 30px; }
@@ -449,7 +450,7 @@ html.oc-dark .s-block--bundle-personalized-shoppers-who-bought * { color: var(--
   .oc-sec { padding-block: 32px; }
   .oc-hero { padding-top: 12px; }
   .oc-hero__slides { min-height: 560px; }
-  .oc-slide__text h2 { font-size: 30px; }
+  .oc-slide__text h2 { font-size: clamp(22px, 7.4vw, 30px); }
   .oc-slide__text p { font-size: 15px; margin-bottom: 22px; }
   .oc-btn { height: 46px; padding: 0 18px; font-size: 14px; }
   .oc-service { padding: 14px; gap: 10px; }

@@ -208,9 +208,9 @@
 
   /* ---------- home: hero ---------- */
   var SLIDES = [
-    { k: 'خطوط تويوتا بتصاميم حصرية', t: 'خطوط تعطي سيارتك<br><em>هوية جديدة</em>', p: 'تصاميم لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_lc.webp', a: [['تسوق الخطوط', C['الخطوط']], ['اختر سيارتك', '#oc-finder']] },
-    { k: 'قطع غيار واكسسوارات', t: 'كل ما تحتاجه سيارتك<br><em>في مكان واحد</em>', p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts.webp', a: [['تسوق القطع', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '#oc-finder']] },
-    { k: 'عروض أوبرا كار', t: 'عروض حصرية<br><em>لفترة محدودة</em>', p: 'خصومات على مختارات من الخطوط والقطع وشحن مجاني للطلبات فوق ٦٠٠ ريال', img: 'hero_hilux.webp', a: [['شاهد العروض', '#oc-deals'], ['تسوق الخطوط', C['الخطوط']]] }
+    { k: 'خطوط تويوتا بتصاميم حصرية', t: ['خطوط تعطي سيارتك', 'هوية جديدة'], p: 'تصاميم لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_lc.webp', a: [['تسوق الخطوط', C['الخطوط']], ['اختر سيارتك', '#oc-finder']] },
+    { k: 'قطع غيار واكسسوارات', t: ['كل ما تحتاجه سيارتك', 'في مكان واحد'], p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts.webp', a: [['تسوق القطع', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '#oc-finder']] },
+    { k: 'عروض أوبرا كار', t: ['عروض حصرية', 'لفترة محدودة'], p: 'خصومات على مختارات من الخطوط والقطع وشحن مجاني للطلبات فوق ٦٠٠ ريال', img: 'hero_hilux.webp', a: [['شاهد العروض', '#oc-deals'], ['تسوق الخطوط', C['الخطوط']]] }
   ];
   var SERVICES = [
     ['truck', 'شحن سريع', 'لكل مناطق المملكة'],
@@ -225,7 +225,7 @@
       '<div class="oc-container oc-hero__in">' +
       '<div class="oc-hero__slides">' + SLIDES.map(function (sl, i) {
         return '<div class="oc-slide' + (i === 0 ? ' is-active' : '') + '">' +
-          '<div class="oc-slide__text"><span class="oc-kicker">' + sl.k + '</span><h2>' + sl.t + '</h2><p>' + sl.p + '</p>' +
+          '<div class="oc-slide__text"><span class="oc-kicker">' + sl.k + '</span><h2><span class="oc-l">' + sl.t[0] + '</span><em class="oc-l">' + sl.t[1] + '</em></h2><p>' + sl.p + '</p>' +
           '<div class="oc-btns"><a class="oc-btn oc-btn--primary" href="' + sl.a[0][1] + '">' + sl.a[0][0] + ic('left') + '</a><a class="oc-btn oc-btn--ghost" href="' + sl.a[1][1] + '">' + sl.a[1][0] + '</a></div></div>' +
           '<div class="oc-slide__media"><span class="oc-slide__ring"></span><img src="' + IMG + sl.img + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + '></div>' +
           '</div>';
@@ -324,7 +324,7 @@
   function featuredSection() {
     var s = h('<section class="oc-sec oc-featured"><div class="oc-container">' + head('الأكثر طلبا', 'مختارات من أكثر الخطوط والقطع طلبا عند عملائنا', C['قطع الغيار والاكسسوارات']) +
       '<div class="oc-featured__grid">' +
-      '<a class="oc-promo" href="#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><span class="oc-kicker">عروض حصرية</span><b>خصومات تصل إلى ٢٥٪</b><small>على مختارات من الخطوط والقطع</small><span class="oc-btn oc-btn--light">تسوق الآن</span></a>' +
+      '<a class="oc-promo" href="#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><span class="oc-kicker">عروض حصرية</span><b>خصومات ١٥٪</b><small>على مختارات من الخطوط والقطع</small><span class="oc-btn oc-btn--light">تسوق الآن</span></a>' +
       '<div class="oc-slider"><div class="oc-track"><div class="oc-skel"></div><div class="oc-skel"></div><div class="oc-skel"></div><div class="oc-skel"></div></div>' +
       '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
       '</div></div></section>');
@@ -352,6 +352,11 @@
   }
 
   /* ---------- home: deals with countdown ---------- */
+  function endDate(v) {
+    if (!v) return null;
+    var d = typeof v === 'number' || /^\d+$/.test(String(v)) ? new Date(+v * (+v < 1e12 ? 1000 : 1)) : new Date(String(v).replace(' ', 'T'));
+    return isNaN(d) || d < new Date() ? null : d;
+  }
   function nextFriday() {
     var d = new Date(); var add = (5 - d.getDay() + 7) % 7 || 7;
     d.setDate(d.getDate() + add); d.setHours(23, 59, 59, 0); return d;
@@ -391,7 +396,7 @@
       return api('products?source=selected&' + DEALS_FALLBACK.map(function (id) { return 'source_value[]=' + id; }).join('&')).then(function (x) { return (x && x.data) || []; });
     }).then(function (list) {
       var fb = nextFriday();
-      track.innerHTML = list.map(function (p) { return dealCard(p, p.discount_ends ? new Date(String(p.discount_ends).replace(' ', 'T')) : fb); }).join('');
+      track.innerHTML = list.map(function (p) { return dealCard(p, endDate(p.discount_ends) || fb); }).join('');
       tick(track); setInterval(function () { tick(track); }, 1000);
     }).catch(function () { s.remove(); });
     return s;
