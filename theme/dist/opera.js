@@ -175,7 +175,7 @@
     return '<div class="oc-slide-item"><article class="oc-card" data-id="' + p.id + '">' +
       '<div class="oc-card__media">' +
       '<a class="oc-card__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(img) + '" alt="' + esc(p.name) + '"></a>' +
-      (pr.off ? '<span class="oc-badge">-' + num(pr.off) + '٪</span>' : '') +
+      (pr.off ? '<span class="oc-badge">خصم ' + num(pr.off) + '٪</span>' : '') +
       '<div class="oc-card__tools">' +
       '<button type="button" class="oc-tool oc-wish" data-id="' + p.id + '" aria-label="أضف للمفضلة">' + ic('heart') + '<span>أضف للمفضلة</span></button>' +
       '<a class="oc-tool" href="' + esc(p.url) + '" aria-label="عرض المنتج">' + ic('eye') + '<span>عرض المنتج</span></a>' +
@@ -401,7 +401,7 @@
     var pr = priceOf(p);
     return '<div class="oc-slide-item"><article class="oc-deal" data-end="' + end.getTime() + '">' +
       '<a class="oc-deal__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(p.image && p.image.url) + '" alt="' + esc(p.name) + '"></a>' +
-      (pr.off ? '<span class="oc-badge">-' + num(pr.off) + '٪</span>' : '') +
+      (pr.off ? '<span class="oc-badge">خصم ' + num(pr.off) + '٪</span>' : '') +
       '<div class="oc-deal__body"><span class="oc-card__cat">' + esc(catName(p)) + '</span>' +
       '<a class="oc-deal__title" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
       '<div class="oc-price oc-price--lg"><b>' + num(pr.price) + ' ' + SAR + '</b>' + (pr.reg ? '<s>' + num(pr.reg) + ' ' + SAR + '</s>' : '') + '</div>' +
@@ -484,7 +484,7 @@
   }
 
   /* ---------- 10 articles ---------- */
-  var ARTICLES = [];
+  var ARTICLES = [{"title": "كيف تختار الخط المناسب لسيارتك", "url": "https://operacar.store/كيف-تختار-الخط-المناسب-لسيارتك/page-144732245", "img": "art_choose.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "144732245"}, {"title": "الفرق بين القطع الأصلية والبديلة", "url": "https://operacar.store/الفرق-بين-القطع-الأصلية-والبديلة/page-1519296342", "img": "art_orig.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "1519296342"}, {"title": "طريقة تركيب الخطوط بدون فقاعات", "url": "https://operacar.store/طريقة-تركيب-الخطوط-بدون-فقاعات/page-879476311", "img": "art_install.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "879476311"}, {"title": "العناية بالخطوط في حر الصيف", "url": "https://operacar.store/العناية-بالخطوط-في-حر-الصيف/page-103865680", "img": "art_summer.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "103865680"}];
   function articlesSection() {
     if (!ARTICLES.length) return null;
     return h('<section class="oc-sec oc-articles"><div class="oc-container">' + head('مقالات ونصائح', ARTICLES.all || null, 'كل المقالات') +
@@ -517,6 +517,13 @@
         menu.parentNode.appendChild(h('<div class="oc-flinks">' + links.map(function (l) { return '<a href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div>'));
       }, 1500);
     }
+    // keep article pages out of the footer link list and show the logo like the reference
+    var artIds = ARTICLES.map(function (a) { return a.id; });
+    var hideArts = function () { $$('a', f).forEach(function (a) { var href = a.getAttribute('href') || ''; if (artIds.some(function (id) { return href.indexOf('page-' + id) > -1; })) { var li = a.closest('li') || a; li.style.display = 'none'; } }); };
+    hideArts(); setTimeout(hideArts, 1500); setTimeout(hideArts, 4000);
+    var brand = $('.store-footer__inner a[href]', f);
+    var logo = window.salla && salla.config && salla.config.get('store.logo');
+    if (brand && logo && !$('.oc-flogo', f)) { var h3 = $('h3', brand); if (h3) h3.style.display = 'none'; brand.insertBefore(h('<img class="oc-flogo" src="' + logo + '" alt="أوبرا كار">'), brand.firstChild); }
     var pays = $('salla-payments', f);
     if (pays && !$('li', pays)) {
       pays.style.display = 'none';
