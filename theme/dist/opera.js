@@ -88,7 +88,7 @@
       ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="/#oc-finder">' + ic('car') + 'اختر سيارتك</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-hot root-level"><a href="/#oc-deals">' + ic('fire') + 'العروض</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="' + ABOUT_URL + '">من نحن</a></li>'));
-      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="#oc-contact">تواصل معنا</a></li>'));
+      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="' + CONTACT_URL + '">تواصل معنا</a></li>'));
     }
 
   }
@@ -528,7 +528,9 @@
   var CONTACT = { phone: '+966539036264', whatsapp: '966500000000' };
   var SOCIAL = [['instagram', 'انستقرام', '#'], ['x', 'إكس', '#'], ['tiktok', 'تيك توك', '#'], ['snapchat', 'سناب شات', '#']];
   var ABOUT_URL = '/%D9%85%D9%86-%D9%86%D8%AD%D9%86/page-1058176407';
-  var STORE_URL = C['قطع الغيار والاكسسوارات'];
+  var STORE_URL = '/%D8%A7%D9%84%D9%85%D8%AA%D8%AC%D8%B1/page-80660524';
+  var CONTACT_URL = '/%D8%AA%D9%88%D8%A7%D8%B5%D9%84-%D9%85%D8%B9%D9%86%D8%A7/page-1028738080';
+  var FAQ_URL = '/%D8%A7%D9%84%D8%A3%D8%B3%D8%A6%D9%84%D8%A9-%D8%A7%D9%84%D8%B4%D8%A7%D8%A6%D8%B9%D8%A9/page-1493469730';
   function footerExtras() {
     var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
     var menu = $('salla-menu', f);
@@ -555,7 +557,7 @@
     var grid = $('.store-footer__inner .container.grid', f) || $('.store-footer__inner .grid', f);
     if (grid && !$('.oc-fcol', f)) {
       var col = function (title, links, cls) { return h('<div class="oc-fcol ' + (cls || '') + '"><h3>' + title + '</h3><div class="s-menu-footer-list">' + links.map(function (l) { return '<a class="s-menu-footer-item" href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div></div>'); };
-      var pagesCol = col('الصفحات', [['الرئيسية', '/'], ['المتجر', STORE_URL], ['من نحن', ABOUT_URL], ['تواصل معنا', '#oc-contact']]);
+      var pagesCol = col('الصفحات', [['الرئيسية', '/'], ['المتجر', STORE_URL], ['من نحن', ABOUT_URL], ['الأسئلة الشائعة', FAQ_URL], ['تواصل معنا', CONTACT_URL]]);
       var storeCol = col('المتجر', [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اكسسوارات تويوتا عامة', C['اكسسوارات تويوتا عامة']], ['العروض', '/#oc-deals'], ['اختر سيارتك', '/#oc-finder']]);
       var contactCol = h('<div class="oc-fcol oc-fcontact" id="oc-contact"><h3>تواصل معنا</h3>' +
         '<a class="oc-fc" href="tel:' + CONTACT.phone + '"><span class="oc-fc__ic">' + ic('phone') + '</span><span dir="ltr">' + CONTACT.phone + '</span></a>' +
@@ -609,7 +611,7 @@
 
 
   /* ================= inner pages ================= */
-  var TREE = [{"n": "قطع الغيار والاكسسوارات", "u": "/قطع-الغيار-والاكسسوارات/c1104165103", "c": 1355, "s": [{"n": "لاندكروزر", "u": "/لاندكروزر/c1838835433", "c": 643, "s": []}, {"n": "برادو", "u": "/برادو/c1529529332", "c": 97, "s": []}, {"n": "هايلوكس وفورشنر", "u": "/هايلوكس-وفورشنر/c156083435", "c": 185, "s": []}, {"n": "شاص وربع", "u": "/شاص-وربع/c1063290346", "c": 356, "s": []}, {"n": "اف جي كروزر", "u": "/اف-جي-كروزر/c888660725", "c": 11, "s": []}, {"n": "كامري", "u": "/كامري/c579227632", "c": 29, "s": []}, {"n": "كورولا ويارس", "u": "/كورولا-ويارس/c1354309879", "c": 12, "s": []}, {"n": "اكسسوارات تويوتا عامة", "u": "/اكسسوارات-تويوتا-عامة/c2086891249", "c": 22, "s": []}]}, {"n": "الخطوط", "u": "/الخطوط/c997204374", "c": 594, "s": [{"n": "خطوط لاندكروزر", "u": "/خطوط-لاندكروزر/c358432919", "c": 149, "s": [{"n": "لاندكروزر حتى 2007", "u": "/لاندكروزر-حتى-2007/c822120081", "c": 59, "s": []}, {"n": "لاندكروزر 2008 إلى 2015", "u": "/لاندكروزر-2008-إلى-2015/c1731882896", "c": 24, "s": []}, {"n": "لاندكروزر 2016 إلى 2025", "u": "/لاندكروزر-2016-إلى-2025/c49130898", "c": 53, "s": []}]}, {"n": "خطوط برادو", "u": "/خطوط-برادو/c1247357342", "c": 9, "s": []}, {"n": "خطوط هايلوكس", "u": "/خطوط-هايلوكس/c2021395101", "c": 306, "s": [{"n": "هايلوكس حتى 2004", "u": "/هايلوكس-حتى-2004/c2120531171", "c": 50, "s": []}, {"n": "هايلوكس 2005 إلى 2015", "u": "/هايلوكس-2005-إلى-2015/c1212275692", "c": 113, "s": []}, {"n": "هايلوكس 2016 إلى 2025", "u": "/هايلوكس-2016-إلى-2025/c439286509", "c": 124, "s": []}]}, {"n": "خطوط شاص", "u": "/خطوط-شاص/c781708188", "c": 89, "s": [{"n": "شاص حتى 2006", "u": "/شاص-حتى-2006/c13918176", "c": 22, "s": []}, {"n": "شاص 2007 إلى 2015", "u": "/شاص-2007-إلى-2015/c1387364065", "c": 20, "s": []}, {"n": "شاص 2016 إلى 2025", "u": "/شاص-2016-إلى-2025/c923742439", "c": 44, "s": []}]}, {"n": "خطوط ربع", "u": "/خطوط-ربع/c1556794515", "c": 41, "s": [{"n": "ربع حتى 2006", "u": "/ربع-حتى-2006/c964219876", "c": 1, "s": []}, {"n": "ربع 2007 إلى 2015", "u": "/ربع-2007-إلى-2015/c1871951003", "c": 15, "s": []}, {"n": "ربع 2016 إلى 2025", "u": "/ربع-2016-إلى-2025/c189133541", "c": 24, "s": []}]}]}];
+  var TREE = [{"n": "قطع الغيار والاكسسوارات", "u": "/قطع-الغيار-والاكسسوارات/c1104165103", "c": 1355, "s": [{"n": "لاندكروزر", "u": "/لاندكروزر/c1838835433", "c": 643, "s": [], "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg"}, {"n": "برادو", "u": "/برادو/c1529529332", "c": 97, "s": [], "i": "https://cdn.salla.sa/azeyQR/1356704d-af7c-47e9-bde5-4653bcba4321-500x500-4ZjM6FUwzi0er54WFgOEitqAUds8pTTyznMCJ0QE.jpg"}, {"n": "هايلوكس وفورشنر", "u": "/هايلوكس-وفورشنر/c156083435", "c": 185, "s": [], "i": "https://cdn.salla.sa/azeyQR/a1b4ab74-39f7-40b6-b960-049bd9a2f17a-500x500-pXsiBiKQvpEegF8mb0pQhaEA1TWaIEuz8TgrFMpI.jpg"}, {"n": "شاص وربع", "u": "/شاص-وربع/c1063290346", "c": 356, "s": [], "i": "https://cdn.salla.sa/azeyQR/e90202be-d22b-465e-8d5c-58fbefaf482e-500x500-7AxEyknbphuuCDLwUn91v9lwjxTOuAlBcJnhn7bX.jpg"}, {"n": "اف جي كروزر", "u": "/اف-جي-كروزر/c888660725", "c": 11, "s": [], "i": "https://cdn.salla.sa/azeyQR/1917d257-62d2-43b6-9ed5-52b7b25886c3-500x500-zzxt9oPDSpER6lF5HQhEAuKjXrsPsSs6G3Ugxnz7.jpg"}, {"n": "كامري", "u": "/كامري/c579227632", "c": 29, "s": [], "i": "https://cdn.salla.sa/azeyQR/64dadc32-8378-4ede-9b61-1b10d07eff98-500x500-eNAnfugJaaCzD3fRgvtUuKMfXk8w4mEyZfh7oJlL.jpg"}, {"n": "كورولا ويارس", "u": "/كورولا-ويارس/c1354309879", "c": 12, "s": [], "i": "https://cdn.salla.sa/azeyQR/2c530a40-998b-45ad-82a4-45c7e927da89-500x500-n1gouBkjpy2n2b6o4o15abxEUa5uyhDSCsOGfFyn.jpg"}, {"n": "اكسسوارات تويوتا عامة", "u": "/اكسسوارات-تويوتا-عامة/c2086891249", "c": 22, "s": [], "i": "https://cdn.salla.sa/azeyQR/8be86f72-55d3-4796-8470-57434893a40d-500x500-o6nYjdr24NsrSpWDrbzVafSnITHvjdZzXafWwdrM.jpg"}], "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg"}, {"n": "الخطوط", "u": "/الخطوط/c997204374", "c": 594, "s": [{"n": "خطوط لاندكروزر", "u": "/خطوط-لاندكروزر/c358432919", "c": 149, "s": [{"n": "لاندكروزر حتى 2007", "u": "/لاندكروزر-حتى-2007/c822120081", "c": 59, "s": [], "i": "https://cdn.salla.sa/azeyQR/22941416-d359-40d0-b5a5-3c8f793e0ea1-500x500-W2PLlOQpQjRxPUKP2VqqwnVyRlq5tQJzbpT1g7wP.jpg"}, {"n": "لاندكروزر 2008 إلى 2015", "u": "/لاندكروزر-2008-إلى-2015/c1731882896", "c": 24, "s": [], "i": "https://cdn.salla.sa/azeyQR/a0278ec7-1187-478e-9786-b679a904da68-500x500-VPxRUX52AgYcJLLFiIccj1AWh1GDoxcNkPoejSVX.jpg"}, {"n": "لاندكروزر 2016 إلى 2025", "u": "/لاندكروزر-2016-إلى-2025/c49130898", "c": 53, "s": [], "i": "https://cdn.salla.sa/azeyQR/4ac56bc3-c72b-4709-a4af-96419c146c5e-500x500-4XZnbzs3g90bUzvKR8j21cpbi2DcoCGwB9JUCqw7.jpg"}], "i": "https://cdn.salla.sa/azeyQR/5abbe9a1-8ac1-4b90-be0a-32d09cf6810f-500x500-HpjLg0Mr3VCQu2kdKezvdNmlYNcO42c12J5SMIlt.jpg"}, {"n": "خطوط برادو", "u": "/خطوط-برادو/c1247357342", "c": 9, "s": [], "i": "https://cdn.salla.sa/azeyQR/1f80a82e-6c41-48b6-85b8-9e4fc61ce97b-500x500-btTqY7k3OwIbSQMRBASrnex3K8LZ4QPps40Vtlw2.jpg"}, {"n": "خطوط هايلوكس", "u": "/خطوط-هايلوكس/c2021395101", "c": 306, "s": [{"n": "هايلوكس حتى 2004", "u": "/هايلوكس-حتى-2004/c2120531171", "c": 50, "s": [], "i": "https://cdn.salla.sa/azeyQR/300b8b6c-bee4-4e42-a786-3eebd25a0b8e-500x500-ZFt1wjQGOTLSifiK33nNm9W1AcTfrUzYZIEZcl1u.jpg"}, {"n": "هايلوكس 2005 إلى 2015", "u": "/هايلوكس-2005-إلى-2015/c1212275692", "c": 113, "s": [], "i": "https://cdn.salla.sa/azeyQR/cd4cc301-a8bc-46d3-ad98-69d40e98ff48-500x500-SdLOEIUD4zE1UtsX3qYxmVyb5hnaJEccl1gupDgW.jpg"}, {"n": "هايلوكس 2016 إلى 2025", "u": "/هايلوكس-2016-إلى-2025/c439286509", "c": 124, "s": [], "i": "https://cdn.salla.sa/azeyQR/7588a1fa-8d0d-48a8-8ced-a55edbd74dc5-500x500-9TTNDBxni5181YejuL6wY95QcCvQSDVGXmc0rqaQ.jpg"}], "i": "https://cdn.salla.sa/azeyQR/02a0e96e-8137-47ef-ab64-8e2a2438f5e2-500x500-1kCXHbySEbVhBdFTSU1PwybG71y3bA2HKR07Xag7.jpg"}, {"n": "خطوط شاص", "u": "/خطوط-شاص/c781708188", "c": 89, "s": [{"n": "شاص حتى 2006", "u": "/شاص-حتى-2006/c13918176", "c": 22, "s": [], "i": "https://cdn.salla.sa/azeyQR/b6d2dc2d-ffe4-4153-b47d-2d47825cf684-500x500-bV4s72U9mP7hV8HCBbCg42WWhiRxAUucjZpfcITR.jpg"}, {"n": "شاص 2007 إلى 2015", "u": "/شاص-2007-إلى-2015/c1387364065", "c": 20, "s": [], "i": "https://cdn.salla.sa/azeyQR/60f55780-482c-46ce-bf07-8371569f35bc-500x500-wKv6NZnB9gXTASecAhBPF3fdF3NrSk3wja40IgC7.jpg"}, {"n": "شاص 2016 إلى 2025", "u": "/شاص-2016-إلى-2025/c923742439", "c": 44, "s": [], "i": "https://cdn.salla.sa/azeyQR/fd179f8e-30c8-447a-87f2-dffc7fe825fc-500x500-tXf6ePSKNp8P2JBehGiw2Xpsy2WVOB3g4b8l3jG8.jpg"}], "i": "https://cdn.salla.sa/azeyQR/a954b931-8882-40ee-9c7c-bbf6bc00614b-500x500-uf2NNYhc6S7bS2H2MkeqUEvot3W6cK7TwxMf4UDP.jpg"}, {"n": "خطوط ربع", "u": "/خطوط-ربع/c1556794515", "c": 41, "s": [{"n": "ربع حتى 2006", "u": "/ربع-حتى-2006/c964219876", "c": 1, "s": [], "i": "https://cdn.salla.sa/azeyQR/e16c0126-47e3-4743-a6a3-a6dd704fd4e1-500x500-CiEmpuTmLjmNeuAAsfdOjZLJE9BLBB4ktkn34bCU.jpg"}, {"n": "ربع 2007 إلى 2015", "u": "/ربع-2007-إلى-2015/c1871951003", "c": 15, "s": [], "i": "https://cdn.salla.sa/azeyQR/51925156-317d-47c6-ab80-f8e1bbe83131-500x500-JJEMKdPUfWv7FmHTUtcpbxHJQOcMkPtjDERTps6m.jpg"}, {"n": "ربع 2016 إلى 2025", "u": "/ربع-2016-إلى-2025/c189133541", "c": 24, "s": [], "i": "https://cdn.salla.sa/azeyQR/95b576b5-bd07-4ca8-a1da-e173d8e4f89a-500x500-JRteiEglbw6fm9RshteSiNtLwe9pEGeLakWwmR3y.jpg"}], "i": "https://cdn.salla.sa/azeyQR/dc4df1f4-f24c-4e18-a883-f619790cb49c-500x500-2TDsvhco1guk6pLAQiX3UlZF3nKKi4AOqxrEZeYJ.jpg"}], "i": "https://cdn.salla.sa/azeyQR/5abbe9a1-8ac1-4b90-be0a-32d09cf6810f-500x500-HpjLg0Mr3VCQu2kdKezvdNmlYNcO42c12J5SMIlt.jpg"}];
   function bodyIs(c) { return document.body.classList.contains(c); }
   function crumbs() { return $$('#main-content .breadcrumbs .s-breadcrumb-item').map(function (li) { var a = $('a', li); return [li.textContent.trim(), a ? a.getAttribute('href') : null]; }).filter(function (x) { return x[0]; }); }
 
@@ -731,7 +733,7 @@
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
     // quick facts under the title
     var h1 = $('h1', info);
-    var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'يشحن خلال ٢٤ ساعة</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
+    var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'نجهز طلبك خلال يوم إلى يومين</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
     if (h1) h1.parentNode.insertBefore(facts, h1.nextSibling);
     api('products/' + pid + '/details').then(function (r) {
       var p = r && r.data; if (!p) return;
@@ -782,6 +784,100 @@
       $('button', pbar).addEventListener('click', function () { var b = $('button', addBtn); if (b) b.click(); });
       var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
       window.addEventListener('scroll', onS, { passive: true });
+    }
+  }
+
+
+  /* ================= store, about, contact and faq pages ================= */
+  function pageId() { var m = /\/page-(\d+)/.exec(location.pathname); return m ? m[1] : null; }
+  function pageShell() {
+    var c = $('#main-content .content--single-page'); if (!c) return null;
+    c.classList.add('oc-hidden');
+    var host = h('<div class="oc-pagebody"></div>');
+    var wrap = c.closest('.container') || c; wrap.parentNode.insertBefore(host, wrap.nextSibling);
+    return host;
+  }
+  function storePage(host) {
+    var cats = []; TREE.forEach(function (t) { t.s.forEach(function (x) { cats.push(x); }); });
+    host.appendChild(h('<section class="oc-sec oc-storecats"><div class="oc-container">' +
+      '<div class="oc-storetop">' + TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + ' <em>(' + num(t.c) + ')</em></a>'; }).join('') + '</div>' +
+      '<div class="oc-storegrid">' + cats.map(function (x) {
+        return '<a class="oc-scat" href="' + x.u + '" data-cid="' + (catId(x.u) || '') + '"><span class="oc-scat__img"><span class="oc-skel"></span></span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
+      }).join('') + '</div></div></section>'));
+    $$('.oc-scat', host).forEach(function (a) {
+      var id = a.dataset.cid; if (!id) return;
+      api('products?source=categories&source_value[]=' + id + '&per_page=1').then(function (r) {
+        var p = r && r.data && r.data[0]; var u = p && p.image && p.image.url;
+        $('.oc-scat__img', a).innerHTML = u ? '<img loading="lazy" src="' + esc(u) + '" alt="">' : '';
+      }).catch(function () {});
+    });
+  }
+  var WHY = [['check', 'نتأكد من المطابقة', 'نراجع موديل سيارتك وسنة الصنع قبل ما نشحن أي قطعة'], ['gear', 'أصلي وبديل', 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة'], ['truck', 'من جدة لكل المملكة', 'توصيل سريع داخل جدة وشحن لكل مناطق المملكة'], ['headset', 'معك قبل وبعد الطلب', 'نرد على استفساراتك ونساعدك تختار القطعة الصح']];
+  function aboutPage(host) {
+    host.appendChild(aboutSection());
+    host.appendChild(h('<section class="oc-sec oc-why"><div class="oc-container">' + head('ليش أوبرا كار') + '<div class="oc-why__row">' +
+      WHY.map(function (w) { return '<div class="oc-whycard"><span class="oc-whycard__ic">' + ic(w[0]) + '</span><b>' + w[1] + '</b><p>' + w[2] + '</p></div>'; }).join('') + '</div></div></section>'));
+    host.appendChild(reviewsSection());
+    host.appendChild(modelsSection());
+  }
+  var HOURS = [['كل أيام الأسبوع', 'مفتوح دائما'], ['الطلبات', 'تستقبل على مدار الساعة'], ['الرد على الاستفسارات', 'طوال أيام الأسبوع']];
+  function contactPage(host) {
+    var s = h('<section class="oc-sec oc-contactp"><div class="oc-container"><div class="oc-contact__grid">' +
+      '<div class="oc-cbox"><h2>أوقات العمل</h2><p class="oc-cbox__sub">نخدمك طوال أيام الأسبوع</p><div class="oc-hours">' + HOURS.map(function (x) { return '<div><b>' + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join('') + '</div>' +
+      '<h2>تواصل معنا</h2><p class="oc-cbox__sub">اختر الطريقة اللي تناسبك</p>' +
+      '<a class="oc-ccard" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><div><b>رقم الاتصال</b><small dir="ltr">' + CONTACT.phone + '</small></div></a>' +
+      '<a class="oc-ccard" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener"><span class="is-wa">' + bic('whatsapp') + '</span><div><b>واتساب</b><small>راسلنا بموديل سيارتك ونساعدك</small></div></a>' +
+      '<div class="oc-ccard"><span>' + ic('pin') + '</span><div><b>موقع المتجر</b><small>جدة المملكة العربية السعودية</small></div></div>' +
+      '</div>' +
+      '<form class="oc-cbox oc-cform"><h2>أرسل لنا رسالة</h2><p class="oc-cbox__sub">تصلنا رسالتك على واتساب ونرد عليك بسرعة</p>' +
+      '<label><span class="oc-sr">اسمك</span><input name="n" required placeholder="اسمك"></label>' +
+      '<label><span class="oc-sr">رقم جوالك</span><input name="p" inputmode="tel" placeholder="رقم جوالك"></label>' +
+      '<label><span class="oc-sr">موديل سيارتك</span><input name="c" placeholder="موديل سيارتك وسنة الصنع"></label>' +
+      '<label><span class="oc-sr">رسالتك</span><textarea name="m" rows="6" required placeholder="اكتب رسالتك"></textarea></label>' +
+      '<button type="submit" class="oc-btn oc-btn--primary">أرسل الرسالة</button></form>' +
+      '</div><div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&output=embed"></iframe></div></div></section>');
+    $('form', s).addEventListener('submit', function (e) {
+      e.preventDefault(); var f = e.target;
+      var t = 'الاسم ' + f.n.value + '\nالجوال ' + f.p.value + '\nالسيارة ' + f.c.value + '\n' + f.m.value;
+      window.open('https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
+    });
+    host.appendChild(s);
+  }
+  var FAQ = [
+    ['الطلب والشحن', [
+      ['هل تشحنون لكل مناطق المملكة', 'نعم نشحن لكل مدن ومناطق المملكة وعندنا توصيل سريع داخل جدة'],
+      ['كم ياخذ الطلب لين يوصل', 'نجهز الطلب خلال يوم إلى يومين عمل ويوصل خلال يومين إلى خمسة أيام عمل حسب المدينة'],
+      ['متى يكون الشحن مجاني', 'الشحن مجاني للطلبات فوق ٦٠٠ ريال ورسوم الطلبات الأقل تظهر لك قبل الدفع'],
+      ['كيف أتابع شحنتي', 'تصلك رسالة برقم الشحنة بعد ما نشحن طلبك وإذا تأخرت تواصل معنا ونتابعها لك']]],
+    ['القطع والمطابقة', [
+      ['كيف أعرف إن القطعة تناسب سيارتي', 'استخدم اختر سيارتك في الصفحة الرئيسية أو أرسل لنا موديل سيارتك وسنة الصنع ونتأكد لك قبل الشحن'],
+      ['وش الفرق بين القطع الأصلية والبديلة', 'الأصلية من الشركة المصنعة والبديلة من مصانع أخرى بسعر أقل وكل منتج مكتوب نوعه في وصفه'],
+      ['هل الخطوط حسب موديل السيارة', 'نعم كل خط مكتوب عليه الموديل وسنوات الصنع المناسبة له']]],
+    ['الدفع والتقسيط', [
+      ['وش طرق الدفع المتاحة', 'مدى وأبل باي وفيزا وماستركارد وتابي وتمارا'],
+      ['هل أقدر أقسط طلبي', 'نعم تقدر تقسط مع تابي أو تمارا من صفحة إتمام الطلب']]],
+    ['الاستبدال والاسترجاع', [
+      ['كم مدة الاستبدال والاسترجاع', 'تقدر تطلب الاستبدال أو الاسترجاع خلال سبعة أيام من استلام الطلب'],
+      ['وش شروط القبول', 'تكون القطعة بحالتها الأصلية وغير مركبة وفي تغليفها مع ملحقاتها والخطوط لا تسترجع بعد فصلها أو تركيبها'],
+      ['متى يرجع المبلغ', 'يرجع المبلغ بنفس طريقة الدفع خلال سبعة إلى أربعة عشر يوم عمل من استلامنا القطعة وفحصها']]]
+  ];
+  function faqPage(host) {
+    var s = h('<section class="oc-sec oc-faq"><div class="oc-container">' + FAQ.map(function (g) {
+      return '<div class="oc-faq__group"><h2>' + g[0] + '</h2>' + g[1].map(function (q) {
+        return '<details class="oc-faq__item"><summary>' + q[0] + '<i>' + ic('plus') + '</i></summary><p>' + q[1] + '</p></details>';
+      }).join('') + '</div>';
+    }).join('') + '<div class="oc-faq__more"><b>ما لقيت إجابتك</b><a class="oc-btn oc-btn--primary" href="' + CONTACT_URL + '">تواصل معنا</a></div></div></section>');
+    host.appendChild(s);
+  }
+  function customPages() {
+    var id = pageId(); if (!id || $('.oc-pagebody')) return;
+    var map = { '80660524': storePage, '1058176407': aboutPage, '1028738080': contactPage, '1493469730': faqPage };
+    if (!map[id]) { document.body.classList.add('oc-textpage'); return; }
+    var host = pageShell(); if (!host) return;
+    map[id](host);
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
+      $$('.oc-sec', host).forEach(function (el) { el.classList.add('oc-reveal'); io.observe(el); });
     }
   }
 
@@ -856,6 +952,7 @@
     pageBanner();
     categoryPage();
     productPage();
+    customPages();
     toTop();
     cartDrawer();
     document.body.classList.add('oc-ready');

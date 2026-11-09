@@ -88,7 +88,7 @@
       ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="/#oc-finder">' + ic('car') + 'اختر سيارتك</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-hot root-level"><a href="/#oc-deals">' + ic('fire') + 'العروض</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="' + ABOUT_URL + '">من نحن</a></li>'));
-      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="#oc-contact">تواصل معنا</a></li>'));
+      ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="' + CONTACT_URL + '">تواصل معنا</a></li>'));
     }
 
   }
@@ -528,7 +528,9 @@
   var CONTACT = { phone: '+966539036264', whatsapp: '966500000000' };
   var SOCIAL = [['instagram', 'انستقرام', '#'], ['x', 'إكس', '#'], ['tiktok', 'تيك توك', '#'], ['snapchat', 'سناب شات', '#']];
   var ABOUT_URL = '/%D9%85%D9%86-%D9%86%D8%AD%D9%86/page-1058176407';
-  var STORE_URL = C['قطع الغيار والاكسسوارات'];
+  var STORE_URL = '/%D8%A7%D9%84%D9%85%D8%AA%D8%AC%D8%B1/page-80660524';
+  var CONTACT_URL = '/%D8%AA%D9%88%D8%A7%D8%B5%D9%84-%D9%85%D8%B9%D9%86%D8%A7/page-1028738080';
+  var FAQ_URL = '/%D8%A7%D9%84%D8%A3%D8%B3%D8%A6%D9%84%D8%A9-%D8%A7%D9%84%D8%B4%D8%A7%D8%A6%D8%B9%D8%A9/page-1493469730';
   function footerExtras() {
     var f = $('footer.store-footer'); if (!f || f.dataset.oc) return; f.dataset.oc = '1';
     var menu = $('salla-menu', f);
@@ -555,7 +557,7 @@
     var grid = $('.store-footer__inner .container.grid', f) || $('.store-footer__inner .grid', f);
     if (grid && !$('.oc-fcol', f)) {
       var col = function (title, links, cls) { return h('<div class="oc-fcol ' + (cls || '') + '"><h3>' + title + '</h3><div class="s-menu-footer-list">' + links.map(function (l) { return '<a class="s-menu-footer-item" href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div></div>'); };
-      var pagesCol = col('الصفحات', [['الرئيسية', '/'], ['المتجر', STORE_URL], ['من نحن', ABOUT_URL], ['تواصل معنا', '#oc-contact']]);
+      var pagesCol = col('الصفحات', [['الرئيسية', '/'], ['المتجر', STORE_URL], ['من نحن', ABOUT_URL], ['الأسئلة الشائعة', FAQ_URL], ['تواصل معنا', CONTACT_URL]]);
       var storeCol = col('المتجر', [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اكسسوارات تويوتا عامة', C['اكسسوارات تويوتا عامة']], ['العروض', '/#oc-deals'], ['اختر سيارتك', '/#oc-finder']]);
       var contactCol = h('<div class="oc-fcol oc-fcontact" id="oc-contact"><h3>تواصل معنا</h3>' +
         '<a class="oc-fc" href="tel:' + CONTACT.phone + '"><span class="oc-fc__ic">' + ic('phone') + '</span><span dir="ltr">' + CONTACT.phone + '</span></a>' +
@@ -731,7 +733,7 @@
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
     // quick facts under the title
     var h1 = $('h1', info);
-    var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'يشحن خلال ٢٤ ساعة</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
+    var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'نجهز طلبك خلال يوم إلى يومين</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
     if (h1) h1.parentNode.insertBefore(facts, h1.nextSibling);
     api('products/' + pid + '/details').then(function (r) {
       var p = r && r.data; if (!p) return;
@@ -782,6 +784,100 @@
       $('button', pbar).addEventListener('click', function () { var b = $('button', addBtn); if (b) b.click(); });
       var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
       window.addEventListener('scroll', onS, { passive: true });
+    }
+  }
+
+
+  /* ================= store, about, contact and faq pages ================= */
+  function pageId() { var m = /\/page-(\d+)/.exec(location.pathname); return m ? m[1] : null; }
+  function pageShell() {
+    var c = $('#main-content .content--single-page'); if (!c) return null;
+    c.classList.add('oc-hidden');
+    var host = h('<div class="oc-pagebody"></div>');
+    var wrap = c.closest('.container') || c; wrap.parentNode.insertBefore(host, wrap.nextSibling);
+    return host;
+  }
+  function storePage(host) {
+    var cats = []; TREE.forEach(function (t) { t.s.forEach(function (x) { cats.push(x); }); });
+    host.appendChild(h('<section class="oc-sec oc-storecats"><div class="oc-container">' +
+      '<div class="oc-storetop">' + TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + ' <em>(' + num(t.c) + ')</em></a>'; }).join('') + '</div>' +
+      '<div class="oc-storegrid">' + cats.map(function (x) {
+        return '<a class="oc-scat" href="' + x.u + '" data-cid="' + (catId(x.u) || '') + '"><span class="oc-scat__img"><span class="oc-skel"></span></span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
+      }).join('') + '</div></div></section>'));
+    $$('.oc-scat', host).forEach(function (a) {
+      var id = a.dataset.cid; if (!id) return;
+      api('products?source=categories&source_value[]=' + id + '&per_page=1').then(function (r) {
+        var p = r && r.data && r.data[0]; var u = p && p.image && p.image.url;
+        $('.oc-scat__img', a).innerHTML = u ? '<img loading="lazy" src="' + esc(u) + '" alt="">' : '';
+      }).catch(function () {});
+    });
+  }
+  var WHY = [['check', 'نتأكد من المطابقة', 'نراجع موديل سيارتك وسنة الصنع قبل ما نشحن أي قطعة'], ['gear', 'أصلي وبديل', 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة'], ['truck', 'من جدة لكل المملكة', 'توصيل سريع داخل جدة وشحن لكل مناطق المملكة'], ['headset', 'معك قبل وبعد الطلب', 'نرد على استفساراتك ونساعدك تختار القطعة الصح']];
+  function aboutPage(host) {
+    host.appendChild(aboutSection());
+    host.appendChild(h('<section class="oc-sec oc-why"><div class="oc-container">' + head('ليش أوبرا كار') + '<div class="oc-why__row">' +
+      WHY.map(function (w) { return '<div class="oc-whycard"><span class="oc-whycard__ic">' + ic(w[0]) + '</span><b>' + w[1] + '</b><p>' + w[2] + '</p></div>'; }).join('') + '</div></div></section>'));
+    host.appendChild(reviewsSection());
+    host.appendChild(modelsSection());
+  }
+  var HOURS = [['كل أيام الأسبوع', 'مفتوح دائما'], ['الطلبات', 'تستقبل على مدار الساعة'], ['الرد على الاستفسارات', 'طوال أيام الأسبوع']];
+  function contactPage(host) {
+    var s = h('<section class="oc-sec oc-contactp"><div class="oc-container"><div class="oc-contact__grid">' +
+      '<div class="oc-cbox"><h2>أوقات العمل</h2><p class="oc-cbox__sub">نخدمك طوال أيام الأسبوع</p><div class="oc-hours">' + HOURS.map(function (x) { return '<div><b>' + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join('') + '</div>' +
+      '<h2>تواصل معنا</h2><p class="oc-cbox__sub">اختر الطريقة اللي تناسبك</p>' +
+      '<a class="oc-ccard" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><div><b>رقم الاتصال</b><small dir="ltr">' + CONTACT.phone + '</small></div></a>' +
+      '<a class="oc-ccard" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener"><span class="is-wa">' + bic('whatsapp') + '</span><div><b>واتساب</b><small>راسلنا بموديل سيارتك ونساعدك</small></div></a>' +
+      '<div class="oc-ccard"><span>' + ic('pin') + '</span><div><b>موقع المتجر</b><small>جدة المملكة العربية السعودية</small></div></div>' +
+      '</div>' +
+      '<form class="oc-cbox oc-cform"><h2>أرسل لنا رسالة</h2><p class="oc-cbox__sub">تصلنا رسالتك على واتساب ونرد عليك بسرعة</p>' +
+      '<label><span class="oc-sr">اسمك</span><input name="n" required placeholder="اسمك"></label>' +
+      '<label><span class="oc-sr">رقم جوالك</span><input name="p" inputmode="tel" placeholder="رقم جوالك"></label>' +
+      '<label><span class="oc-sr">موديل سيارتك</span><input name="c" placeholder="موديل سيارتك وسنة الصنع"></label>' +
+      '<label><span class="oc-sr">رسالتك</span><textarea name="m" rows="6" required placeholder="اكتب رسالتك"></textarea></label>' +
+      '<button type="submit" class="oc-btn oc-btn--primary">أرسل الرسالة</button></form>' +
+      '</div><div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&output=embed"></iframe></div></div></section>');
+    $('form', s).addEventListener('submit', function (e) {
+      e.preventDefault(); var f = e.target;
+      var t = 'الاسم ' + f.n.value + '\nالجوال ' + f.p.value + '\nالسيارة ' + f.c.value + '\n' + f.m.value;
+      window.open('https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
+    });
+    host.appendChild(s);
+  }
+  var FAQ = [
+    ['الطلب والشحن', [
+      ['هل تشحنون لكل مناطق المملكة', 'نعم نشحن لكل مدن ومناطق المملكة وعندنا توصيل سريع داخل جدة'],
+      ['كم ياخذ الطلب لين يوصل', 'نجهز الطلب خلال يوم إلى يومين عمل ويوصل خلال يومين إلى خمسة أيام عمل حسب المدينة'],
+      ['متى يكون الشحن مجاني', 'الشحن مجاني للطلبات فوق ٦٠٠ ريال ورسوم الطلبات الأقل تظهر لك قبل الدفع'],
+      ['كيف أتابع شحنتي', 'تصلك رسالة برقم الشحنة بعد ما نشحن طلبك وإذا تأخرت تواصل معنا ونتابعها لك']]],
+    ['القطع والمطابقة', [
+      ['كيف أعرف إن القطعة تناسب سيارتي', 'استخدم اختر سيارتك في الصفحة الرئيسية أو أرسل لنا موديل سيارتك وسنة الصنع ونتأكد لك قبل الشحن'],
+      ['وش الفرق بين القطع الأصلية والبديلة', 'الأصلية من الشركة المصنعة والبديلة من مصانع أخرى بسعر أقل وكل منتج مكتوب نوعه في وصفه'],
+      ['هل الخطوط حسب موديل السيارة', 'نعم كل خط مكتوب عليه الموديل وسنوات الصنع المناسبة له']]],
+    ['الدفع والتقسيط', [
+      ['وش طرق الدفع المتاحة', 'مدى وأبل باي وفيزا وماستركارد وتابي وتمارا'],
+      ['هل أقدر أقسط طلبي', 'نعم تقدر تقسط مع تابي أو تمارا من صفحة إتمام الطلب']]],
+    ['الاستبدال والاسترجاع', [
+      ['كم مدة الاستبدال والاسترجاع', 'تقدر تطلب الاستبدال أو الاسترجاع خلال سبعة أيام من استلام الطلب'],
+      ['وش شروط القبول', 'تكون القطعة بحالتها الأصلية وغير مركبة وفي تغليفها مع ملحقاتها والخطوط لا تسترجع بعد فصلها أو تركيبها'],
+      ['متى يرجع المبلغ', 'يرجع المبلغ بنفس طريقة الدفع خلال سبعة إلى أربعة عشر يوم عمل من استلامنا القطعة وفحصها']]]
+  ];
+  function faqPage(host) {
+    var s = h('<section class="oc-sec oc-faq"><div class="oc-container">' + FAQ.map(function (g) {
+      return '<div class="oc-faq__group"><h2>' + g[0] + '</h2>' + g[1].map(function (q) {
+        return '<details class="oc-faq__item"><summary>' + q[0] + '<i>' + ic('plus') + '</i></summary><p>' + q[1] + '</p></details>';
+      }).join('') + '</div>';
+    }).join('') + '<div class="oc-faq__more"><b>ما لقيت إجابتك</b><a class="oc-btn oc-btn--primary" href="' + CONTACT_URL + '">تواصل معنا</a></div></div></section>');
+    host.appendChild(s);
+  }
+  function customPages() {
+    var id = pageId(); if (!id || $('.oc-pagebody')) return;
+    var map = { '80660524': storePage, '1058176407': aboutPage, '1028738080': contactPage, '1493469730': faqPage };
+    if (!map[id]) { document.body.classList.add('oc-textpage'); return; }
+    var host = pageShell(); if (!host) return;
+    map[id](host);
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
+      $$('.oc-sec', host).forEach(function (el) { el.classList.add('oc-reveal'); io.observe(el); });
     }
   }
 
@@ -856,6 +952,7 @@
     pageBanner();
     categoryPage();
     productPage();
+    customPages();
     toTop();
     cartDrawer();
     document.body.classList.add('oc-ready');
