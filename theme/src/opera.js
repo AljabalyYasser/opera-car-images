@@ -155,6 +155,8 @@
   I.heart = '<path d="M12 20s-7.5-4.4-9-9.3C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.2C19.5 15.6 12 20 12 20z"/>';
   I.eye = '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
   I.check = '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>';
+  I.gear = '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>';
+  I.okc = '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>';
   I.minus = '<path d="M6 12h12"/>';
   I.plus = '<path d="M12 6v12M6 12h12"/>';
   I.cal = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
@@ -224,8 +226,10 @@
     next.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
   }
   function arrows() { return '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button>'; }
-  function head(title, link, linkText) {
-    return '<div class="oc-head"><h2>' + title + '</h2>' + (link ? '<a class="oc-more" href="' + link + '">' + (linkText || 'عرض الكل') + '</a>' : '') + '</div>';
+  function head(title, link, linkText, nav, tag) {
+    tag = tag || 'h2';
+    var side = (link ? '<a class="oc-more" href="' + link + '">' + (linkText || 'عرض الكل') + '</a>' : '') + (nav ? '<div class="oc-nav">' + arrows() + '</div>' : '');
+    return '<div class="oc-head"><' + tag + '>' + title + '</' + tag + '>' + (side ? '<div class="oc-head__side">' + side + '</div>' : '') + '</div>';
   }
   function skeleton(n) { var s = ''; for (var i = 0; i < n; i++) s += '<div class="oc-slide-item"><div class="oc-skel"></div></div>'; return s; }
 
@@ -234,12 +238,6 @@
     { k: 'خطوط تويوتا بتصاميم حصرية', t: ['خطوط تعطي سيارتك', 'هوية جديدة'], p: 'تصاميم لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_lc.webp', a: [['تسوق الخطوط', C['الخطوط']], ['اختر سيارتك', '#oc-finder']] },
     { k: 'قطع غيار واكسسوارات', t: ['كل ما تحتاجه سيارتك', 'في مكان واحد'], p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts.webp', a: [['تسوق القطع', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '#oc-finder']] },
     { k: 'عروض أوبرا كار', t: ['عروض حصرية', 'لفترة محدودة'], p: 'خصومات على مختارات من القطع والإكسسوارات وشحن مجاني للطلبات فوق ٦٠٠&nbsp;ريال', img: 'hero_hilux.webp', a: [['شاهد العروض', '#oc-deals'], ['تسوق الخطوط', C['الخطوط']]] }
-  ];
-  var SERVICES = [
-    ['truck', 'شحن سريع', 'لكل المملكة وتوصيل سريع داخل جدة'],
-    ['gift', 'شحن مجاني', 'للطلبات فوق ٦٠٠&nbsp;ريال'],
-    ['card', 'قسّطها', 'مع تابي وتمارا'],
-    ['check', 'نتأكد من المطابقة', 'قبل الشحن لموديل سيارتك']
   ];
   function heroSection() {
     var s = h('<section class="oc-hero" aria-label="الواجهة">' +
@@ -253,9 +251,6 @@
       }).join('') + '</div>' +
       '<div class="oc-hero__dots">' + SLIDES.map(function (_, i) { return '<button type="button" aria-label="شريحة ' + (i + 1) + '" class="' + (i === 0 ? 'is-on' : '') + '"></button>'; }).join('') + '</div>' +
       '</div>' +
-      '<div class="oc-container"><div class="oc-services">' + SERVICES.map(function (x) {
-        return '<div class="oc-service"><span class="oc-service__ic">' + ic(x[0]) + '</span><div><b>' + x[1] + '</b><small>' + x[2] + '</small></div></div>';
-      }).join('') + '</div></div>' +
       '</section>');
     var slides = $$('.oc-slide', s), dots = $$('.oc-hero__dots button', s), cur = 0, timer;
     function go(i) {
@@ -297,8 +292,8 @@
       '<button type="button" class="oc-btn oc-btn--primary oc-finder__go">' + ic('search') + 'اعرض المنتجات</button>' +
       '<p class="oc-finder__msg" hidden></p>' +
       '</div>' +
-      '<div class="oc-finder__res" hidden><div class="oc-head oc-head--sm"><h3></h3><a class="oc-more" href="#">عرض كل المنتجات</a></div>' +
-      '<div class="oc-slider"><div class="oc-track"></div>' + arrows() + '</div></div>' +
+      '<div class="oc-finder__res" hidden><div class="oc-head oc-head--sm"><h3></h3><div class="oc-head__side"><a class="oc-more" href="#">عرض كل المنتجات</a><div class="oc-nav">' + arrows() + '</div></div></div>' +
+      '<div class="oc-slider"><div class="oc-track"></div></div></div>' +
       '</div></section>');
     var fm = $('[data-f=m]', s), fy = $('[data-f=y]', s), ft = $('[data-f=t]', s), msg = $('.oc-finder__msg', s), res = $('.oc-finder__res', s);
     slider(res);
@@ -357,8 +352,8 @@
   /* ---------- 4 and 6 product rows with promo card ---------- */
   function productRow(opts) {
     var promo = '<a class="oc-promo" href="' + opts.promoLink + '" style="background-image:url(' + IMG + opts.promoImg + ')"><b>' + opts.promoTitle + '</b><small>' + opts.promoText + '</small><span class="oc-promo__btn">تسوق الآن</span></a>';
-    var s = h('<section class="oc-sec oc-row' + (opts.end ? ' oc-row--end' : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + '><div class="oc-container">' + head(opts.title, opts.link, opts.linkText) +
-      '<div class="oc-row__grid">' + promo + '<div class="oc-slider"><div class="oc-track">' + skeleton(4) + '</div>' + arrows() + '</div></div>' +
+    var s = h('<section class="oc-sec oc-row' + (opts.end ? ' oc-row--end' : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + '><div class="oc-container">' + head(opts.title, opts.link, opts.linkText, true) +
+      '<div class="oc-row__grid">' + promo + '<div class="oc-slider"><div class="oc-track">' + skeleton(4) + '</div></div></div>' +
       '</div></section>');
     var track = $('.oc-track', s);
     slider(s);
@@ -418,8 +413,8 @@
     });
   }
   function dealsSection() {
-    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية') +
-      '<div class="oc-slider"><div class="oc-track oc-track--deals">' + skeleton(2) + '</div>' + arrows() + '</div>' +
+    var s = h('<section class="oc-sec oc-deals" id="oc-deals"><div class="oc-container">' + head('عروض حصرية', null, null, true) +
+      '<div class="oc-slider"><div class="oc-track oc-track--deals">' + skeleton(2) + '</div></div>' +
       '</div></section>');
     var track = $('.oc-track', s);
     slider(s);
@@ -447,6 +442,19 @@
       '<div class="oc-marquee"><div class="oc-marquee__track">' + items + items + '</div></div></section>');
   }
 
+  /* ---------- about ---------- */
+  var ABOUT_POINTS = ['قطع أصلية وبديلة لكل موديلات تويوتا', 'خطوط بتصاميم أصلية وتصاميم خاصة', 'نرد على استفساراتك قبل الطلب وبعده'];
+  function aboutSection() {
+    return h('<section class="oc-sec oc-about" id="oc-about"><div class="oc-container oc-about__in">' +
+      '<div class="oc-about__text"><span class="oc-kicker">من نحن</span>' +
+      '<h2><span class="oc-l">متجر متخصص في سيارات تويوتا</span><span class="oc-l">من جدة لكل المملكة</span></h2>' +
+      '<p>أوبرا كار متجر سعودي متخصص في قطع غيار وإكسسوارات وخطوط سيارات تويوتا نوفر القطع الأصلية والبديلة لأشهر الموديلات ونتأكد من مطابقة كل قطعة لموديل سيارتك قبل الشحن</p>' +
+      '<ul>' + ABOUT_POINTS.map(function (t) { return '<li>' + ic('okc') + t + '</li>'; }).join('') + '</ul>' +
+      '<a class="oc-btn oc-btn--dark" href="https://wa.me/966539036264" target="_blank" rel="noopener">تواصل معنا</a></div>' +
+      '<div class="oc-about__media"><img loading="lazy" src="' + IMG + 'ban_parts.webp" alt="قطع غيار تويوتا"><span class="oc-about__badge"><b>نتأكد من المطابقة</b><small>قبل شحن أي قطعة</small></span></div>' +
+      '</div></section>');
+  }
+
   /* ---------- 9 testimonials ---------- */
   var REVIEWS = [
     ['عبدالله الحربي', 'جدة', 5, 'ركبت خط لاندكروزر على سيارتي وطلع نفس الصورة بالضبط والقص نظيف ووصلني ثاني يوم'],
@@ -467,8 +475,8 @@
       '<p>' + esc(r[3]) + '</p></article></div>';
   }
   function reviewsSection() {
-    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا') +
-      '<div class="oc-slider"><div class="oc-track oc-track--reviews">' + REVIEWS.map(reviewCard).join('') + '</div>' + arrows() + '</div>' +
+    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا', null, null, true) +
+      '<div class="oc-slider"><div class="oc-track oc-track--reviews">' + REVIEWS.map(reviewCard).join('') + '</div></div>' +
       '</div></section>');
     var track = $('.oc-track', s);
     slider(s);
@@ -495,7 +503,8 @@
   }
 
   /* ---------- features bar (all pages, above footer) ---------- */
-  var FEATS = [['shield', 'قطع أصلية وبديلة', 'جودة مضمونة لكل موديل'], ['lock', 'دفع آمن', 'مدى وأبل باي والبطاقات'], ['headset', 'دعم مباشر', 'نرد على استفساراتك بسرعة'], ['ret', 'استبدال واسترجاع', 'حسب سياسة المتجر']];
+  var FEATS = [['truck', 'شحن سريع', 'لكل المملكة وتوصيل سريع داخل جدة'], ['gift', 'شحن مجاني', 'للطلبات فوق ٦٠٠&nbsp;ريال'], ['card', 'قسّطها', 'مع تابي وتمارا'],
+    ['check', 'نتأكد من المطابقة', 'قبل الشحن لموديل سيارتك'], ['gear', 'قطع أصلية وبديلة', 'لأشهر موديلات تويوتا'], ['ret', 'استبدال واسترجاع', 'حسب سياسة المتجر']];
   function featuresBar() {
     var footer = $('footer.store-footer');
     if (!footer || $('.oc-feats')) return;
@@ -545,7 +554,8 @@
     var latest = $('.s-block--latest-products', main);
     if (latest) latest.classList.add('oc-hidden');
     var anchor = latest || main.firstChild;
-    [heroSection(), finderSection(), kindsSection(), featuredSection(), bannersSection(), latestSection(), dealsSection(), modelsSection(), reviewsSection(), articlesSection()]
+    var hero = heroSection(); hero.appendChild(finderSection());
+    [hero, kindsSection(), featuredSection(), bannersSection(), latestSection(), dealsSection(), modelsSection(), aboutSection(), reviewsSection(), articlesSection()]
       .forEach(function (el) { if (el) main.insertBefore(el, anchor); });
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
