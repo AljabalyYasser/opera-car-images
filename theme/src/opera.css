@@ -168,7 +168,7 @@ html.oc-dark .oc-mode__moon { transform: translateY(-26px) rotate(-90deg); opaci
 .oc-slide__text h2 .oc-l { display: block; white-space: nowrap; }
 .oc-slide__text h2 { font-size: clamp(26px, 3.9vw, 54px); line-height: 1.22; font-weight: 800; color: var(--oc-ink); margin: 14px 0 16px; }
 .oc-slide__text h2 em { font-style: normal; color: var(--oc-red); }
-.oc-slide__text p { font-size: 17px; color: var(--oc-muted); max-width: 480px; margin: 0 0 30px; line-height: 1.9; }
+.oc-slide__text p { font-size: 17px; color: var(--oc-muted); max-width: 540px; text-wrap: pretty; margin: 0 0 30px; line-height: 1.9; }
 .oc-slide__text .oc-kicker { background: var(--oc-red-soft); padding: 6px 14px; border-radius: 30px; }
 .oc-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 .oc-slide__media { position: relative; display: flex; align-items: center; justify-content: center; height: 100%; }
