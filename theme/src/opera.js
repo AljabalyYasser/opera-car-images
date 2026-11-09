@@ -628,6 +628,16 @@
     var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
     document.body.classList.add('oc-has-banner');
+    if (!trail) {
+      var fill = function () {
+        if ($('.oc-trail', b)) return;
+        var c2 = crumbs(); if (!c2.length) return;
+        var t2 = c2.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < c2.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
+        $('.oc-container', b).appendChild(h('<nav class="oc-trail" aria-label="مسار الصفحة">' + t2 + '</nav>'));
+        if (bodyIs('product-single') && c2.length > 1) $('h1', b).textContent = c2[c2.length - 2][0];
+      };
+      setTimeout(fill, 800); setTimeout(fill, 2000); setTimeout(fill, 4500);
+    }
   }
 
   /* back to top */
@@ -655,7 +665,9 @@
     // sidebar
     var here = decodeURIComponent(location.pathname);
     var link = function (n) { var on = here === decodeURIComponent(n.u) ? ' is-on' : ''; return '<a class="oc-acat' + on + '" href="' + n.u + '"><span>' + esc(n.n) + '</span><em>(' + num(n.c) + ')</em></a>'; };
-    var cats = TREE.map(function (t) { return '<div class="oc-acat-group">' + link(t) + '<div class="oc-acat-subs">' + t.s.map(link).join('') + '</div></div>'; }).join('');
+    var inTree = function (t) { return decodeURIComponent(t.u) === here || t.s.some(inTree); };
+    var anyOn = TREE.some(inTree);
+    var cats = TREE.map(function (t, i) { var open = inTree(t) || (!anyOn && i === 0); return '<div class="oc-acat-group' + (open ? ' is-open' : '') + '">' + link(t) + '<div class="oc-acat-subs">' + t.s.map(link).join('') + '</div></div>'; }).join('');
     var models = MODELS.filter(function (m, i) { return MODELS.findIndex(function (x) { return x.parts === m.parts; }) === i; })
       .map(function (m) { return '<a class="oc-chip" href="' + m.parts + '">' + m.n + '</a>'; }).join('');
     var aside = h('<aside class="oc-cat-aside">' +
@@ -668,7 +680,12 @@
     row.classList.add('oc-cat-row');
     // toolbar: count and view switcher
     var head = wrap.firstElementChild, h1 = $('#page-main-title', wrap);
-    if (h1) { var sp = $('span', h1); h1.innerHTML = (sp ? sp.outerHTML : '') + ' منتج'; h1.classList.add('oc-count'); }
+    if (h1) {
+      h1.classList.add('oc-count');
+      var strip1 = function () { var t = h1.firstChild; if (t && t.nodeType === 3 && /-/.test(t.textContent)) t.textContent = ''; };
+      strip1();
+      try { new MutationObserver(strip1).observe(h1, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+    }
     var views = [[2, 'عمودين'], [3, 'ثلاثة أعمدة'], [4, 'أربعة أعمدة'], [1, 'قائمة']];
     var cur = 3; try { cur = +localStorage.getItem(VIEW_KEY) || 3; } catch (e) {}
     var sw = h('<div class="oc-views" role="group" aria-label="طريقة العرض">' + views.map(function (v) {
@@ -683,6 +700,89 @@
     };
     sw.addEventListener('click', function (e) { var b = e.target.closest('button[data-v]'); if (b) apply(+b.dataset.v); });
     apply(cur);
+  }
+
+
+  /* product page in the reference layout */
+  var RETURNS_URL = '/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84-%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9/page-2003817800';
+  function productPage() {
+    if (!bodyIs('product-single') || $('.oc-pinfo')) return;
+    var box = $('[id^="product-"].flex', $('#main-content')); if (!box) return;
+    var pid = (box.id.match(/\d+/) || [])[0];
+    var info = $('.part-main-content', box), side = $('.part-sidebar', box);
+    box.classList.add('oc-pbox');
+    // thumbnails beside the main image
+    var slider = side && $('salla-slider', side);
+    var buildThumbs = function () {
+      if (!slider || $('.oc-thumbs', side)) return;
+      var imgs = $$('.swiper-slide img', slider); if (imgs.length < 2) return;
+      var th = h('<div class="oc-thumbs"><button type="button" class="oc-thumbs__nav" data-d="-1" aria-label="الصورة السابقة">' + ic('up') + '</button><div class="oc-thumbs__list">' +
+        imgs.map(function (im, i) { return '<button type="button" data-i="' + i + '" class="' + (i ? '' : 'is-on') + '" aria-label="صورة ' + (i + 1) + '"><img src="' + esc(im.currentSrc || im.src || im.dataset.src) + '" alt=""></button>'; }).join('') +
+        '</div><button type="button" class="oc-thumbs__nav oc-thumbs__nav--down" data-d="1" aria-label="الصورة التالية">' + ic('up') + '</button></div>');
+      side.insertBefore(th, side.firstChild); side.classList.add('oc-has-thumbs');
+      var sw = function () { var el = $('.swiper', slider); return el && el.swiper; };
+      var mark = function (i) { $$('.oc-thumbs__list button', th).forEach(function (b, j) { b.classList.toggle('is-on', j === i); }); };
+      th.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return; var s1 = sw(); if (!s1) return;
+        if (b.dataset.i != null) s1.slideTo(+b.dataset.i); else s1.slideTo(Math.max(0, Math.min(imgs.length - 1, s1.activeIndex + (+b.dataset.d))));
+      });
+      var s0 = sw(); if (s0 && s0.on) s0.on('slideChange', function () { mark(s0.activeIndex); });
+    };
+    buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
+    // quick facts under the title
+    var h1 = $('h1', info);
+    var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'يشحن خلال ٢٤ ساعة</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
+    if (h1) h1.parentNode.insertBefore(facts, h1.nextSibling);
+    api('products/' + pid + '/details').then(function (r) {
+      var p = r && r.data; if (!p) return;
+      var st = $('.oc-pstock', facts); st.hidden = false;
+      if (p.is_out_of_stock || p.is_available === false) { st.textContent = 'نفدت الكمية'; st.classList.add('is-out'); }
+      if (p.is_on_sale && p.regular_price && p.sale_price) {
+        var reg = +(p.regular_price.amount || p.regular_price), sale = +(p.sale_price.amount || p.sale_price);
+        if (reg > sale) { var d = $('.oc-pdisc', facts); d.hidden = false; d.textContent = 'خصم ' + num(Math.round((1 - sale / reg) * 100)) + '٪'; }
+      }
+    }).catch(function () {});
+    // buy now next to add to cart
+    var bar = $('.sticky-product-bar', box), quick = $('salla-quick-order', box);
+    if (bar && quick && !bar.contains(quick)) { bar.appendChild(quick); bar.classList.add('oc-buyrow'); }
+    // trust lines and returns link
+    var form = $('form.product-form', info);
+    if (form && !$('.oc-ptrust', info)) {
+      form.parentNode.insertBefore(h('<ul class="oc-ptrust">' +
+        '<li>' + ic('truck') + '<span>توصيل سريع داخل جدة وشحن لكل مناطق المملكة</span></li>' +
+        '<li>' + ic('check') + '<span>نتأكد من مطابقة القطعة لموديل سيارتك قبل الشحن</span></li>' +
+        '<li>' + ic('ret') + '<span>استبدال واسترجاع حسب <a href="' + RETURNS_URL + '">سياسة المتجر</a></span></li>' +
+        '<li>' + ic('card') + '<span>قسّطها مع تابي وتمارا</span></li></ul>'), form.nextSibling);
+    }
+    // description and reviews tabs under the product
+    var desc = $('.product__description', info), comments = $('salla-comments', $('#main-content'));
+    if (desc && !$('.oc-ptabs')) {
+      var full = desc.cloneNode(true);
+      var tabs = h('<section class="oc-ptabs"><div class="oc-container"><div class="oc-ptabs__nav" role="tablist"><button type="button" role="tab" class="is-on" data-t="d">الوصف</button><button type="button" role="tab" data-t="r">التقييمات</button></div><div class="oc-ptabs__body"><div data-p="d"></div><div data-p="r" hidden></div></div></div></section>');
+      $('[data-p=d]', tabs).appendChild(full);
+      if (comments) $('[data-p=r]', tabs).appendChild(comments); else $('[data-p=r]', tabs).innerHTML = '<p class="oc-empty">ما فيه تقييمات لهذا المنتج حاليا</p>';
+      var after = box.closest('.s-blocks-wrapper, .container'); var anchor = after && after.parentNode === $('#main-content') ? after : box.parentNode;
+      anchor.parentNode.insertBefore(tabs, anchor.nextSibling);
+      tabs.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-t]'); if (!b) return;
+        $$('[data-t]', tabs).forEach(function (x) { x.classList.toggle('is-on', x === b); });
+        $$('[data-p]', tabs).forEach(function (x) { x.hidden = x.dataset.p !== b.dataset.t; });
+      });
+      // keep a short line at the top
+      var first = $('p', desc); var txt = (first ? first.textContent : desc.textContent).trim();
+      desc.innerHTML = '<p>' + esc(txt.length > 160 ? txt.slice(0, 160) + '…' : txt) + '</p>';
+      desc.classList.add('oc-pshort');
+    }
+    // sticky add to cart bar when the main button scrolls away
+    var addBtn = $('salla-add-product-button', box);
+    if (addBtn && !$('.oc-pbar')) {
+      var im0 = $('.swiper-slide img', box), price = $('.part-price', info);
+      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.textContent.replace(/\s+/g, ' ').trim() : '') + '</span></div></div><button type="button" class="oc-btn oc-btn--primary">' + ic('bag') + 'أضف للسلة</button></div></div>');
+      document.body.appendChild(pbar);
+      $('button', pbar).addEventListener('click', function () { var b = $('button', addBtn); if (b) b.click(); });
+      var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
+      window.addEventListener('scroll', onS, { passive: true });
+    }
   }
 
   /* cart drawer opened after adding to cart */
@@ -755,6 +855,7 @@
     cartBar();
     pageBanner();
     categoryPage();
+    productPage();
     toTop();
     cartDrawer();
     document.body.classList.add('oc-ready');
