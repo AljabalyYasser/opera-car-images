@@ -429,7 +429,7 @@
       '<div class="oc-stars">' + stars + '</div><p>' + esc(r[3]) + '</p></article>';
   }
   function reviewsSection() {
-    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا', 'تجارب حقيقية من عملاء أوبرا كار في مختلف مدن المملكة') +
+    var s = h('<section class="oc-sec oc-reviews"><div class="oc-container">' + head('آراء عملائنا', 'تجارب عملاء أوبرا كار في مختلف مدن المملكة') +
       '<div class="oc-slider"><div class="oc-track oc-track--reviews">' + REVIEWS.map(reviewCard).join('') + '</div>' +
       '<button type="button" class="oc-arrow oc-arrow--prev" aria-label="السابق">' + ic('right') + '</button><button type="button" class="oc-arrow oc-arrow--next" aria-label="التالي">' + ic('left') + '</button></div>' +
       '</div></section>');
