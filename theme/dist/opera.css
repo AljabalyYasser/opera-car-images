@@ -502,3 +502,44 @@ body.product-single salla-add-product-button .s-button-element.s-button-primary,
 body.product-single salla-add-product-button .s-button-btn.s-button-primary { background: var(--oc-red) !important; color: #fff !important; border-color: var(--oc-red) !important; border-radius: 10px !important; height: 50px !important; font-weight: 700 !important; box-shadow: 0 10px 24px -12px rgba(210, 31, 43, .8); }
 body.product-single salla-add-product-button .s-button-element.s-button-primary:hover { background: var(--oc-red-d) !important; }
 body.product-single salla-add-product-button .s-button-element.s-button-primary * { color: #fff !important; }
+
+/* ---------- comfortable line height ---------- */
+body { line-height: 1.8; }
+.oc-slide__text h2 { line-height: 1.45 !important; }
+.oc-slide__text h2 em { display: block; margin-top: 2px; }
+.oc-slide__text p { line-height: 2; }
+.oc-head h2 { line-height: 1.5; }
+.oc-head p { line-height: 1.8; }
+.oc-kicker { line-height: 1.7; }
+.oc-topbar__msgs span { line-height: 1.7; }
+.oc-service b, .oc-feat b, .oc-finder__title b { line-height: 1.6; }
+.oc-service small, .oc-feat small, .oc-finder__title small { line-height: 1.7; margin-top: 3px; }
+.oc-card__body { gap: 8px; }
+.oc-card__title { line-height: 1.75; min-height: 3.5em; }
+.oc-card__cat { line-height: 1.6; }
+.oc-price { line-height: 1.5; }
+.oc-banner__txt b { line-height: 1.4; }
+.oc-banner__txt small { line-height: 1.7; }
+.oc-promo b { line-height: 1.5; }
+.oc-promo small { line-height: 1.8; }
+.oc-kind b, .oc-model b { line-height: 1.6; }
+.oc-review p { line-height: 2; }
+.oc-review__top b { line-height: 1.6; }
+.oc-timer b { line-height: 1.4; }
+.oc-ship__txt { line-height: 1.8; }
+.oc-flinks a { line-height: 1.8; }
+.s-product-card-content-title, .s-product-card-content-title a { line-height: 1.75 !important; }
+.s-block__title h2 { line-height: 1.5; }
+body.product-single h1, body.product-single .product-title { line-height: 1.6 !important; }
+body.product-single article, body.product-single article p, body.product-single article li,
+body.product-single .product__description, body.product-single .product__description p { line-height: 2 !important; }
+.store-footer p, .store-footer div, .store-footer a { line-height: 1.9; }
+custom-main-menu .sub-menu a { line-height: 1.7; }
+@media (max-width: 640px) {
+  .oc-slide__text h2 { line-height: 1.5 !important; }
+  .oc-slide__text p { line-height: 1.95; }
+  .oc-head h2 { line-height: 1.5; }
+  .oc-card__title { line-height: 1.7; }
+  .oc-service b { line-height: 1.5; }
+  .oc-service small { line-height: 1.6; }
+}
