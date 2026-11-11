@@ -93,6 +93,61 @@
 
   }
 
+  /* mega menu like the reference: red column titles, link lists and image cards */
+  function findNode(id, list) {
+    list = list || TREE;
+    for (var i = 0; i < list.length; i++) {
+      if (catId(list[i].u) === String(id)) return list[i];
+      var f = findNode(id, list[i].s || []); if (f) return f;
+    }
+    return null;
+  }
+  function megaCol(title, url, links) {
+    return '<div class="oc-mega__col"><a class="oc-mega__title" href="' + url + '">' + esc(title) + '</a><ul>' +
+      links.map(function (l) { return '<li><a href="' + l[1] + '">' + esc(l[0]) + '</a></li>'; }).join('') + '</ul></div>';
+  }
+  function megaCard(title, url, img, cover) {
+    return '<a class="oc-mega__card' + (cover ? ' is-cover' : '') + '" href="' + url + '"><span class="oc-mega__pic"><img loading="lazy" src="' + img + '" alt=""></span><b>' + esc(title) + '</b></a>';
+  }
+  function partsMega(node) {
+    var kids = (node.s || []).map(function (k) { return [k.n, k.u]; });
+    var kinds = KINDS.slice(0, kids.length).map(function (k) { return [k[0], '/search?q=' + encodeURIComponent(k[1])]; });
+    var lc = findNode(1838835433), hl = findNode(156083435);
+    return megaCol('حسب السيارة', node.u, kids) + megaCol('حسب القطعة', node.u, kinds) +
+      (lc ? megaCard('قطع لاندكروزر', lc.u, IMG + 'car_lc.webp') : '') +
+      (hl ? megaCard('قطع هايلوكس وفورشنر', hl.u, IMG + 'car_hilux.webp') : '');
+  }
+  function stripesMega(node) {
+    var withYears = [], others = [];
+    (node.s || []).forEach(function (k) {
+      if (k.s && k.s.length) withYears.push(megaCol(k.n, k.u, k.s.map(function (y) { return [y.n.replace(/^\S+\s+/, ''), y.u]; })));
+      else others.push([k.n, k.u]);
+    });
+    others.push(['كل الخطوط', node.u]);
+    var shas = findNode(781708188);
+    return withYears.join('') + megaCol('المزيد', node.u, others) +
+      megaCard('خطوط شاص وربع', shas ? shas.u : node.u, IMG + 'car_shas.webp');
+  }
+  function addMegaMenu() {
+    var header = $('#part-store-header'); if (!header || !TREE || !TREE.length) return;
+    var builders = { '1104165103': partsMega, '997204374': stripesMega };
+    $$('custom-main-menu li.root-level.has-children', header).forEach(function (li) {
+      var b = builders[li.id], node = b && findNode(li.id);
+      if (!node || $('.oc-mega', li)) return;
+      var panel = h('<div class="oc-mega" role="region" aria-label="' + esc(node.n) + '"><div class="oc-mega__in">' + b(node) + '</div></div>');
+      li.appendChild(panel); li.classList.add('oc-has-mega');
+      var place = function () {
+        var box = panel.offsetParent; if (!box) return;
+        var br = box.getBoundingClientRect(), lr = li.getBoundingClientRect(), w = panel.offsetWidth;
+        var right = Math.max(0, br.right - lr.right - 12);
+        if (right + w > br.width) right = Math.max(0, br.width - w);
+        panel.style.right = right + 'px';
+      };
+      li.addEventListener('mouseenter', place);
+      li.addEventListener('focusin', place);
+    });
+  }
+
   function buildHeader() {
     var header = $('#part-store-header');
     if (!header || header.dataset.oc) return;
@@ -115,6 +170,7 @@
     if (menuLink && menuLink.parentNode) menuLink.parentNode.insertBefore(modeBtn('oc-mode--mob'), menuLink);
 
     addNavExtras();
+    addMegaMenu();
 
     // sticky shadow
     var onScroll = function () { header.classList.toggle('oc-scrolled', window.scrollY > 40); };

@@ -93,6 +93,61 @@
 
   }
 
+  /* mega menu like the reference: red column titles, link lists and image cards */
+  function findNode(id, list) {
+    list = list || TREE;
+    for (var i = 0; i < list.length; i++) {
+      if (catId(list[i].u) === String(id)) return list[i];
+      var f = findNode(id, list[i].s || []); if (f) return f;
+    }
+    return null;
+  }
+  function megaCol(title, url, links) {
+    return '<div class="oc-mega__col"><a class="oc-mega__title" href="' + url + '">' + esc(title) + '</a><ul>' +
+      links.map(function (l) { return '<li><a href="' + l[1] + '">' + esc(l[0]) + '</a></li>'; }).join('') + '</ul></div>';
+  }
+  function megaCard(title, url, img, cover) {
+    return '<a class="oc-mega__card' + (cover ? ' is-cover' : '') + '" href="' + url + '"><span class="oc-mega__pic"><img loading="lazy" src="' + img + '" alt=""></span><b>' + esc(title) + '</b></a>';
+  }
+  function partsMega(node) {
+    var kids = (node.s || []).map(function (k) { return [k.n, k.u]; });
+    var kinds = KINDS.slice(0, kids.length).map(function (k) { return [k[0], '/search?q=' + encodeURIComponent(k[1])]; });
+    var lc = findNode(1838835433), hl = findNode(156083435);
+    return megaCol('حسب السيارة', node.u, kids) + megaCol('حسب القطعة', node.u, kinds) +
+      (lc ? megaCard('قطع لاندكروزر', lc.u, IMG + 'car_lc.webp') : '') +
+      (hl ? megaCard('قطع هايلوكس وفورشنر', hl.u, IMG + 'car_hilux.webp') : '');
+  }
+  function stripesMega(node) {
+    var withYears = [], others = [];
+    (node.s || []).forEach(function (k) {
+      if (k.s && k.s.length) withYears.push(megaCol(k.n, k.u, k.s.map(function (y) { return [y.n.replace(/^\S+\s+/, ''), y.u]; })));
+      else others.push([k.n, k.u]);
+    });
+    others.push(['كل الخطوط', node.u]);
+    var shas = findNode(781708188);
+    return withYears.join('') + megaCol('المزيد', node.u, others) +
+      megaCard('خطوط شاص وربع', shas ? shas.u : node.u, IMG + 'car_shas.webp');
+  }
+  function addMegaMenu() {
+    var header = $('#part-store-header'); if (!header || !TREE || !TREE.length) return;
+    var builders = { '1104165103': partsMega, '997204374': stripesMega };
+    $$('custom-main-menu li.root-level.has-children', header).forEach(function (li) {
+      var b = builders[li.id], node = b && findNode(li.id);
+      if (!node || $('.oc-mega', li)) return;
+      var panel = h('<div class="oc-mega" role="region" aria-label="' + esc(node.n) + '"><div class="oc-mega__in">' + b(node) + '</div></div>');
+      li.appendChild(panel); li.classList.add('oc-has-mega');
+      var place = function () {
+        var box = panel.offsetParent; if (!box) return;
+        var br = box.getBoundingClientRect(), lr = li.getBoundingClientRect(), w = panel.offsetWidth;
+        var right = Math.max(0, br.right - lr.right - 12);
+        if (right + w > br.width) right = Math.max(0, br.width - w);
+        panel.style.right = right + 'px';
+      };
+      li.addEventListener('mouseenter', place);
+      li.addEventListener('focusin', place);
+    });
+  }
+
   function buildHeader() {
     var header = $('#part-store-header');
     if (!header || header.dataset.oc) return;
@@ -115,6 +170,7 @@
     if (menuLink && menuLink.parentNode) menuLink.parentNode.insertBefore(modeBtn('oc-mode--mob'), menuLink);
 
     addNavExtras();
+    addMegaMenu();
 
     // sticky shadow
     var onScroll = function () { header.classList.toggle('oc-scrolled', window.scrollY > 40); };
@@ -611,7 +667,7 @@
 
 
   /* ================= inner pages ================= */
-  var TREE = [{"n": "قطع الغيار والاكسسوارات", "u": "/قطع-الغيار-والاكسسوارات/c1104165103", "c": 1355, "s": [{"n": "لاندكروزر", "u": "/لاندكروزر/c1838835433", "c": 643, "s": [], "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg"}, {"n": "برادو", "u": "/برادو/c1529529332", "c": 97, "s": [], "i": "https://cdn.salla.sa/azeyQR/1356704d-af7c-47e9-bde5-4653bcba4321-500x500-4ZjM6FUwzi0er54WFgOEitqAUds8pTTyznMCJ0QE.jpg"}, {"n": "هايلوكس وفورشنر", "u": "/هايلوكس-وفورشنر/c156083435", "c": 185, "s": [], "i": "https://cdn.salla.sa/azeyQR/a1b4ab74-39f7-40b6-b960-049bd9a2f17a-500x500-pXsiBiKQvpEegF8mb0pQhaEA1TWaIEuz8TgrFMpI.jpg"}, {"n": "شاص وربع", "u": "/شاص-وربع/c1063290346", "c": 356, "s": [], "i": "https://cdn.salla.sa/azeyQR/e90202be-d22b-465e-8d5c-58fbefaf482e-500x500-7AxEyknbphuuCDLwUn91v9lwjxTOuAlBcJnhn7bX.jpg"}, {"n": "اف جي كروزر", "u": "/اف-جي-كروزر/c888660725", "c": 11, "s": [], "i": "https://cdn.salla.sa/azeyQR/1917d257-62d2-43b6-9ed5-52b7b25886c3-500x500-zzxt9oPDSpER6lF5HQhEAuKjXrsPsSs6G3Ugxnz7.jpg"}, {"n": "كامري", "u": "/كامري/c579227632", "c": 29, "s": [], "i": "https://cdn.salla.sa/azeyQR/64dadc32-8378-4ede-9b61-1b10d07eff98-500x500-eNAnfugJaaCzD3fRgvtUuKMfXk8w4mEyZfh7oJlL.jpg"}, {"n": "كورولا ويارس", "u": "/كورولا-ويارس/c1354309879", "c": 12, "s": [], "i": "https://cdn.salla.sa/azeyQR/2c530a40-998b-45ad-82a4-45c7e927da89-500x500-n1gouBkjpy2n2b6o4o15abxEUa5uyhDSCsOGfFyn.jpg"}, {"n": "اكسسوارات تويوتا عامة", "u": "/اكسسوارات-تويوتا-عامة/c2086891249", "c": 22, "s": [], "i": "https://cdn.salla.sa/azeyQR/8be86f72-55d3-4796-8470-57434893a40d-500x500-o6nYjdr24NsrSpWDrbzVafSnITHvjdZzXafWwdrM.jpg"}], "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg"}, {"n": "الخطوط", "u": "/الخطوط/c997204374", "c": 594, "s": [{"n": "خطوط لاندكروزر", "u": "/خطوط-لاندكروزر/c358432919", "c": 149, "s": [{"n": "لاندكروزر حتى 2007", "u": "/لاندكروزر-حتى-2007/c822120081", "c": 59, "s": [], "i": "https://cdn.salla.sa/azeyQR/22941416-d359-40d0-b5a5-3c8f793e0ea1-500x500-W2PLlOQpQjRxPUKP2VqqwnVyRlq5tQJzbpT1g7wP.jpg"}, {"n": "لاندكروزر 2008 إلى 2015", "u": "/لاندكروزر-2008-إلى-2015/c1731882896", "c": 24, "s": [], "i": "https://cdn.salla.sa/azeyQR/a0278ec7-1187-478e-9786-b679a904da68-500x500-VPxRUX52AgYcJLLFiIccj1AWh1GDoxcNkPoejSVX.jpg"}, {"n": "لاندكروزر 2016 إلى 2025", "u": "/لاندكروزر-2016-إلى-2025/c49130898", "c": 53, "s": [], "i": "https://cdn.salla.sa/azeyQR/4ac56bc3-c72b-4709-a4af-96419c146c5e-500x500-4XZnbzs3g90bUzvKR8j21cpbi2DcoCGwB9JUCqw7.jpg"}], "i": "https://cdn.salla.sa/azeyQR/5abbe9a1-8ac1-4b90-be0a-32d09cf6810f-500x500-HpjLg0Mr3VCQu2kdKezvdNmlYNcO42c12J5SMIlt.jpg"}, {"n": "خطوط برادو", "u": "/خطوط-برادو/c1247357342", "c": 9, "s": [], "i": "https://cdn.salla.sa/azeyQR/1f80a82e-6c41-48b6-85b8-9e4fc61ce97b-500x500-btTqY7k3OwIbSQMRBASrnex3K8LZ4QPps40Vtlw2.jpg"}, {"n": "خطوط هايلوكس", "u": "/خطوط-هايلوكس/c2021395101", "c": 306, "s": [{"n": "هايلوكس حتى 2004", "u": "/هايلوكس-حتى-2004/c2120531171", "c": 50, "s": [], "i": "https://cdn.salla.sa/azeyQR/300b8b6c-bee4-4e42-a786-3eebd25a0b8e-500x500-ZFt1wjQGOTLSifiK33nNm9W1AcTfrUzYZIEZcl1u.jpg"}, {"n": "هايلوكس 2005 إلى 2015", "u": "/هايلوكس-2005-إلى-2015/c1212275692", "c": 113, "s": [], "i": "https://cdn.salla.sa/azeyQR/cd4cc301-a8bc-46d3-ad98-69d40e98ff48-500x500-SdLOEIUD4zE1UtsX3qYxmVyb5hnaJEccl1gupDgW.jpg"}, {"n": "هايلوكس 2016 إلى 2025", "u": "/هايلوكس-2016-إلى-2025/c439286509", "c": 124, "s": [], "i": "https://cdn.salla.sa/azeyQR/7588a1fa-8d0d-48a8-8ced-a55edbd74dc5-500x500-9TTNDBxni5181YejuL6wY95QcCvQSDVGXmc0rqaQ.jpg"}], "i": "https://cdn.salla.sa/azeyQR/02a0e96e-8137-47ef-ab64-8e2a2438f5e2-500x500-1kCXHbySEbVhBdFTSU1PwybG71y3bA2HKR07Xag7.jpg"}, {"n": "خطوط شاص", "u": "/خطوط-شاص/c781708188", "c": 89, "s": [{"n": "شاص حتى 2006", "u": "/شاص-حتى-2006/c13918176", "c": 22, "s": [], "i": "https://cdn.salla.sa/azeyQR/b6d2dc2d-ffe4-4153-b47d-2d47825cf684-500x500-bV4s72U9mP7hV8HCBbCg42WWhiRxAUucjZpfcITR.jpg"}, {"n": "شاص 2007 إلى 2015", "u": "/شاص-2007-إلى-2015/c1387364065", "c": 20, "s": [], "i": "https://cdn.salla.sa/azeyQR/60f55780-482c-46ce-bf07-8371569f35bc-500x500-wKv6NZnB9gXTASecAhBPF3fdF3NrSk3wja40IgC7.jpg"}, {"n": "شاص 2016 إلى 2025", "u": "/شاص-2016-إلى-2025/c923742439", "c": 44, "s": [], "i": "https://cdn.salla.sa/azeyQR/fd179f8e-30c8-447a-87f2-dffc7fe825fc-500x500-tXf6ePSKNp8P2JBehGiw2Xpsy2WVOB3g4b8l3jG8.jpg"}], "i": "https://cdn.salla.sa/azeyQR/a954b931-8882-40ee-9c7c-bbf6bc00614b-500x500-uf2NNYhc6S7bS2H2MkeqUEvot3W6cK7TwxMf4UDP.jpg"}, {"n": "خطوط ربع", "u": "/خطوط-ربع/c1556794515", "c": 41, "s": [{"n": "ربع حتى 2006", "u": "/ربع-حتى-2006/c964219876", "c": 1, "s": [], "i": "https://cdn.salla.sa/azeyQR/e16c0126-47e3-4743-a6a3-a6dd704fd4e1-500x500-CiEmpuTmLjmNeuAAsfdOjZLJE9BLBB4ktkn34bCU.jpg"}, {"n": "ربع 2007 إلى 2015", "u": "/ربع-2007-إلى-2015/c1871951003", "c": 15, "s": [], "i": "https://cdn.salla.sa/azeyQR/51925156-317d-47c6-ab80-f8e1bbe83131-500x500-JJEMKdPUfWv7FmHTUtcpbxHJQOcMkPtjDERTps6m.jpg"}, {"n": "ربع 2016 إلى 2025", "u": "/ربع-2016-إلى-2025/c189133541", "c": 24, "s": [], "i": "https://cdn.salla.sa/azeyQR/95b576b5-bd07-4ca8-a1da-e173d8e4f89a-500x500-JRteiEglbw6fm9RshteSiNtLwe9pEGeLakWwmR3y.jpg"}], "i": "https://cdn.salla.sa/azeyQR/dc4df1f4-f24c-4e18-a883-f619790cb49c-500x500-2TDsvhco1guk6pLAQiX3UlZF3nKKi4AOqxrEZeYJ.jpg"}], "i": "https://cdn.salla.sa/azeyQR/5abbe9a1-8ac1-4b90-be0a-32d09cf6810f-500x500-HpjLg0Mr3VCQu2kdKezvdNmlYNcO42c12J5SMIlt.jpg"}];
+  var TREE = [{"n": "قطع الغيار والاكسسوارات", "u": "/قطع-الغيار-والاكسسوارات/c1104165103", "c": 1355, "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg", "s": [{"n": "لاندكروزر", "u": "/لاندكروزر/c1838835433", "c": 643, "i": "https://cdn.salla.sa/azeyQR/0fc3777e-e344-49bd-a328-c742d34dbd4e-500x500-FGP7J8CZcXV3ENDS1gyCWgr6B0BAhQVmGzJPluJt.jpg", "s": []}, {"n": "برادو", "u": "/برادو/c1529529332", "c": 97, "i": "https://cdn.salla.sa/azeyQR/1356704d-af7c-47e9-bde5-4653bcba4321-500x500-4ZjM6FUwzi0er54WFgOEitqAUds8pTTyznMCJ0QE.jpg", "s": []}, {"n": "هايلوكس وفورشنر", "u": "/هايلوكس-وفورشنر/c156083435", "c": 185, "i": "https://cdn.salla.sa/azeyQR/a1b4ab74-39f7-40b6-b960-049bd9a2f17a-500x500-pXsiBiKQvpEegF8mb0pQhaEA1TWaIEuz8TgrFMpI.jpg", "s": []}, {"n": "شاص وربع", "u": "/شاص-وربع/c1063290346", "c": 356, "i": "https://cdn.salla.sa/azeyQR/e90202be-d22b-465e-8d5c-58fbefaf482e-500x500-7AxEyknbphuuCDLwUn91v9lwjxTOuAlBcJnhn7bX.jpg", "s": []}, {"n": "اف جي كروزر", "u": "/اف-جي-كروزر/c888660725", "c": 11, "i": "https://cdn.salla.sa/azeyQR/1917d257-62d2-43b6-9ed5-52b7b25886c3-500x500-zzxt9oPDSpER6lF5HQhEAuKjXrsPsSs6G3Ugxnz7.jpg", "s": []}, {"n": "كامري", "u": "/كامري/c579227632", "c": 29, "i": "https://cdn.salla.sa/azeyQR/64dadc32-8378-4ede-9b61-1b10d07eff98-500x500-eNAnfugJaaCzD3fRgvtUuKMfXk8w4mEyZfh7oJlL.jpg", "s": []}, {"n": "كورولا ويارس", "u": "/كورولا-ويارس/c1354309879", "c": 12, "i": "https://cdn.salla.sa/azeyQR/2c530a40-998b-45ad-82a4-45c7e927da89-500x500-n1gouBkjpy2n2b6o4o15abxEUa5uyhDSCsOGfFyn.jpg", "s": []}, {"n": "اكسسوارات تويوتا عامة", "u": "/اكسسوارات-تويوتا-عامة/c2086891249", "c": 22, "i": "https://cdn.salla.sa/azeyQR/8be86f72-55d3-4796-8470-57434893a40d-500x500-o6nYjdr24NsrSpWDrbzVafSnITHvjdZzXafWwdrM.jpg", "s": []}]}, {"n": "الخطوط", "u": "/الخطوط/c997204374", "c": 637, "i": "https://cdn.salla.sa/azeyQR/70fcbf41-c61d-4ea0-a9d3-d3274ca4ea6f-500x500-4uWnff9pBSTTlOminTeX8Uif9xQygDlhVgNNmHcq.jpg", "s": [{"n": "خطوط لاندكروزر", "u": "/خطوط-لاندكروزر/c358432919", "c": 143, "i": "https://cdn.salla.sa/azeyQR/70fcbf41-c61d-4ea0-a9d3-d3274ca4ea6f-500x500-4uWnff9pBSTTlOminTeX8Uif9xQygDlhVgNNmHcq.jpg", "s": [{"n": "لاندكروزر حتى 2007", "u": "/لاندكروزر-حتى-2007/c822120081", "c": 60, "i": "https://cdn.salla.sa/azeyQR/25bdb992-4bc0-4dfa-a1b5-8190da8d27ec-500x500-NrTzoT45rsnJ3M3xYedhNRtWvetdjAVgfrDtn9mF.jpg", "s": []}, {"n": "لاندكروزر 2008 إلى 2015", "u": "/لاندكروزر-2008-إلى-2015/c1731882896", "c": 24, "i": "https://cdn.salla.sa/azeyQR/4ecbc99d-3eef-4314-b640-b4ff722d4944-500x500-k9LcNIap1JVvOYjLOCSVqgOk3FAuOnPgknyKEpAB.jpg", "s": []}, {"n": "لاندكروزر 2016 إلى 2025", "u": "/لاندكروزر-2016-إلى-2025/c49130898", "c": 53, "i": "https://cdn.salla.sa/azeyQR/335183d6-66f8-415e-87bd-e20e3beeebc4-500x500-gRyHG3PtaD7hv4yFJcFIEbmlNCxfEcIDluGjTv3g.jpg", "s": []}]}, {"n": "خطوط برادو", "u": "/خطوط-برادو/c1247357342", "c": 9, "i": "https://cdn.salla.sa/azeyQR/557e9d52-6000-42eb-a2e2-bd4c1882b4f2-500x500-JSQHHgPZNQk6zXHQePhFHSpVAOE8RhjhBS6qwNjp.jpg", "s": []}, {"n": "خطوط هايلوكس", "u": "/خطوط-هايلوكس/c2021395101", "c": 293, "i": "https://cdn.salla.sa/azeyQR/7219394c-d130-4cf2-924e-d446fc903e6e-500x500-xKj0s63wM8dy3WMMcyERQyE1gRGDDhP50FvsPDVK.jpg", "s": [{"n": "هايلوكس حتى 2004", "u": "/هايلوكس-حتى-2004/c2120531171", "c": 53, "i": "https://cdn.salla.sa/azeyQR/4f0c3ffb-c09b-4cd9-8688-56d8ff08c5e2-500x500-kRkJZWtFyOsjq8TCNv3F9ZrkYN9CapWI9imbdnlR.jpg", "s": []}, {"n": "هايلوكس 2005 إلى 2015", "u": "/هايلوكس-2005-إلى-2015/c1212275692", "c": 115, "i": "https://cdn.salla.sa/azeyQR/66450600-19db-4e83-badf-fdba72dab12d-500x500-gnLAnJpBPDpjDXUtjRsdmT7XNzJkLxJUYP1GSfQc.jpg", "s": []}, {"n": "هايلوكس 2016 إلى 2025", "u": "/هايلوكس-2016-إلى-2025/c439286509", "c": 124, "i": "https://cdn.salla.sa/azeyQR/db60375f-28f6-4d7b-ac3b-ce9113c17c93-500x500-cTQMQZhpdrIip5wN1iczULvoOvPbt4HPCbBxlwYE.jpg", "s": []}]}, {"n": "خطوط شاص", "u": "/خطوط-شاص/c781708188", "c": 99, "i": "https://cdn.salla.sa/azeyQR/1594c9f4-9dcc-4e08-81c9-a3055b2971e9-500x500-YIejoBhwqKX8r7DIpfZfetLXC5Vw75yhiPK6ofFq.jpg", "s": [{"n": "شاص حتى 2006", "u": "/شاص-حتى-2006/c13918176", "c": 27, "i": "https://cdn.salla.sa/azeyQR/c493e517-6902-4c2b-a5c8-3a5b22250b86-500x500-FPovYFq3ScqpbEGUXLPtmHDy6CCgrIgljVRt3AQM.jpg", "s": []}, {"n": "شاص 2007 إلى 2015", "u": "/شاص-2007-إلى-2015/c1387364065", "c": 27, "i": "https://cdn.salla.sa/azeyQR/f8b728a4-c5fa-4988-8408-9c487be72731-500x500-VbSKojvf9GeD7iVRp9ofm0YnHBZBWZHLarKXs6KY.jpg", "s": []}, {"n": "شاص 2016 إلى 2025", "u": "/شاص-2016-إلى-2025/c923742439", "c": 44, "i": "https://cdn.salla.sa/azeyQR/53f138ca-3934-4f95-832e-9f1bab5d2494-500x500-WJoomZKFwiRiXRB8OhBwok03x2Sc6x58kaJK3ST7.jpg", "s": []}]}, {"n": "خطوط ربع", "u": "/خطوط-ربع/c1556794515", "c": 65, "i": "https://cdn.salla.sa/azeyQR/035622e5-53dc-4a53-8a75-75758bd0dbcc-500x500-jrR6B47MIS8FpFOPNDHKq1tulkslUXPSk4t4SZ1w.jpg", "s": [{"n": "ربع حتى 2006", "u": "/ربع-حتى-2006/c964219876", "c": 5, "i": "https://cdn.salla.sa/azeyQR/6bde52df-d7d3-41e1-b48b-41b83ac52f7d-500x500-ZlNf0umMxihKXdByV8L3BzS36zzCLbuaMQJx8AU0.jpg", "s": []}, {"n": "ربع 2007 إلى 2015", "u": "/ربع-2007-إلى-2015/c1871951003", "c": 19, "i": "https://cdn.salla.sa/azeyQR/53405ec2-1c9d-4f0b-9f9e-d9d8e4aaeede-500x500-zbZ9Zt82fcWBfgMIfVY0ai5zFW19SZVV1PobWfQa.jpg", "s": []}, {"n": "ربع 2016 إلى 2025", "u": "/ربع-2016-إلى-2025/c189133541", "c": 39, "i": "https://cdn.salla.sa/azeyQR/c67a070e-4a0c-4a1c-8286-e86ab29b98e5-500x500-qIt1G59DHbJF8dH0o942TdhWsrakbj6pcoGUEvAT.jpg", "s": []}]}, {"n": "ستيكرات وشعارات", "u": "/ستيكرات-وشعارات/c1619274970", "c": 28, "i": "https://cdn.salla.sa/azeyQR/c6178717-ea8d-4da2-be52-ad8bbaaa81e8-500x500-2rBXF7YCNJILax3Z1zp92AaZacyXVrSEzghaA3qw.jpg", "s": []}]}];
   function bodyIs(c) { return document.body.classList.contains(c); }
   function crumbs() { return $$('#main-content .breadcrumbs .s-breadcrumb-item').map(function (li) { var a = $('a', li); return [li.textContent.trim(), a ? a.getAttribute('href') : null]; }).filter(function (x) { return x[0]; }); }
 
