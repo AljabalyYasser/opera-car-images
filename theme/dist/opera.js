@@ -232,6 +232,7 @@
   I.up = '<path d="m6 15 6-6 6 6"/>';
   I.x = '<path d="M6 6l12 12M18 6 6 18"/>';
   I.minus = '<path d="M6 12h12"/>';
+  I.star = '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>';
   I.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
   I.link = '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>';
   I.plus = '<path d="M12 6v12M6 12h12"/>';
@@ -785,7 +786,7 @@
 
   /* page banner like the reference: dark band with the page title and the trail */
   function pageBanner() {
-    if (bodyIs('index') || $('.oc-pbanner')) return;
+    if (bodyIs('index') || bodyIs('product-single') || $('.oc-pbanner')) return;
     var main = $('#main-content'); if (!main) return;
     var cr = crumbs(), title = '';
     var h1 = $('#page-main-title');
@@ -924,15 +925,52 @@
       slider.appendChild(zb);
       zb.addEventListener('click', function () {
         var el = $('.swiper', slider), s1 = el && el.swiper;
-        var slides = $$('.swiper-slide img', slider), cur = s1 ? slides[s1.activeIndex] : slides[0];
-        var src = cur ? (cur.currentSrc || cur.src || cur.dataset.src) : ''; if (!src) return;
-        var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صورة المنتج"><button type="button" aria-label="إغلاق">' + ic('x') + '</button><img src="' + esc(src) + '" alt=""></div>');
+        var srcs = $$('.swiper-slide img', slider).map(function (im) { return im.currentSrc || im.src || im.dataset.src; }).filter(Boolean);
+        if (!srcs.length) return;
+        var i = s1 ? Math.min(s1.activeIndex, srcs.length - 1) : 0;
+        var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صور المنتج"><button type="button" class="oc-viewer__x" aria-label="إغلاق">' + ic('x') + '</button>' +
+          '<button type="button" class="oc-viewer__nav oc-viewer__prev" aria-label="الصورة السابقة">' + ic('right') + '</button><img class="oc-viewer__img" alt="">' +
+          '<button type="button" class="oc-viewer__nav oc-viewer__next" aria-label="الصورة التالية">' + ic('left') + '</button>' +
+          '<div class="oc-viewer__thumbs">' + srcs.map(function (u, k) { return '<button type="button" data-k="' + k + '"><img src="' + esc(u) + '" alt=""></button>'; }).join('') + '</div></div>');
         document.body.appendChild(v);
-        var close = function () { v.remove(); document.removeEventListener('keydown', onK); };
-        var onK = function (e) { if (e.key === 'Escape') close(); };
-        v.addEventListener('click', function (e) { if (e.target.tagName !== 'IMG') close(); });
-        document.addEventListener('keydown', onK);
+        var show = function (k) { i = (k + srcs.length) % srcs.length; $('.oc-viewer__img', v).src = srcs[i]; $$('.oc-viewer__thumbs button', v).forEach(function (b, j) { b.classList.toggle('is-on', j === i); }); };
+        show(i);
+        if (srcs.length < 2) v.classList.add('is-single');
+        try { if (v.requestFullscreen) v.requestFullscreen().catch(function () {}); } catch (e) {}
+        var close = function () { try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {} v.remove(); document.removeEventListener('keydown', onK); document.removeEventListener('fullscreenchange', onF); };
+        var onK = function (e) { if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft') show(i + 1); else if (e.key === 'ArrowRight') show(i - 1); };
+        var onF = function () { if (!document.fullscreenElement && document.body.contains(v)) close(); };
+        v.addEventListener('click', function (e) {
+          var t = e.target.closest('button');
+          if (t && t.classList.contains('oc-viewer__x')) return close();
+          if (t && t.classList.contains('oc-viewer__prev')) return show(i - 1);
+          if (t && t.classList.contains('oc-viewer__next')) return show(i + 1);
+          if (t && t.dataset.k != null) return show(+t.dataset.k);
+          if (e.target === v) close();
+        });
+        document.addEventListener('keydown', onK); document.addEventListener('fullscreenchange', onF);
       });
+      // magnifying lens over the main picture on hover
+      if (window.matchMedia && matchMedia('(hover: hover)').matches) {
+        var lens = h('<span class="oc-lens" aria-hidden="true"></span>'); side.appendChild(lens);
+        var cur = null;
+        slider.addEventListener('mousemove', function (e) {
+          var im = e.target.closest && e.target.closest('.swiper-slide') ? $('img', e.target.closest('.swiper-slide')) : null;
+          if (!im || e.target.closest('.oc-zoom')) { lens.classList.remove('is-on'); return; }
+          var r = im.getBoundingClientRect(), sr = side.getBoundingClientRect();
+          var nw = im.naturalWidth || r.width, nh = im.naturalHeight || r.height;
+          var sc = Math.min(r.width / nw, r.height / nh), w = nw * sc, hgt = nh * sc, ox = r.left + (r.width - w) / 2, oy = r.top + (r.height - hgt) / 2;
+          var x = e.clientX - ox, y = e.clientY - oy;
+          if (x < 0 || y < 0 || x > w || y > hgt) { lens.classList.remove('is-on'); return; }
+          var z = 2.2, L = 125;
+          if (cur !== im.currentSrc) { cur = im.currentSrc || im.src; lens.style.backgroundImage = 'url("' + cur + '")'; }
+          lens.style.backgroundSize = (w * z) + 'px ' + (hgt * z) + 'px';
+          lens.style.backgroundPosition = (L / 2 - x * z) + 'px ' + (L / 2 - y * z) + 'px';
+          lens.style.left = (e.clientX - sr.left - L / 2) + 'px'; lens.style.top = (e.clientY - sr.top - L / 2) + 'px';
+          lens.classList.add('is-on');
+        });
+        slider.addEventListener('mouseleave', function () { lens.classList.remove('is-on'); });
+      }
     }
     // quick facts under the title
     var h1 = $('h1', info);
@@ -1022,6 +1060,16 @@
       var full = desc.cloneNode(true);
       var tabs = h('<section class="oc-ptabs"><div class="oc-container"><div class="oc-ptabs__nav" role="tablist"><button type="button" role="tab" class="is-on" data-t="d">الوصف</button><button type="button" role="tab" data-t="r">التقييمات</button></div><div class="oc-ptabs__body"><div data-p="d"></div><div data-p="r" hidden></div></div></div></section>');
       $('[data-p=d]', tabs).appendChild(h('<h3 class="oc-ptabs__h">الوصف</h3>'));
+      var rev = h('<div class="oc-prev"><h3 class="oc-ptabs__h">التقييمات</h3><div class="oc-prev__box"><h4>تقييمات العملاء</h4><div class="oc-prev__grid">' +
+        '<div class="oc-prev__avg"><span class="oc-stars" data-v="0"></span><b><span data-avg>٠</span> من ٥</b><small>بناء على <span data-cnt>٠</span> تقييم</small></div>' +
+        '<div class="oc-prev__bars">' + [5, 4, 3, 2, 1].map(function (n) { return '<div data-n="' + n + '"><span class="oc-stars" data-v="' + n + '"></span><i><em></em></i><small>٠</small></div>'; }).join('') + '</div>' +
+        '<div class="oc-prev__act"><button type="button" class="oc-prev__write">اكتب تقييمك</button></div></div></div></div>');
+      $('[data-p=r]', tabs).appendChild(rev);
+      $('.oc-prev__write', rev).addEventListener('click', function () {
+        var guest = true; try { guest = salla.config.isGuest(); } catch (e) {}
+        if (guest) { try { salla.event.dispatch('login::open'); } catch (e) {} return; }
+        var f = $('salla-comment-form textarea, salla-comments textarea', tabs); if (f) { f.scrollIntoView({ block: 'center', behavior: 'smooth' }); f.focus(); }
+      });
       $('[data-p=d]', tabs).appendChild(full);
       if (comments) $('[data-p=r]', tabs).appendChild(comments); else $('[data-p=r]', tabs).innerHTML = '<p class="oc-empty">ما فيه تقييمات لهذا المنتج حاليا</p>';
       var after = box.closest('.s-blocks-wrapper, .container'); var anchor = after && after.parentNode === $('#main-content') ? after : box.parentNode;
@@ -1031,6 +1079,25 @@
         $$('[data-t]', tabs).forEach(function (x) { x.classList.toggle('is-on', x === b); });
         $$('[data-p]', tabs).forEach(function (x) { x.hidden = x.dataset.p !== b.dataset.t; });
       });
+      var starsHtml = function (v) { var o = ''; for (var k = 1; k <= 5; k++) o += '<i class="' + (k <= Math.round(v) ? 'on' : '') + '">' + ic('star') + '</i>'; return o; };
+      $$('.oc-stars', tabs).forEach(function (el) { el.innerHTML = starsHtml(+el.dataset.v); });
+      // Salla's comments box stays as an empty white panel when there is nothing in it
+      var hideEmpty = function () { var c = $('salla-comments', tabs); if (c) c.classList.toggle('oc-hidden', !c.textContent.trim()); };
+      setTimeout(hideEmpty, 1500); setTimeout(hideEmpty, 4000);
+      api('reviews?products[]=' + pid + '&per_page=50').then(function (r) {
+        var list = (r && r.data) || [], total = (r && r.pagination && r.pagination.total) || list.length;
+        var st = list.map(function (x) { return +(x.stars || x.rating || 0); }).filter(Boolean);
+        var avg = st.length ? st.reduce(function (a, b) { return a + b; }, 0) / st.length : 0;
+        $('[data-avg]', tabs).textContent = num(Math.round(avg * 10) / 10); $('[data-cnt]', tabs).textContent = num(total);
+        var av = $('.oc-prev__avg .oc-stars', tabs); av.innerHTML = starsHtml(avg);
+        [5, 4, 3, 2, 1].forEach(function (n) {
+          var c = st.filter(function (x) { return Math.round(x) === n; }).length, row = $('[data-n="' + n + '"]', tabs);
+          $('em', row).style.width = (st.length ? c / st.length * 100 : 0) + '%'; $('small', row).textContent = num(c);
+        });
+        if (total > 0 && h1 && !$('.oc-prate', info)) {
+          h1.parentNode.insertBefore(h('<div class="oc-prate"><span class="oc-stars">' + starsHtml(avg) + '</span><small>(' + num(total) + ' تقييم)</small></div>'), h1.nextSibling);
+        }
+      }).catch(function () {});
       // keep a short line at the top
       var first = $('p', desc); var txt = (first ? first.textContent : desc.textContent).trim();
       desc.innerHTML = '<p>' + esc(txt.length > 160 ? txt.slice(0, 160) + '…' : txt) + '</p>';
@@ -1040,7 +1107,7 @@
     var addBtn = $('salla-add-product-button', box);
     if (addBtn && !$('.oc-pbar')) {
       var im0 = $('.swiper-slide img', box), price = $$('.part-price h2, .part-price h4', info).filter(function (x) { return x.offsetParent; })[0];
-      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.innerHTML : '') + '</span></div></div><div class="oc-pbar__act"><div class="oc-qty oc-pbar__qty"><button type="button" data-q="-1" aria-label="نقص">' + ic('minus') + '</button><input type="text" inputmode="numeric" value="1" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">' + ic('plus') + '</button></div><button type="button" class="oc-btn oc-btn--primary oc-pbar__add">' + ic('bag') + 'أضف للسلة</button></div></div></div>');
+      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.innerHTML : '') + '</span>' + (function () { var o = $('.part-price .line-through', info); return o && o.offsetParent ? '<s class="oc-pbar__old">' + o.innerHTML + '</s>' : ''; })() + '</div></div><div class="oc-pbar__act"><div class="oc-qty oc-pbar__qty"><button type="button" data-q="-1" aria-label="نقص">' + ic('minus') + '</button><input type="text" inputmode="numeric" value="1" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">' + ic('plus') + '</button></div><button type="button" class="oc-btn oc-btn--primary oc-pbar__add">' + ic('bag') + 'أضف للسلة</button></div></div></div>');
       document.body.appendChild(pbar);
       $('.oc-pbar__add', pbar).addEventListener('click', function () {
         var n = Math.max(1, parseInt($('input', pbar).value, 10) || 1);
