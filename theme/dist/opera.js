@@ -782,7 +782,7 @@
 
   /* page banner like the reference: dark band with the page title and the trail */
   function pageBanner() {
-    if (bodyIs('index') || bodyIs('product-single') || $('.oc-pbanner')) return;
+    if (bodyIs('index') || $('.oc-pbanner')) return;
     var main = $('#main-content'); if (!main) return;
     var cr = crumbs(), title = '';
     var h1 = $('#page-main-title');
@@ -792,7 +792,7 @@
     else title = cr.length ? cr[cr.length - 1][0] : (document.title.split('|')[0] || '').trim();
     if (!title) title = (document.title.split('|')[0] || '').trim();
     var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
-    var b = h('<section class="oc-pbanner"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
+    var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
     document.body.classList.add('oc-has-banner');
     if (!trail) {
@@ -839,7 +839,9 @@
       '<form class="oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-asq">ابحث في المتجر</label><input id="oc-asq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
       '<div class="oc-aside__part"><h3>الأقسام</h3>' + cats + '</div>' +
       '<div class="oc-aside__part"><h3>تسوق حسب الموديل</h3><div class="oc-chips">' + models + '</div></div>' +
-      '</div></aside>');
+      '</div>' +
+      '<a class="oc-apromo" href="/#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><b>عروض حصرية</b><small><em>وفر ١٥٪</em> على مختارات من القطع</small><span>تسوق الآن</span></a>' +
+      '</aside>');
     row.insertBefore(aside, row.firstChild);
     row.classList.add('oc-cat-row');
     // toolbar: count and view switcher
@@ -1174,7 +1176,7 @@
     toTop();
     cartDrawer();
     var foot = $('footer.store-footer');
-    if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), foot);
+    if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), $('.oc-feats-wrap') || foot);
     tickAll();
     document.body.classList.add('oc-ready');
   }
