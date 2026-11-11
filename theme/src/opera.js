@@ -384,13 +384,15 @@
     return '<div class="oc-rate"><span class="oc-stars">' + s + '</span><small>(' + num(r.count || r.total) + ' تقييم)</small></div>';
   }
   function uniq(list) { var seen = {}; return list.filter(function (p) { var k = String(p.name || '').replace(/\s+/g, ' ').trim(); if (seen[k]) return false; seen[k] = 1; return true; }); }
+  // stripe and sticker images are full photos, part images are cut outs on white
+  function isPhoto(p) { var c = (p.category && p.category.name) || ''; return /^(خط|ستيكر|شعار|ملصق)/.test(p.name || '') || /إلى|حتى|ستيكرات|خطوط/.test(c); }
   function offBadge(pr) { return pr.off ? '<span class="oc-badge">خصم ' + num(pr.off) + '٪</span>' : ''; }
 
   /* product card like the reference: grey image box, category, name, price, full black cart button */
   function card(p) {
     var pr = priceOf(p), out = p.is_out_of_stock || p.status === 'out';
     var img = (p.image && p.image.url) || p.thumbnail || '';
-    return '<div class="oc-slide-item"><article class="oc-card' + (out ? ' is-out' : '') + '" data-id="' + p.id + '">' +
+    return '<div class="oc-slide-item"><article class="oc-card' + (out ? ' is-out' : '') + (isPhoto(p) ? ' is-photo' : '') + '" data-id="' + p.id + '">' +
       '<div class="oc-card__media">' +
       '<a class="oc-card__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(img) + '" alt="' + esc(p.name) + '"></a>' + offBadge(pr) +
       '<div class="oc-card__tools">' +
@@ -540,7 +542,7 @@
   setInterval(tickAll, 1000);
   function miniCard(p) {
     var pr = priceOf(p), out = p.is_out_of_stock || p.status === 'out';
-    return '<article class="oc-mini"><a class="oc-mini__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(p.image && p.image.url) + '" alt="' + esc(p.name) + '">' + offBadge(pr) + '</a>' +
+    return '<article class="oc-mini' + (isPhoto(p) ? ' is-photo' : '') + '"><a class="oc-mini__img" href="' + esc(p.url) + '"><img loading="lazy" src="' + esc(p.image && p.image.url) + '" alt="' + esc(p.name) + '">' + offBadge(pr) + '</a>' +
       '<div class="oc-mini__b"><span class="oc-card__cat">' + esc(catName(p)) + '</span><a class="oc-mini__t" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' + starsRow(p) +
       '<div class="oc-mini__f"><div class="oc-price"><b>' + num(pr.price) + ' ' + SAR + '</b>' + (pr.reg ? '<s>' + num(pr.reg) + ' ' + SAR + '</s>' : '') + '</div>' +
       (out ? '' : '<button type="button" class="oc-mini__add oc-add" data-id="' + p.id + '" aria-label="أضف للسلة">' + ic('bag') + '</button>') + '</div></div></article>';
@@ -549,19 +551,31 @@
     var s = h('<section class="oc-sec oc-wdeals" id="oc-deals"><div class="oc-container oc-wdeals__in">' +
       '<a class="oc-wdeals__promo" href="/offers" style="background-image:url(' + IMG + 'deal_tall.webp)"><span class="oc-pill oc-pill--g">هذا الأسبوع فقط</span><b>وفر حتى<br><em>١٥٪</em> خصم</b><small>على مختارات من القطع والخطوط</small><span class="oc-wdeals__btn">تسوق الآن</span></a>' +
       '<div class="oc-wdeals__main">' + sHead('عروض الأسبوع', { all: '/offers', after: '<span class="oc-wdeals__time">ينتهي خلال' + timerHtml('oc-ctd') + '</span>' }) +
-      '<div class="oc-wdeals__grid">' + new Array(10).join('<div class="oc-mini oc-mini--skel"></div>') + '</div></div></div></section>');
-    var grid = $('.oc-wdeals__grid', s);
-    api('products?source=offers&per_page=9').then(function (r) {
+      '<div class="oc-wdeals__slide"><button type="button" class="oc-wdeals__arrow oc-wdeals__arrow--prev" aria-label="السابق">' + ic('right') + '</button>' +
+      '<div class="oc-wdeals__grid">' + new Array(10).join('<div class="oc-mini oc-mini--skel"></div>') + '</div>' +
+      '<button type="button" class="oc-wdeals__arrow oc-wdeals__arrow--next" aria-label="التالي">' + ic('left') + '</button></div></div></div></section>');
+    var grid = $('.oc-wdeals__grid', s), prev = $('.oc-wdeals__arrow--prev', s), next = $('.oc-wdeals__arrow--next', s);
+    var colW = function () { var c = grid.querySelector('.oc-mini'); return c ? c.getBoundingClientRect().width + 16 : 300; };
+    var sync = function () {
+      var max = grid.scrollWidth - grid.clientWidth, x = Math.abs(grid.scrollLeft);
+      prev.disabled = x < 4; next.disabled = x > max - 4;
+      s.classList.toggle('oc-wdeals--static', max < 4);
+    };
+    prev.addEventListener('click', function () { grid.scrollBy({ left: colW(), behavior: 'smooth' }); });
+    next.addEventListener('click', function () { grid.scrollBy({ left: -colW(), behavior: 'smooth' }); });
+    grid.addEventListener('scroll', function () { clearTimeout(grid._t); grid._t = setTimeout(sync, 80); }, { passive: true });
+    window.addEventListener('resize', sync);
+    api('products?source=offers&per_page=18').then(function (r) {
       var list = (r && r.data) || [];
-      if (list.length >= 9) return list;
+      if (list.length >= 18) return list;
       return api(sel(DEALS_FALLBACK.concat(FEATURED))).then(function (x) {
         var ids = list.map(function (p) { return p.id; });
         return list.concat(((x && x.data) || []).filter(function (p) { return ids.indexOf(p.id) < 0; }));
       });
     }).then(function (list) {
       list = uniq(list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); }));
-      grid.innerHTML = list.slice(0, 9).map(miniCard).join('');
-      tickAll();
+      grid.innerHTML = list.slice(0, 18).map(miniCard).join('');
+      tickAll(); sync();
     }).catch(function () { s.remove(); });
     return s;
   }
@@ -626,7 +640,8 @@
 
   /* ---------- logos strip ---------- */
   function logosSection() {
-    return h('<section class="oc-logos" aria-label="طرق الدفع"><div class="oc-container oc-logos__row">' + PAY.map(function (p) { return '<img loading="lazy" src="' + IMG + 'pay/' + p + '.svg" alt="' + p + '">'; }).join('') + '</div></section>');
+    var one = PAY.map(function (p) { return '<img loading="lazy" src="' + IMG + 'pay/' + p + '.svg" alt="' + p + '">'; }).join('');
+    return h('<section class="oc-logos" aria-label="طرق الدفع"><div class="oc-container"><div class="oc-logos__view"><div class="oc-logos__track">' + one + one + one + one + '</div></div></div></section>');
   }
 
   /* ---------- articles ---------- */
@@ -644,13 +659,32 @@
 
   /* ---------- subscribe band before the footer ---------- */
   function subscribeBand() {
-    var wa = 'https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent('أبغى أشترك في عروض أوبرا كار');
-    return h('<section class="oc-sub" style="--oc-sub-img:url(' + IMG + 'sub_cars.webp)"><div class="oc-sub__in">' +
-      '<div class="oc-sub__txt"><small>تابع جديد القطع والخطوط</small><h2>اشترك في <em>العروض الحصرية</em></h2>' +
-      '<div class="oc-sub__form"><a class="oc-sub__field" href="' + wa + '" target="_blank" rel="noopener">' + bic('whatsapp') + 'وصلك جديد العروض على واتساب</a>' +
-      '<a class="oc-sub__btn" href="' + wa + '" target="_blank" rel="noopener">اشترك الآن</a></div></div>' +
-      
+    var s = h('<section class="oc-sub" style="--oc-sub-img:url(' + IMG + 'sub_cars.webp)"><div class="oc-sub__in">' +
+      '<div class="oc-sub__txt"><small>سجل رقم جوالك ويوصلك جديد القطع والخطوط والخصومات</small><h2>اشترك في <em>العروض الحصرية</em></h2>' +
+      '<form class="oc-sub__form" novalidate><label class="oc-sub__field">' + ic('phone') + '<input type="tel" inputmode="numeric" dir="ltr" placeholder="05xxxxxxxx" aria-label="رقم الجوال" maxlength="10"></label>' +
+      '<button type="submit" class="oc-sub__btn">اشترك</button></form><p class="oc-sub__msg" hidden></p></div>' +
       '</div></section>');
+    var form = $('form', s), inp = $('input', s), msg = $('.oc-sub__msg', s);
+    var say = function (t) { msg.textContent = t; msg.hidden = false; };
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var guest = !(window.salla && salla.config && salla.config.isGuest) || salla.config.isGuest();
+      if (!guest) { say('أنت مشترك ويوصلك جديد العروض على رقمك المسجل'); return; }
+      var n = (inp.value || '').replace(/\D/g, '').replace(/^966/, '0');
+      if (!/^05\d{8}$/.test(n)) { say('اكتب رقم جوال صحيح يبدأ بـ 05'); inp.focus(); return; }
+      msg.hidden = true;
+      var m = $('salla-login-modal');
+      if (m && m.open) {
+        m.open();
+        // put the number in the sign in form once it shows
+        var tries = 0, fill = setInterval(function () {
+          var t = m.querySelector('input[type=tel], salla-tel-input input');
+          if (t || ++tries > 20) clearInterval(fill);
+          if (t) { t.value = n.replace(/^0/, ''); t.dispatchEvent(new Event('input', { bubbles: true })); }
+        }, 250);
+      } else location.href = '/login';
+    });
+    return s;
   }
 
   /* ---------- features bar (all pages, above footer) ---------- */
