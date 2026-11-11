@@ -969,6 +969,16 @@
     // buy now next to add to cart
     var bar = $('.sticky-product-bar', box), quick = $('salla-quick-order', box);
     if (bar && quick && !bar.contains(quick)) { bar.appendChild(quick); bar.classList.add('oc-buyrow'); }
+    // the buy now button draws a red outline inside its own shadow root, clear it so it reads as a black button
+    var fixBuy = function () {
+      $$('salla-mini-checkout-widget', box).forEach(function (w) {
+        var sr = w.shadowRoot; if (!sr || sr.querySelector('style[data-oc]')) return;
+        var st = document.createElement('style'); st.setAttribute('data-oc', '1');
+        st.textContent = 'button{border:0!important;box-shadow:none!important;background:transparent!important;color:#fff!important;height:45px!important;width:100%!important;border-radius:8px!important}';
+        sr.appendChild(st);
+      });
+    };
+    fixBuy(); setTimeout(fixBuy, 1000); setTimeout(fixBuy, 3000);
     // trust lines, payment options and returns link
     var form = $('form.product-form', info);
     var shareRow = $('salla-social-share', info); if (shareRow) { var sr = shareRow.parentNode; if (sr && sr !== info) sr.classList.add('oc-hidden'); }
