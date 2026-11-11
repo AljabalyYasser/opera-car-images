@@ -1568,3 +1568,6 @@ body.product-single .part-sidebar salla-slider .s-slider-block__title-nav { disp
   html body.product-single .oc-buyrow salla-add-product-button { flex-basis: 100%; }
   .oc-ptimer { gap: 10px; padding: 16px; }
 }
+html body.product-single .oc-buyrow salla-mini-checkout-widget { border: 0 !important; box-shadow: none !important; outline: 0 !important; }
+html body.product-single .oc-buyrow salla-mini-checkout-widget * { border: 0 !important; box-shadow: none !important; }
+html body.product-single .oc-buyrow salla-mini-checkout-widget { overflow: hidden !important; display: flex !important; align-items: center; justify-content: center; }

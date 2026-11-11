@@ -985,7 +985,8 @@
       } catch (e) {}
     }
     if (form && !$('.oc-ptrust', info)) {
-      form.parentNode.insertBefore(h('<div class="oc-ppay"><b>طرق الدفع</b><div>' + PAY.map(function (x) { return '<img src="' + IMG + 'pay/' + x + '.svg" alt="' + x + '" loading="lazy">'; }).join('') + '</div></div>'), form.nextSibling);
+      var payAnchor = $('.oc-pwish', info) || form;
+      payAnchor.parentNode.insertBefore(h('<div class="oc-ppay"><b>طرق الدفع</b><div>' + PAY.map(function (x) { return '<img src="' + IMG + 'pay/' + x + '.svg" alt="' + x + '" loading="lazy">'; }).join('') + '</div></div>'), payAnchor.nextSibling);
       form.parentNode.insertBefore(h('<ul class="oc-ptrust">' +
         '<li>' + ic('truck') + '<span>توصيل سريع داخل جدة وشحن لكل مناطق المملكة</span></li>' +
         '<li>' + ic('check') + '<span>نتأكد من مطابقة القطعة لموديل سيارتك قبل الشحن</span></li>' +
