@@ -1201,14 +1201,14 @@
       update(0);
       try {
         if (window.salla && salla.cart && salla.cart.api && salla.cart.api.details) {
-          return salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); update(+(c && (c.sub_total || c.total)) || 0); }).catch(function () {});
+          return salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); var v = +(c && (c.sub_total || c.total)) || 0; if (v) update(v); }).catch(function () {});
         }
       } catch (e) {}
       update(0);
     }
     window.ocShipUpdate = update;
     read();
-    try { salla.event.on('cart::updated', function (d) { var c = d && (d.cart || d.data || d); update(+(c && (c.sub_total || c.total)) || 0); }); } catch (e) {}
+    try { salla.event.on('cart::updated', function (d) { var c = d && (d.cart || d.data || d); var v = +(c && (c.sub_total || c.total)) || 0; if (v) update(v); }); } catch (e) {}
   }
 
   /* cart page in the reference layout: items table card, shipping progress inside the summary, empty state */
