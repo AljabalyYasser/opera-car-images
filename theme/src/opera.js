@@ -1206,6 +1206,7 @@
       } catch (e) {}
       update(0);
     }
+    window.ocShipUpdate = update;
     read();
     try { salla.event.on('cart::updated', function (d) { var c = d && (d.cart || d.data || d); update(+(c && (c.sub_total || c.total)) || 0); }); } catch (e) {}
   }
@@ -1225,6 +1226,12 @@
         mc.appendChild(h('<div class="oc-cart__foot"><a class="oc-cart__cont" href="/">تابع التسوق</a></div>'));
       }
       var ship = $('.oc-ship'), sum = $('salla-cart-summary-card', main);
+      // keep the free shipping progress in step with the total shown in the summary
+      var tot = sum && $('.s-cart-summary-card-bar-total', sum);
+      if (tot && ship) {
+        var n = +tot.textContent.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[^\d.]/g, '');
+        if (n && ship.dataset.total !== String(n)) { ship.dataset.total = n; if (window.ocShipUpdate) window.ocShipUpdate(n); }
+      }
       if (ship && sum && ship.nextElementSibling !== sum) { sum.parentNode.insertBefore(ship, sum); ship.classList.add('oc-ship--side'); }
       var ph = $('.no-content-placeholder', main);
       if (ph && !ph.dataset.oc) { var a = $('a.btn', ph); if (a) { ph.dataset.oc = '1'; a.textContent = 'تابع التسوق'; a.setAttribute('href', '/'); } }
