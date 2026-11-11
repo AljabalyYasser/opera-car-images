@@ -1191,11 +1191,12 @@
     var main = $('#main-content'); if (!main) return;
     var bar = h('<div class="oc-container"><div class="oc-ship"><div class="oc-ship__txt">' + ic('truck') + '<span></span></div><div class="oc-ship__track"><i></i></div></div></div>');
     main.insertBefore(bar, main.firstChild);
+    var shipEl = $('.oc-ship', bar);
     function update(total) {
       var left = Math.max(0, FREE_SHIP - total), pct = Math.min(100, total / FREE_SHIP * 100);
-      $('.oc-ship__track i', bar).style.width = pct + '%';
-      $('.oc-ship__txt span', bar).innerHTML = left > 0 ? 'باقي لك <b>' + num(left) + ' ' + SAR + '</b> وتحصل على <b>شحن مجاني</b>' : 'مبروك طلبك صار عليه <b>شحن مجاني</b>';
-      bar.querySelector('.oc-ship').classList.toggle('is-done', left <= 0);
+      $('.oc-ship__track i', shipEl).style.width = pct + '%';
+      $('.oc-ship__txt span', shipEl).innerHTML = left > 0 ? 'باقي لك <b>' + num(left) + ' ' + SAR + '</b> وتحصل على <b>شحن مجاني</b>' : 'مبروك طلبك صار عليه <b>شحن مجاني</b>';
+      shipEl.classList.toggle('is-done', left <= 0);
     }
     function read() {
       update(0);
