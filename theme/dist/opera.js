@@ -3,7 +3,7 @@
   if (window.__OC_LOADED) return;
   window.__OC_LOADED = true;
 
-  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@93f3fdfc/theme/img/';
+  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@d39e3b04/theme/img/';
   var API = 'https://api.salla.dev/store/v1/';
   var SID = '1590934287';
   var FREE_SHIP = 600;
@@ -595,8 +595,8 @@
 
   /* ---------- flash banner with a countdown ---------- */
   function flashSection() {
-    return h('<section class="oc-flash" style="background-image:url(' + IMG + 'ban_parts.webp)"><div class="oc-container oc-flash__in">' +
-      '<div class="oc-flash__pic"><i></i><img loading="lazy" src="' + IMG + 'hero_lc.webp" alt=""></div>' +
+    return h('<section class="oc-flash" style="background-image:url(' + IMG + 'flash_bg.webp)"><div class="oc-container oc-flash__in">' +
+      '<div class="oc-flash__pic"></div>' +
       '<div class="oc-flash__txt"><h2>تخفيضات الأسبوع</h2><p>سارع واحصل على <em>خصومات حصرية</em></p><a class="oc-flash__btn" href="#oc-deals">تسوق الآن</a>' + timerHtml('oc-flash__timer') + '</div>' +
       '</div></section>');
   }
@@ -645,11 +645,11 @@
   /* ---------- subscribe band before the footer ---------- */
   function subscribeBand() {
     var wa = 'https://wa.me/' + CONTACT.whatsapp + '?text=' + encodeURIComponent('أبغى أشترك في عروض أوبرا كار');
-    return h('<section class="oc-sub"><div class="oc-sub__in">' +
+    return h('<section class="oc-sub" style="--oc-sub-img:url(' + IMG + 'sub_cars.webp)"><div class="oc-sub__in">' +
       '<div class="oc-sub__txt"><small>تابع جديد القطع والخطوط</small><h2>اشترك في <em>العروض الحصرية</em></h2>' +
       '<div class="oc-sub__form"><a class="oc-sub__field" href="' + wa + '" target="_blank" rel="noopener">' + bic('whatsapp') + 'وصلك جديد العروض على واتساب</a>' +
       '<a class="oc-sub__btn" href="' + wa + '" target="_blank" rel="noopener">اشترك الآن</a></div></div>' +
-      '<div class="oc-sub__cars"><img loading="lazy" src="' + IMG + 'car_prado.webp" alt=""><img loading="lazy" src="' + IMG + 'car_lc.webp" alt=""></div>' +
+      
       '</div></section>');
   }
 

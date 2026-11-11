@@ -1132,8 +1132,8 @@ html.oc-dark .oc-mini__img img { mix-blend-mode: normal; }
 @media (max-width: 899px) { .oc-why__grid { grid-template-columns: 1fr; } .oc-why__pic { order: -1; max-height: 300px; } }
 
 /* flash banner */
-.oc-flash { position: relative; margin-block: 34px; background-size: cover; background-position: center; color: #fff; }
-.oc-flash::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 10, 11, .95) 0%, rgba(10, 10, 11, .82) 45%, rgba(10, 10, 11, .55) 100%); }
+.oc-flash { position: relative; margin-block: 34px; background-color: #050506; background-size: cover; background-position: right center; background-repeat: no-repeat; color: #fff; }
+.oc-flash::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5, 5, 6, .55) 0%, rgba(5, 5, 6, 0) 50%); }
 .oc-flash__in { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; min-height: 552px; gap: 24px; }
 .oc-flash__pic { position: relative; display: flex; align-items: center; justify-content: center; }
 .oc-flash__pic i { position: absolute; width: 74%; aspect-ratio: 1.6; border-radius: 50%; border: 12px solid var(--oc-red); border-color: #E6E8EB #8A9096 var(--oc-red) #C9CDD2; box-shadow: 0 0 40px rgba(210, 31, 43, .45); transform: rotate(-24deg); opacity: .9; }
@@ -1193,7 +1193,7 @@ html.oc-dark .oc-mini__img img { mix-blend-mode: normal; }
 
 /* subscribe band */
 .oc-sub { position: relative; overflow: hidden; background: #000; margin-top: 30px; }
-.oc-sub::after { content: ''; position: absolute; inset-block: 0; inset-inline-end: 0; width: 45%; background: var(--oc-red); clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
+.oc-sub::after { content: ''; position: absolute; inset-block: 0; inset-inline-end: 0; width: 50%; background: #9A0A12 var(--oc-sub-img) center / cover no-repeat; clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
 [dir="rtl"] .oc-sub::after, html[dir="rtl"] .oc-sub::after { clip-path: polygon(0 0, 78% 0, 100% 100%, 0 100%); }
 .oc-sub__in { position: relative; z-index: 2; max-width: 1332px; margin-inline: auto; padding: 34px 16px; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 212px; }
 .oc-sub__txt small { font-size: 14px; color: #fff; }
