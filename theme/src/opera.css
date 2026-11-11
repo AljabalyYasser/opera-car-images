@@ -1328,7 +1328,7 @@ html.oc-dark .s-product-card-image img { mix-blend-mode: normal; }
 .s-product-card-content-footer .s-button-text i { font-size: 17px !important; }
 
 /* product page */
-body.product-single #main-content { padding-top: 50px; }
+body.product-single.oc-has-banner #main-content { padding-top: 0; }
 body.product-single .part-sidebar { border: 0 !important; background: transparent !important; padding: 0 !important; }
 body.product-single .oc-has-thumbs { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 14px; }
 body.product-single .oc-has-thumbs salla-slider { grid-row: 1; min-width: 0; background: var(--oc-surface); border-radius: 12px; padding: 18px; }
