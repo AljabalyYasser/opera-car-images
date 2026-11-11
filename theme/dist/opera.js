@@ -1081,6 +1081,9 @@
       });
       var starsHtml = function (v) { var o = ''; for (var k = 1; k <= 5; k++) o += '<i class="' + (k <= Math.round(v) ? 'on' : '') + '">' + ic('star') + '</i>'; return o; };
       $$('.oc-stars', tabs).forEach(function (el) { el.innerHTML = starsHtml(+el.dataset.v); });
+      // Salla's comments box stays as an empty white panel when there is nothing in it
+      var hideEmpty = function () { var c = $('salla-comments', tabs); if (c) c.classList.toggle('oc-hidden', !c.textContent.trim()); };
+      setTimeout(hideEmpty, 1500); setTimeout(hideEmpty, 4000);
       api('reviews?products[]=' + pid + '&per_page=50').then(function (r) {
         var list = (r && r.data) || [], total = (r && r.pagination && r.pagination.total) || list.length;
         var st = list.map(function (x) { return +(x.stars || x.rating || 0); }).filter(Boolean);
