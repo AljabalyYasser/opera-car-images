@@ -1006,9 +1006,9 @@ html.oc-dark .oc-price b { color: #FF4D4D; }
 .oc-hero2__box { position: relative; height: 600px; border-radius: 12px; overflow: hidden; background: #0C0C0D; }
 .oc-hslide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .8s, visibility 0s linear .8s; }
 .oc-hslide.is-active { opacity: 1; visibility: visible; transition: opacity .8s; }
-.oc-hslide__bg { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scaleX(-1) scale(1.06); transition: transform 7s ease; }
-.oc-hslide.is-active .oc-hslide__bg { transform: scaleX(-1) scale(1); }
-.oc-hslide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(270deg, rgba(8, 8, 9, .92) 0%, rgba(8, 8, 9, .7) 38%, rgba(8, 8, 9, 0) 70%); }
+.oc-hslide__bg { position: absolute; inset: 0; background-size: cover; background-position: left center; transform: scale(1.06); transition: transform 7s ease; }
+.oc-hslide.is-active .oc-hslide__bg { transform: scale(1); }
+.oc-hslide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(270deg, rgba(8, 8, 9, .75) 0%, rgba(8, 8, 9, .35) 35%, rgba(8, 8, 9, 0) 60%); }
 .oc-hslide__txt { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-inline: 56px; max-width: 620px; color: #fff; }
 .oc-hslide__badge { display: inline-block; background: var(--oc-red); color: #fff; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 4px; margin-bottom: 22px; }
 .oc-hslide__txt h2 { font-family: var(--oc-head); font-size: clamp(34px, 4.2vw, 58px); font-weight: 600; line-height: 1.25; color: #fff; margin: 0; }
@@ -1050,8 +1050,8 @@ html.oc-dark .oc-col__pic img { mix-blend-mode: normal; border-radius: 50%; }
 /* colour banners */
 .oc-cbans__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .oc-cban { position: relative; display: flex; align-items: center; justify-content: space-between; min-height: 260px; padding: 26px; border-radius: 12px; overflow: hidden; color: #fff; }
-.oc-cban--org { background: repeating-linear-gradient(118deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 14px), radial-gradient(circle at 85% 20%, rgba(210, 31, 43, .35), transparent 45%), var(--oc-steel); }
-.oc-cban--red { background: radial-gradient(circle at 15% 85%, rgba(0, 0, 0, .3), transparent 50%), repeating-linear-gradient(118deg, rgba(0, 0, 0, .08) 0 7px, transparent 7px 19px), var(--oc-red); }
+.oc-cban.oc-cban--org, .oc-cban.oc-cban--red { background-color: #121315; background-size: cover; background-position: left center; background-repeat: no-repeat; transition: background-size .6s; }
+.oc-cban.oc-cban--red { background-color: #7A0A10; }
 .oc-cban__txt { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; }
 .oc-pill { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 14px; color: #0C0C0D; }
 .oc-pill--g { background: linear-gradient(180deg, #F4F5F7, #C9CDD2); }
@@ -1062,8 +1062,6 @@ html.oc-dark .oc-col__pic img { mix-blend-mode: normal; border-radius: 50%; }
 .oc-cban__btn .oc-ic { width: 17px; height: 17px; }
 .oc-cban:hover .oc-cban__btn { background: var(--oc-red); color: #fff; }
 .oc-cban--red:hover .oc-cban__btn { background: #0C0C0D; }
-.oc-cban img { position: absolute; inset-inline-end: -40px; bottom: 50%; transform: translateY(50%); width: 62%; max-height: 82%; object-fit: contain; transition: transform .5s; filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .3)); }
-.oc-cban:hover img { transform: translateY(50%) scale(1.06); }
 @media (max-width: 1023px) { .oc-cbans__row { grid-template-columns: 1fr; } }
 
 /* shop by car */
@@ -1080,14 +1078,12 @@ html.oc-dark .oc-col__pic img { mix-blend-mode: normal; border-radius: 50%; }
 
 /* deals of the week */
 .oc-wdeals__in { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: stretch; }
-.oc-wdeals__promo { position: relative; overflow: hidden; border-radius: 8px; padding: 24px; color: #fff; display: flex; flex-direction: column; align-items: flex-start; background: repeating-linear-gradient(118deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 14px), radial-gradient(circle at 80% 15%, rgba(210, 31, 43, .4), transparent 50%), var(--oc-steel); min-height: 480px; }
+.oc-wdeals__promo { position: relative; overflow: hidden; border-radius: 8px; padding: 24px; color: #fff; display: flex; flex-direction: column; align-items: flex-start; background-color: #111214; background-size: cover; background-position: center bottom; background-repeat: no-repeat; min-height: 480px; }
 .oc-wdeals__promo b { margin-top: 12px; font-family: var(--oc-head); font-size: 38px; font-weight: 800; line-height: 1.2; }
 .oc-wdeals__promo b em { font-style: normal; color: #FF3B47; }
 .oc-wdeals__promo small { margin-top: 8px; font-size: 14px; }
 .oc-wdeals__btn { margin-top: 24px; height: 44px; padding: 0 26px; border-radius: 4px; background: #fff; color: #262626; display: inline-flex; align-items: center; font-weight: 600; transition: background-color .25s, color .25s; }
 .oc-wdeals__promo:hover .oc-wdeals__btn { background: var(--oc-red); color: #fff; }
-.oc-wdeals__promo img { position: absolute; bottom: 14px; inset-inline-start: -10%; width: 120%; max-width: none; filter: drop-shadow(0 16px 16px rgba(0, 0, 0, .35)); transition: transform .5s; }
-.oc-wdeals__promo:hover img { transform: scale(1.05); }
 .oc-wdeals__main .oc-shead { margin-bottom: 18px; }
 .oc-wdeals__time { display: inline-flex; align-items: center; gap: 10px; margin-inline-start: 24px; font-size: 14px; color: var(--oc-muted); }
 .oc-ctd { display: inline-flex; gap: 6px; }
@@ -1110,7 +1106,7 @@ html.oc-dark .oc-mini__img img { mix-blend-mode: normal; }
 .oc-mini__add .oc-ic { width: 19px; height: 19px; }
 .oc-mini__add:hover { background: var(--oc-red); }
 @media (max-width: 1199px) { .oc-wdeals__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 899px) { .oc-wdeals__in { grid-template-columns: 1fr; } .oc-wdeals__promo { min-height: 320px; } .oc-wdeals__promo img { width: 70%; inset-inline-start: auto; inset-inline-end: -6%; } }
+@media (max-width: 899px) { .oc-wdeals__in { grid-template-columns: 1fr; } .oc-wdeals__promo { min-height: 320px; } }
 @media (max-width: 639px) { .oc-wdeals__grid { grid-template-columns: 1fr; } .oc-wdeals__time { margin-inline-start: 0; } }
 
 /* shop by model tiles */

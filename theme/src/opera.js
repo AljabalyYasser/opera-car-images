@@ -407,9 +407,9 @@
 
   /* ---------- hero: dark rounded banner with a photo, badge, title, price line and button ---------- */
   var SLIDES = [
-    { b: 'تصاميم حصرية', t: ['خطوط تويوتا', 'تعطي سيارتك', 'هوية جديدة'], f: 'تبدأ من ١٤٩&nbsp;ريال', p: 'خطوط لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'ban_stripes.webp', u: C['الخطوط'] },
-    { b: 'أصلية وبديلة', t: ['قطع غيار', 'لكل موديلات', 'تويوتا'], f: 'نتأكد من المطابقة قبل الشحن', p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'ban_parts.webp', u: C['قطع الغيار والاكسسوارات'] },
-    { b: 'عروض أوبرا كار', t: ['اكسسوارات', 'تفرق في', 'سيارتك'], f: 'شحن مجاني فوق ٦٠٠&nbsp;ريال', p: 'ديكورات ومسجلات وفرشات ودركسونات لسيارات تويوتا', img: 'ban_acc.webp', u: C['اكسسوارات تويوتا عامة'] }
+    { b: 'تصاميم حصرية', t: ['خطوط تويوتا', 'تعطي سيارتك', 'هوية جديدة'], f: 'تبدأ من ١٤٩&nbsp;ريال', p: 'خطوط لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_st2.webp', u: C['الخطوط'] },
+    { b: 'أصلية وبديلة', t: ['قطع غيار', 'لكل موديلات', 'تويوتا'], f: 'نتأكد من المطابقة قبل الشحن', p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts2.webp', u: C['قطع الغيار والاكسسوارات'] },
+    { b: 'عروض أوبرا كار', t: ['اكسسوارات', 'تفرق في', 'سيارتك'], f: 'شحن مجاني فوق ٦٠٠&nbsp;ريال', p: 'ديكورات ومسجلات وفرشات ودركسونات لسيارات تويوتا', img: 'hero_acc2.webp', u: C['اكسسوارات تويوتا عامة'] }
   ];
   function heroSection() {
     var s = h('<section class="oc-hero2" aria-label="الواجهة"><div class="oc-container"><div class="oc-hero2__box">' +
@@ -500,12 +500,12 @@
   /* ---------- three colour banners with a badge, a title, a white button and a product picture ---------- */
   function bannersSection() {
     var B = [
-      ['org', 'g', 'تبدأ من ١٤٩&nbsp;ريال', 'خطوط<br>تويوتا', 'لكل موديل وسنة صنع', C['الخطوط'], IMG + 'car_lc.webp'],
-      ['red', 'p', 'أصلية وبديلة', 'قطع<br>الغيار', 'لأشهر موديلات تويوتا', C['قطع الغيار والاكسسوارات'], IMG + 'hero_parts.webp'],
-      ['org', 'g', 'لمسات تفرق', 'اكسسوارات<br>السيارة', 'ديكورات ومسجلات وفرشات', C['اكسسوارات تويوتا عامة'], IMG + 'car_shas.webp']
+      ['org', 'g', 'تبدأ من ١٤٩&nbsp;ريال', 'خطوط<br>تويوتا', 'لكل موديل وسنة صنع', C['الخطوط'], IMG + 'ban_st2.webp'],
+      ['red', 'p', 'أصلية وبديلة', 'قطع<br>الغيار', 'لأشهر موديلات تويوتا', C['قطع الغيار والاكسسوارات'], IMG + 'ban_parts2.webp'],
+      ['org', 'g', 'لمسات تفرق', 'اكسسوارات<br>السيارة', 'ديكورات ومسجلات وفرشات', C['اكسسوارات تويوتا عامة'], IMG + 'ban_acc2.webp']
     ];
     return h('<section class="oc-sec oc-cbans"><div class="oc-container"><div class="oc-cbans__row">' + B.map(function (b) {
-      return '<a class="oc-cban oc-cban--' + b[0] + '" href="' + b[5] + '"><span class="oc-cban__txt"><span class="oc-pill oc-pill--' + b[1] + '">' + b[2] + '</span><b>' + b[3] + '</b><small>' + b[4] + '</small><span class="oc-cban__btn">تسوق الآن' + ic('left') + '</span></span><img loading="lazy" src="' + b[6] + '" alt=""></a>';
+      return '<a class="oc-cban oc-cban--' + b[0] + '" href="' + b[5] + '" style="background-image:url(' + b[6] + ')"><span class="oc-cban__txt"><span class="oc-pill oc-pill--' + b[1] + '">' + b[2] + '</span><b>' + b[3] + '</b><small>' + b[4] + '</small><span class="oc-cban__btn">تسوق الآن' + ic('left') + '</span></span></a>';
     }).join('') + '</div></div></section>');
   }
 
@@ -547,7 +547,7 @@
   }
   function dealsSection() {
     var s = h('<section class="oc-sec oc-wdeals" id="oc-deals"><div class="oc-container oc-wdeals__in">' +
-      '<a class="oc-wdeals__promo" href="/offers"><span class="oc-pill oc-pill--g">هذا الأسبوع فقط</span><b>وفر حتى<br><em>١٥٪</em> خصم</b><small>على مختارات من القطع والخطوط</small><span class="oc-wdeals__btn">تسوق الآن</span><img loading="lazy" src="' + IMG + 'car_rab3.webp" alt=""></a>' +
+      '<a class="oc-wdeals__promo" href="/offers" style="background-image:url(' + IMG + 'deal_tall.webp)"><span class="oc-pill oc-pill--g">هذا الأسبوع فقط</span><b>وفر حتى<br><em>١٥٪</em> خصم</b><small>على مختارات من القطع والخطوط</small><span class="oc-wdeals__btn">تسوق الآن</span></a>' +
       '<div class="oc-wdeals__main">' + sHead('عروض الأسبوع', { all: '/offers', after: '<span class="oc-wdeals__time">ينتهي خلال' + timerHtml('oc-ctd') + '</span>' }) +
       '<div class="oc-wdeals__grid">' + new Array(10).join('<div class="oc-mini oc-mini--skel"></div>') + '</div></div></div></section>');
     var grid = $('.oc-wdeals__grid', s);
@@ -589,7 +589,7 @@
     var c = function (w) { return '<div class="oc-why__card"><span class="oc-why__ic">' + ic(w[0]) + '</span><h3>' + w[1] + '</h3><p>' + w[2] + '</p></div>'; };
     return h('<section class="oc-sec oc-why" id="oc-about"><div class="oc-container">' + sHead('لماذا أوبرا كار', { center: true }) +
       '<div class="oc-why__grid"><div class="oc-why__col">' + c(HOME_WHY[0]) + c(HOME_WHY[1]) + '</div>' +
-      '<div class="oc-why__pic"><img loading="lazy" src="' + IMG + 'art_orig.webp" alt="قطع غيار تويوتا"></div>' +
+      '<div class="oc-why__pic"><img loading="lazy" src="' + IMG + 'why.webp" alt="فريق أوبرا كار يجهز قطع الغيار"></div>' +
       '<div class="oc-why__col">' + c(HOME_WHY[2]) + c(HOME_WHY[3]) + '</div></div></div></section>');
   }
 
