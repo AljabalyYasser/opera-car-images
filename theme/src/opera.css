@@ -49,6 +49,13 @@ html.oc-dark {
   }
 }
 
+/* ---------- page reveal: hidden until the header is built, never longer than 3 seconds ---------- */
+html { background: #F0F0F0; }
+html.oc-dark { background: #0F1114; }
+html:not(.oc-on) .app-inner { opacity: 0; animation: oc-failsafe 0s 3s forwards; }
+html.oc-on .app-inner { opacity: 1; transition: opacity .2s ease; }
+@keyframes oc-failsafe { to { opacity: 1; } }
+
 /* ---------- base ---------- */
 body { font-family: var(--oc-font) !important; background: var(--oc-bg) !important; color: var(--oc-text); transition: background-color .35s, color .35s; }
 body input, body button, body select, body textarea { font-family: var(--oc-font); }

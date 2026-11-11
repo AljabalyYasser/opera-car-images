@@ -770,13 +770,7 @@
     var anchor = latest || main.firstChild;
     [heroSection(), finderSection(), kindsSection(), featuredSection(), bannersSection(), latestSection(), modelsSection(), dealsSection(), makesSection(), aboutSection(), flashSection(), reviewsSection(), logosSection(), articlesSection()]
       .forEach(function (el) { if (el) main.insertBefore(el, anchor); });
-    var foot = $('footer.store-footer');
-    if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), foot);
     tickAll();
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
-      $$('.oc-sec', main).forEach(function (el) { el.classList.add('oc-reveal'); io.observe(el); });
-    }
     if (location.hash && /^#oc-/.test(location.hash)) { var t2 = $(location.hash); if (t2) setTimeout(function () { t2.scrollIntoView({ behavior: 'smooth' }); }, 300); }
   }
 
@@ -1048,10 +1042,6 @@
     if (!map[id]) { document.body.classList.add('oc-textpage'); return; }
     var host = pageShell(); if (!host) return;
     map[id](host);
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -60px 0px' });
-      $$('.oc-sec', host).forEach(function (el) { el.classList.add('oc-reveal'); io.observe(el); });
-    }
   }
 
   /* cart drawer opened after adding to cart */
@@ -1128,10 +1118,25 @@
     customPages();
     toTop();
     cartDrawer();
+    var foot = $('footer.store-footer');
+    if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), foot);
+    tickAll();
     document.body.classList.add('oc-ready');
+  }
+  // show the page only once the header menu is in place so the original theme never flashes
+  function reveal() {
+    var t0 = Date.now();
+    (function wait() {
+      var menu = $('#part-store-header custom-main-menu li.root-level');
+      if (menu || Date.now() - t0 > 1800) {
+        addNavExtras(); addMegaMenu();
+        document.documentElement.classList.add('oc-on');
+      } else setTimeout(wait, 40);
+    })();
   }
   ready(function () {
     init();
+    reveal();
     // Salla web components hydrate late; retry header pieces once
     setTimeout(function () { addNavExtras(); addMegaMenu(); }, 1200); setTimeout(function () { addNavExtras(); addMegaMenu(); }, 3500);
   });
