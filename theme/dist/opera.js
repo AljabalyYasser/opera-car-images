@@ -232,6 +232,7 @@
   I.up = '<path d="m6 15 6-6 6 6"/>';
   I.x = '<path d="M6 6l12 12M18 6 6 18"/>';
   I.minus = '<path d="M6 12h12"/>';
+  I.link = '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>';
   I.plus = '<path d="M12 6v12M6 12h12"/>';
   I.cal = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
   I.headset = '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 1.5-2 2.5-5 2.5"/>';
@@ -646,10 +647,11 @@
 
   /* ---------- articles ---------- */
   var ARTICLES = [{"title": "كيف تختار الخط المناسب لسيارتك", "url": "https://operacar.store/كيف-تختار-الخط-المناسب-لسيارتك/page-144732245", "img": "art_choose.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "144732245"}, {"title": "الفرق بين القطع الأصلية والبديلة", "url": "https://operacar.store/الفرق-بين-القطع-الأصلية-والبديلة/page-1519296342", "img": "art_orig.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "1519296342"}, {"title": "طريقة تركيب الخطوط بدون فقاعات", "url": "https://operacar.store/طريقة-تركيب-الخطوط-بدون-فقاعات/page-879476311", "img": "art_install.webp", "tag": "دليل", "date": "٩ نوفمبر ٢٠٢٦", "id": "879476311"}, {"title": "العناية بالخطوط في حر الصيف", "url": "https://operacar.store/العناية-بالخطوط-في-حر-الصيف/page-103865680", "img": "art_summer.webp", "tag": "نصائح", "date": "٩ نوفمبر ٢٠٢٦", "id": "103865680"}];
-  function articlesSection() {
-    if (!ARTICLES.length) return null;
-    return h('<section class="oc-sec oc-arts" id="oc-articles"><div class="oc-container">' + sHead('أحدث المقالات', { center: true }) +
-      '<div class="oc-arts__row">' + ARTICLES.map(function (a) {
+  function articlesSection(title, skip) {
+    var list = ARTICLES.filter(function (a) { return a.id !== skip; });
+    if (!list.length) return null;
+    return h('<section class="oc-sec oc-arts"' + (skip ? '' : ' id="oc-articles"') + '><div class="oc-container">' + sHead(title || 'أحدث المقالات', { center: !title }) +
+      '<div class="oc-arts__row">' + list.map(function (a) {
         return '<article class="oc-art"><a class="oc-art__img" href="' + a.url + '"><img loading="lazy" src="' + IMG + a.img + '" alt=""></a>' +
           '<span class="oc-pill oc-pill--g">' + a.tag + '</span><a class="oc-art__t" href="' + a.url + '">' + a.title + '</a>' +
           '<small class="oc-art__meta">بواسطة <u>أوبرا كار</u><i></i>' + a.date + '</small>' +
@@ -786,7 +788,8 @@
     var main = $('#main-content'); if (!main) return;
     var cr = crumbs(), title = '';
     var h1 = $('#page-main-title');
-    if (bodyIs('product-index') && h1) title = (h1.childNodes[0] && h1.childNodes[0].textContent || '').replace(/[-–]\s*$/, '').trim();
+    if (bodyIs('product-index-search')) title = 'البحث';
+    else if (bodyIs('product-index') && h1) title = (h1.childNodes[0] && h1.childNodes[0].textContent || '').replace(/[-–]\s*$/, '').trim();
     else if (bodyIs('product-single')) title = cr.length > 1 ? cr[cr.length - 2][0] : 'المنتجات';
     else if (/\/cart(\/|$)/.test(location.pathname)) title = 'سلة المشتريات';
     else title = cr.length ? cr[cr.length - 1][0] : (document.title.split('|')[0] || '').trim();
@@ -820,13 +823,20 @@
   /* category page: parts strip, sidebar, grid switcher */
   var VIEW_KEY = 'oc-view';
   function categoryPage() {
-    if (!bodyIs('product-index') || $('.oc-cat-aside')) return;
+    var isSearch = bodyIs('product-index-search');
+    if (!(bodyIs('product-index') || isSearch) || $('.oc-cat-aside')) return;
     var main = $('#main-content'); var wrap = $('.main-content', main); if (!wrap) return;
     var row = wrap.parentNode;
-    // parts strip under the banner
-    var strip = kindsSection(); strip.classList.add('oc-catstrip');
     var banner = $('.oc-pbanner', main);
-    main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
+    if (isSearch) {
+      // search results heading centered above the results like the reference
+      var q = ''; try { q = new URLSearchParams(location.search).get('q') || ''; } catch (e) {}
+      row.parentNode.insertBefore(h('<h2 class="oc-sres">نتائج البحث عن <em>' + esc(q) + '</em></h2>'), row);
+    } else {
+      // parts strip under the banner
+      var strip = kindsSection(); strip.classList.add('oc-catstrip');
+      main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
+    }
     // sidebar
     var here = decodeURIComponent(location.pathname);
     var link = function (n) { var on = here === decodeURIComponent(n.u) ? ' is-on' : ''; return '<a class="oc-acat' + on + '" href="' + n.u + '"><span>' + esc(n.n) + '</span><em>(' + num(n.c) + ')</em></a>'; };
@@ -1091,8 +1101,48 @@
     }).join('') + '<div class="oc-faq__more"><b>ما لقيت إجابتك</b><a class="oc-btn oc-btn--primary" href="' + CONTACT_URL + '">تواصل معنا</a></div></div></section>');
     host.appendChild(s);
   }
+  /* article pages in the reference layout: picture, meta, title, content, tags, share, previous and next, sidebar and related articles */
+  var ART_TAGS = { '144732245': ['خطوط', 'تويوتا', 'دليل'], '1519296342': ['قطع غيار', 'أصلي', 'بديل'], '879476311': ['خطوط', 'تركيب', 'دليل'], '103865680': ['خطوط', 'عناية', 'نصائح'] };
+  function articlePage(a) {
+    var c = $('#main-content .content--single-page'); if (!c || $('.oc-post__head')) return;
+    document.body.classList.add('oc-postpage', 'oc-textpage');
+    var row = c.parentNode, entry = $('.content-entry', c), h1 = $('h1', c);
+    var img = entry && $('img', entry);
+    var head = h('<div class="oc-post__head"><div class="oc-post__meta"><span class="oc-pill oc-pill--g">' + esc(a.tag) + '</span><small>بواسطة <u>أوبرا كار</u><i></i>' + esc(a.date) + '</small></div></div>');
+    if (img) { var box = img.parentNode !== entry ? img.parentNode : img; box.classList.add('oc-post__img'); head.insertBefore(box, head.firstChild); }
+    if (h1) head.appendChild(h1);
+    c.insertBefore(head, c.firstChild);
+    var i = ARTICLES.indexOf(a), prev = ARTICLES[i - 1], next = ARTICLES[i + 1];
+    var u = encodeURIComponent(location.origin + location.pathname), t = encodeURIComponent(a.title);
+    var tags = ART_TAGS[a.id] || [a.tag];
+    var tagLink = function (x) { return '<a href="/search?q=' + encodeURIComponent(x) + '">#' + esc(x) + '</a>'; };
+    var foot = h('<div class="oc-post__foot"><div class="oc-post__tags"><b>الوسوم</b>' + tags.map(tagLink).join('') + '</div>' +
+      '<div class="oc-post__share"><b>شارك المقال</b><a href="https://wa.me/?text=' + t + '%20' + u + '" target="_blank" rel="noopener" aria-label="شارك على واتساب">' + bic('whatsapp') + '</a>' +
+      '<a href="https://x.com/intent/post?url=' + u + '&text=' + t + '" target="_blank" rel="noopener" aria-label="شارك على إكس">' + bic('x') + '</a>' +
+      '<button type="button" data-copy aria-label="انسخ رابط المقال">' + ic('link') + '</button><span class="oc-post__copied" hidden>تم نسخ الرابط</span></div>' +
+      '<nav class="oc-post__nav" aria-label="المقالات">' + (prev ? '<a href="' + prev.url + '">' + ic('right') + 'المقال السابق</a>' : '<span></span>') + (next ? '<a href="' + next.url + '">المقال التالي' + ic('left') + '</a>' : '') + '</nav></div>');
+    if (entry) entry.parentNode.insertBefore(foot, entry.nextSibling); else c.appendChild(foot);
+    $('[data-copy]', foot).addEventListener('click', function () {
+      var done = function () { var m = $('.oc-post__copied', foot); m.hidden = false; setTimeout(function () { m.hidden = true; }, 2000); };
+      try { navigator.clipboard.writeText(location.origin + location.pathname).then(done); } catch (e) {}
+    });
+    var groups = {}; ARTICLES.forEach(function (x) { groups[x.tag] = (groups[x.tag] || 0) + 1; });
+    var allTags = []; ARTICLES.forEach(function (x) { (ART_TAGS[x.id] || [x.tag]).forEach(function (g) { if (allTags.indexOf(g) < 0) allTags.push(g); }); });
+    var aside = h('<aside class="oc-post__aside"><div class="oc-abox oc-abox--one">' +
+      '<form class="oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-psq">ابحث في المتجر</label><input id="oc-psq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
+      '<div class="oc-aside__part"><h3>التصنيفات</h3><ul class="oc-post__cats">' + Object.keys(groups).map(function (g) { return '<li><a href="/#oc-articles">' + esc(g) + '</a><span>(' + (groups[g] < 10 ? '٠' : '') + num(groups[g]) + ')</span></li>'; }).join('') + '</ul></div>' +
+      '<div class="oc-aside__part"><h3>أحدث المقالات</h3>' + ARTICLES.slice(0, 3).map(function (x) { return '<a class="oc-post__recent" href="' + x.url + '"><img loading="lazy" src="' + IMG + x.img + '" alt=""><span><b>' + esc(x.title) + '</b><small>' + esc(x.date) + '</small></span></a>'; }).join('') + '</div>' +
+      '<div class="oc-aside__part"><h3>الوسوم</h3><div class="oc-chips">' + allTags.map(function (g) { return '<a class="oc-chip" href="/search?q=' + encodeURIComponent(g) + '">' + esc(g) + '</a>'; }).join('') + '</div></div>' +
+      '</div></aside>');
+    row.appendChild(aside); row.classList.add('oc-post');
+    var rel = articlesSection('مقالات ذات صلة', a.id);
+    var cont = row.closest('.container') || row;
+    if (rel) cont.parentNode.insertBefore(rel, cont.nextSibling);
+  }
   function customPages() {
     var id = pageId(); if (!id || $('.oc-pagebody')) return;
+    var art = ARTICLES.filter(function (x) { return x.id === id; })[0];
+    if (art) { articlePage(art); return; }
     var map = { '80660524': storePage, '1058176407': aboutPage, '1028738080': contactPage, '1493469730': faqPage };
     if (!map[id]) { document.body.classList.add('oc-textpage'); return; }
     var host = pageShell(); if (!host) return;
@@ -1160,6 +1210,29 @@
     try { salla.event.on('cart::updated', function (d) { var c = d && (d.cart || d.data || d); update(+(c && (c.sub_total || c.total)) || 0); }); } catch (e) {}
   }
 
+  /* cart page in the reference layout: items table card, shipping progress inside the summary, empty state */
+  function cartPage() {
+    if (!/\/cart(\/|$)/.test(location.pathname)) return;
+    var main = $('#main-content'); if (!main) return;
+    var state = function () {
+      var full = !!$('.cart-item', main);
+      document.body.classList.toggle('oc-cart-full', full);
+      document.body.classList.toggle('oc-cart-empty', !full);
+      var mc = $('.main-content', main);
+      if (full && mc && !$('.oc-cart__head', mc)) {
+        var first = $('form', mc) || $('.cart-item', mc);
+        first.parentNode.insertBefore(h('<div class="oc-cart__head" aria-hidden="true"><span>المنتج</span><span>الكمية</span><span>المجموع</span><span>حذف</span></div>'), first);
+        mc.appendChild(h('<div class="oc-cart__foot"><a class="oc-cart__cont" href="/">تابع التسوق</a></div>'));
+      }
+      var ship = $('.oc-ship'), sum = $('salla-cart-summary-card', main);
+      if (ship && sum && ship.nextElementSibling !== sum) { sum.parentNode.insertBefore(ship, sum); ship.classList.add('oc-ship--side'); }
+      var ph = $('.no-content-placeholder', main);
+      if (ph && !ph.dataset.oc) { var a = $('a.btn', ph); if (a) { ph.dataset.oc = '1'; a.textContent = 'تابع التسوق'; a.setAttribute('href', '/'); } }
+    };
+    state(); setTimeout(state, 1200); setTimeout(state, 3000);
+    try { salla.event.on('cart::updated', function () { setTimeout(state, 300); }); salla.event.on('cart::item.deleted', function () { setTimeout(state, 300); }); } catch (e) {}
+  }
+
   function init() {
     buildHeader();
     buildBottomBar();
@@ -1167,6 +1240,7 @@
     featuresBar();
     footerExtras();
     cartBar();
+    cartPage();
     pageBanner();
     categoryPage();
     tagPhotoCards();
