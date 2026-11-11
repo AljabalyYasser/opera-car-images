@@ -446,7 +446,7 @@
 
   /* ---------- product rows with category tabs and a shop all link ---------- */
   function sel(ids) { return 'products?source=selected&' + ids.map(function (id) { return 'source_value[]=' + id; }).join('&'); }
-  function inCat(name, n) { return 'products?source=categories&source_value[]=' + catId(C[name]) + '&per_page=' + (n || 12); }
+  function inCat(name, n) { return 'products?source=categories&source_value[]=' + catId(C[name]) + '&per_page=' + (n || 30); }
   function tabRow(o) {
     var tabs = '<div class="oc-tabs" role="tablist">' + o.tabs.map(function (t, i) { return '<button type="button" role="tab" aria-selected="' + (i ? 'false' : 'true') + '" class="' + (i ? '' : 'is-on') + '" data-i="' + i + '">' + t.n + '</button>'; }).join('') + '</div>';
     var s = h('<section class="oc-sec oc-prow' + (o.below ? ' oc-prow--below' : '') + '"' + (o.id ? ' id="' + o.id + '"' : '') + '><div class="oc-container">' +
@@ -461,6 +461,8 @@
       api(t.q).then(function (r) {
         var list = (r && r.data) || [];
         if (t.order) list.sort(function (a, b) { return t.order.indexOf(+a.id) - t.order.indexOf(+b.id); });
+        var ok = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
+        list = ok.concat(list.filter(function (p) { return ok.indexOf(p) < 0; }));
         cache[i] = list.length ? list.slice(0, 12).map(card).join('') : '<p class="oc-empty">ما فيه منتجات في هذا القسم حاليا</p>';
         track.innerHTML = cache[i]; track.scrollLeft = 0;
       }).catch(function () { if (!i) s.remove(); });
@@ -478,7 +480,7 @@
   }
   function latestSection() {
     return tabRow({ id: 'oc-new', below: true, title: 'وصل حديثا', all: C['الخطوط'], tabs: [
-      { n: 'كل المنتجات', q: 'products?source=latest&per_page=12' },
+      { n: 'كل المنتجات', q: 'products?source=latest&per_page=60' },
       { n: 'خطوط هايلوكس', q: inCat('خطوط هايلوكس') },
       { n: 'خطوط شاص', q: inCat('خطوط شاص') },
       { n: 'ستيكرات وشعارات', q: inCat('ستيكرات وشعارات') }] });
@@ -546,6 +548,7 @@
         return list.concat(((x && x.data) || []).filter(function (p) { return ids.indexOf(p.id) < 0; }));
       });
     }).then(function (list) {
+      list = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
       grid.innerHTML = list.slice(0, 9).map(miniCard).join('');
       tickAll();
     }).catch(function () { s.remove(); });
@@ -565,7 +568,7 @@
   }
 
   /* ---------- why choose us: two cards, a photo, two cards ---------- */
-  var WHY = [
+  var HOME_WHY = [
     ['medal', 'قطع أصلية وبديلة', 'نوفر القطع الأصلية والبديلة لأشهر موديلات تويوتا بجودة عالية وأسعار منافسة'],
     ['check', 'نتأكد من المطابقة', 'نراجع مطابقة كل قطعة لموديل سيارتك وسنة صنعها قبل الشحن'],
     ['stripe', 'خطوط بتصاميم خاصة', 'خطوط أصلية وتصاميم خاصة للاندكروزر والهايلوكس والشاص والربع حسب سنة الصنع'],
@@ -574,9 +577,9 @@
   function aboutSection() {
     var c = function (w) { return '<div class="oc-why__card"><span class="oc-why__ic">' + ic(w[0]) + '</span><h3>' + w[1] + '</h3><p>' + w[2] + '</p></div>'; };
     return h('<section class="oc-sec oc-why" id="oc-about"><div class="oc-container">' + sHead('لماذا أوبرا كار', { center: true }) +
-      '<div class="oc-why__grid"><div class="oc-why__col">' + c(WHY[0]) + c(WHY[1]) + '</div>' +
+      '<div class="oc-why__grid"><div class="oc-why__col">' + c(HOME_WHY[0]) + c(HOME_WHY[1]) + '</div>' +
       '<div class="oc-why__pic"><img loading="lazy" src="' + IMG + 'art_orig.webp" alt="قطع غيار تويوتا"></div>' +
-      '<div class="oc-why__col">' + c(WHY[2]) + c(WHY[3]) + '</div></div></div></section>');
+      '<div class="oc-why__col">' + c(HOME_WHY[2]) + c(HOME_WHY[3]) + '</div></div></div></section>');
   }
 
   /* ---------- flash banner with a countdown ---------- */

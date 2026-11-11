@@ -917,6 +917,7 @@ body, .app-inner, #main-content { background: var(--oc-page) !important; }
 /* header: search with categories, pick your car, boxed account and cart */
 #part-store-header .main-nav-container, #part-store-header .main-nav-container .inner { background: var(--oc-page) !important; border: 0 !important; }
 .oc-has-scat { position: relative; }
+#part-store-header .oc-scat { flex-direction: row !important; flex-wrap: nowrap !important; background: transparent !important; height: auto !important; width: auto !important; border-radius: 0 !important; margin: 0 !important; }
 .oc-scat { position: absolute; inset-block: 4px; inset-inline-start: 4px; z-index: 2; display: flex; align-items: center; gap: 8px; padding-inline: 12px 8px; border-inline-end: 1px solid var(--oc-line); color: var(--oc-ink); font-size: 14px; cursor: pointer; }
 .oc-scat .oc-ic { width: 18px; height: 18px; }
 .oc-scat select { appearance: auto; border: 0 !important; background: transparent !important; color: var(--oc-ink) !important; font-size: 14px; font-weight: 500; padding: 0 2px; max-width: 130px; cursor: pointer; box-shadow: none !important; }
@@ -933,7 +934,7 @@ body, .app-inner, #main-content { background: var(--oc-page) !important; }
 @media (min-width: 1024px) {
   .oc-findcar { display: inline-flex; }
   #part-store-header .header-btn, #part-store-header .s-cart-summary-wrapper { width: 42px; height: 42px; border: 1px solid var(--oc-line) !important; border-radius: 6px !important; background: var(--oc-page) !important; display: inline-flex !important; align-items: center; justify-content: center; }
-  #part-store-header .header-btn span:not(.s-cart-summary-count), #part-store-header .s-cart-summary-wrapper > span:not(.s-cart-summary-count), #part-store-header .s-cart-summary-total { display: none !important; }
+  #part-store-header .header-btn span:not(.s-cart-summary-count), #part-store-header .s-cart-summary-wrapper > span:not(.s-cart-summary-count), #part-store-header .s-cart-summary-total, #part-store-header .s-cart-summary-wrapper p, #part-store-header .header-btn p { display: none !important; }
 }
 
 /* nav: divider and coloured icon links */
@@ -1210,9 +1211,20 @@ html.oc-dark .oc-mini__img img { mix-blend-mode: normal; }
 @media (max-width: 1023px) { .oc-sub::after { display: none; } .oc-sub__cars { display: none; } .oc-sub__field { min-width: 0; flex: 1; } }
 
 /* footer on white like the reference */
-footer.store-footer, footer.store-footer .store-footer__inner { background: var(--oc-surface) !important; color: var(--oc-text) !important; }
-footer.store-footer h3 { color: var(--oc-ink) !important; }
-footer.store-footer a, footer.store-footer p, footer.store-footer .s-menu-footer-item { color: var(--oc-text) !important; }
-footer.store-footer a:hover, footer.store-footer .s-menu-footer-item:hover { color: var(--oc-red) !important; }
-footer.store-footer .oc-social a { background: var(--oc-box) !important; color: var(--oc-ink) !important; border-radius: 4px !important; }
-footer.store-footer .oc-social a:hover { background: var(--oc-red) !important; color: #fff !important; }
+html body footer.store-footer, html body footer.store-footer .store-footer__inner, html body footer.store-footer .part-copyright { background: var(--oc-surface) !important; }
+html body footer.store-footer { padding-top: 56px !important; }
+html body footer.store-footer :is(p, span, div, li, a, small) { color: var(--oc-muted) !important; }
+html body footer.store-footer h3, html body footer.store-footer h3 * { color: var(--oc-ink) !important; font-size: 19px; font-weight: 600; }
+html body footer.store-footer :is(a, .s-menu-footer-item):hover { color: var(--oc-red) !important; }
+html body footer.store-footer .oc-fcol .s-menu-footer-item, html body footer.store-footer salla-menu a { font-size: 15px; margin-bottom: 12px; }
+html body footer.store-footer .oc-fc span[dir] { color: var(--oc-red) !important; font-weight: 600; }
+html body footer.store-footer .oc-fc__ic { background: var(--oc-box) !important; color: var(--oc-ink) !important; border-radius: 6px; }
+html body footer.store-footer .oc-fc__ic svg { color: var(--oc-ink) !important; }
+html body footer.store-footer .oc-fc__ic--wa, html body footer.store-footer .oc-fc__ic--wa svg { background: #25D366 !important; color: #fff !important; }
+html body footer.store-footer .oc-social a { background: var(--oc-box) !important; border-radius: 4px !important; }
+html body footer.store-footer .oc-social a, html body footer.store-footer .oc-social a svg { color: var(--oc-ink) !important; }
+html body footer.store-footer .oc-social a:hover { background: var(--oc-red) !important; }
+html body footer.store-footer .oc-social a:hover svg { color: #fff !important; }
+html body footer.store-footer .part-copyright { border-top: 1px solid var(--oc-line) !important; }
+html body footer.store-footer .copyright-text a.oc-credit { color: var(--oc-ink) !important; font-weight: 700; }
+html.oc-dark .oc-flogo { background: linear-gradient(180deg, #F4F5F7, #D9DCE0); border-radius: 10px; padding: 3px 8px; }
