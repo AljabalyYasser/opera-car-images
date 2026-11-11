@@ -3,7 +3,7 @@
   if (window.__OC_LOADED) return;
   window.__OC_LOADED = true;
 
-  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@f069424/theme/img/';
+  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@93f3fdfc/theme/img/';
   var API = 'https://api.salla.dev/store/v1/';
   var SID = '1590934287';
   var FREE_SHIP = 600;
