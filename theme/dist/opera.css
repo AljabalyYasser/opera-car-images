@@ -1571,3 +1571,9 @@ body.product-single .part-sidebar salla-slider .s-slider-block__title-nav { disp
 html body.product-single .oc-buyrow salla-mini-checkout-widget { border: 0 !important; box-shadow: none !important; outline: 0 !important; }
 html body.product-single .oc-buyrow salla-mini-checkout-widget * { border: 0 !important; box-shadow: none !important; }
 html body.product-single .oc-buyrow salla-mini-checkout-widget { overflow: hidden !important; display: flex !important; align-items: center; justify-content: center; }
+/* gallery and details scroll with the page like the reference */
+html body.product-single .oc-pbox .part-sidebar, html body.product-single .oc-pbox .part-main-content { position: static !important; top: auto !important; max-height: none !important; overflow: visible !important; }
+html body.product-single .oc-pbox .part-sidebar .swiper.s-slider-container { aspect-ratio: 648 / 760; height: auto !important; border-radius: 12px; }
+html body.product-single .oc-pbox .part-sidebar .swiper-wrapper, html body.product-single .oc-pbox .part-sidebar .swiper-slide { height: 100% !important; }
+html body.product-single .oc-pbox .part-sidebar .swiper-slide { display: flex !important; align-items: center; justify-content: center; }
+html body.product-single .oc-pbox .part-sidebar .swiper-slide img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
