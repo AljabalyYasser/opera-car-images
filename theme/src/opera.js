@@ -480,7 +480,7 @@
   }
   function latestSection() {
     return tabRow({ id: 'oc-new', below: true, title: 'وصل حديثا', all: C['الخطوط'], tabs: [
-      { n: 'كل المنتجات', q: 'products?source=latest&per_page=60' },
+      { n: 'كل المنتجات', q: 'products?source=latest&per_page=50' },
       { n: 'خطوط هايلوكس', q: inCat('خطوط هايلوكس') },
       { n: 'خطوط شاص', q: inCat('خطوط شاص') },
       { n: 'ستيكرات وشعارات', q: inCat('ستيكرات وشعارات') }] });
