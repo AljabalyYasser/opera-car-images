@@ -923,10 +923,10 @@ body, .app-inner, #main-content { background: var(--oc-page) !important; }
 #part-store-header .oc-scat select { margin: 0 !important; padding-inline: 4px 0 !important; text-indent: 0 !important; width: auto !important; }
 .oc-scat select { appearance: auto; border: 0 !important; background: transparent !important; color: var(--oc-ink) !important; font-size: 14px; font-weight: 500; padding: 0 2px; max-width: 130px; cursor: pointer; box-shadow: none !important; }
 .oc-scat select option { color: #111; background: #fff; }
-#part-store-header .oc-has-scat input { padding-inline-start: 190px !important; background: var(--oc-page) !important; border-color: transparent !important; border-radius: 6px !important; }
+#part-store-header .part-header-search.oc-has-scat input.s-search-input { padding-inline-start: 190px !important; background: var(--oc-page) !important; border-color: transparent !important; border-radius: 6px !important; }
 #part-store-header .part-header-search .s-search-icon-wrap { background: var(--oc-surface) !important; border-radius: 6px; }
 #part-store-header .part-header-search .s-search-icon-wrap * { color: var(--oc-ink) !important; }
-@media (max-width: 1023px) { .oc-scat { display: none; } #part-store-header .oc-has-scat input { padding-inline-start: 18px !important; } }
+@media (max-width: 1023px) { .oc-scat { display: none; } #part-store-header .part-header-search.oc-has-scat input.s-search-input { padding-inline-start: 18px !important; } }
 .oc-findcar { display: none; align-items: center; gap: 10px; margin-inline-end: 18px; color: var(--oc-ink); }
 .oc-findcar > .oc-ic { width: 30px; height: 30px; }
 .oc-findcar b { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; }
