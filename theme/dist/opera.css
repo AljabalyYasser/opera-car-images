@@ -1395,7 +1395,7 @@ a.oc-cline:hover { color: var(--oc-red); }
 .oc-cform input, .oc-cform textarea { flex: 1; min-width: 0; border: 0 !important; outline: 0; background: transparent !important; color: var(--oc-ink) !important; font: inherit; font-size: 14px; box-shadow: none !important; padding: 0 !important; }
 .oc-cform textarea { width: 100%; padding: 14px !important; border-radius: 6px; background: var(--oc-surface) !important; resize: vertical; }
 .oc-cform__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.oc-cform__btn { height: 46px; padding: 0 26px; border-radius: 4px; background: var(--oc-black); color: #fff; font-weight: 600; cursor: pointer; transition: background-color .25s; }
+.oc-cform__btn { align-self: flex-start; width: auto; height: 46px; padding: 0 26px; border-radius: 4px; background: var(--oc-black); color: #fff; font-weight: 600; cursor: pointer; transition: background-color .25s; }
 .oc-cform__btn:hover { background: var(--oc-red); }
 @media (max-width: 899px) { .oc-contact__grid, .oc-cform__row { grid-template-columns: 1fr; } .oc-contactp .oc-map { height: 300px; } }
 body.product-single .oc-has-thumbs salla-slider .s-slider-thumbs { display: none !important; }
