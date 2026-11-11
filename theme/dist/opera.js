@@ -32,7 +32,7 @@
 
   /* ---------- helpers ---------- */
   function api(path) {
-    return fetch(API + path, { headers: { 'Store-Identifier': SID, 'Accept-Language': 'ar' } })
+    return fetch(/^https?:/.test(path) ? path : API + path, { headers: { 'Store-Identifier': SID, 'Accept-Language': 'ar' } })
       .then(function (r) { return r.json(); });
   }
   function h(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
@@ -458,7 +458,17 @@
       if (cache[i]) { track.innerHTML = cache[i]; track.scrollLeft = 0; return; }
       track.innerHTML = skeleton(6);
       var t = o.tabs[i];
-      api(t.q).then(function (r) {
+      // keep loading pages until there are enough products in stock
+      var got = [];
+      var more = function (q, n) {
+        return api(q).then(function (r) {
+          got = got.concat((r && r.data) || []);
+          var avail = got.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); }).length;
+          var nx = r && r.cursor && r.cursor.next;
+          return avail < 12 && nx && n < 4 ? more(nx, n + 1) : { data: got };
+        });
+      };
+      more(t.q, 1).then(function (r) {
         var list = (r && r.data) || [];
         if (t.order) list.sort(function (a, b) { return t.order.indexOf(+a.id) - t.order.indexOf(+b.id); });
         var ok = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
