@@ -383,6 +383,7 @@
     for (var i = 0; i < 5; i++) s += '<span class="' + (i < n ? 'on' : '') + '">' + STAR + '</span>';
     return '<div class="oc-rate"><span class="oc-stars">' + s + '</span><small>(' + num(r.count || r.total) + ' تقييم)</small></div>';
   }
+  function uniq(list) { var seen = {}; return list.filter(function (p) { var k = String(p.name || '').replace(/\s+/g, ' ').trim(); if (seen[k]) return false; seen[k] = 1; return true; }); }
   function offBadge(pr) { return pr.off ? '<span class="oc-badge">خصم ' + num(pr.off) + '٪</span>' : ''; }
 
   /* product card like the reference: grey image box, category, name, price, full black cart button */
@@ -472,7 +473,7 @@
         var list = (r && r.data) || [];
         if (t.order) list.sort(function (a, b) { return t.order.indexOf(+a.id) - t.order.indexOf(+b.id); });
         var ok = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
-        list = ok.concat(list.filter(function (p) { return ok.indexOf(p) < 0; }));
+        list = uniq(ok.concat(list.filter(function (p) { return ok.indexOf(p) < 0; })));
         cache[i] = list.length ? list.slice(0, 12).map(card).join('') : '<p class="oc-empty">ما فيه منتجات في هذا القسم حاليا</p>';
         track.innerHTML = cache[i]; track.scrollLeft = 0;
       }).catch(function () { if (!i) s.remove(); });
@@ -558,7 +559,7 @@
         return list.concat(((x && x.data) || []).filter(function (p) { return ids.indexOf(p.id) < 0; }));
       });
     }).then(function (list) {
-      list = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
+      list = uniq(list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); }));
       grid.innerHTML = list.slice(0, 9).map(miniCard).join('');
       tickAll();
     }).catch(function () { s.remove(); });
