@@ -1577,3 +1577,4 @@ html body.product-single .oc-pbox .part-sidebar .swiper.s-slider-container { asp
 html body.product-single .oc-pbox .part-sidebar .swiper-wrapper, html body.product-single .oc-pbox .part-sidebar .swiper-slide { height: 100% !important; }
 html body.product-single .oc-pbox .part-sidebar .swiper-slide { display: flex !important; align-items: center; justify-content: center; }
 html body.product-single .oc-pbox .part-sidebar .swiper-slide img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+html body.product-single .oc-pbox .part-main-content { padding-bottom: 0 !important; }
