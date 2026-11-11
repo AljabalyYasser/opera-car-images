@@ -1406,3 +1406,4 @@ a.oc-cline:hover { color: var(--oc-red); }
 .oc-cform__btn { height: 46px; padding: 0 26px; border-radius: 4px; background: var(--oc-black); color: #fff; font-weight: 600; cursor: pointer; transition: background-color .25s; }
 .oc-cform__btn:hover { background: var(--oc-red); }
 @media (max-width: 899px) { .oc-contact__grid, .oc-cform__row { grid-template-columns: 1fr; } .oc-contactp .oc-map { height: 300px; } }
+body.product-single .oc-has-thumbs salla-slider .s-slider-thumbs { display: none !important; }
