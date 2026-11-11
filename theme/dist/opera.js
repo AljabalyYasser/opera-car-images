@@ -232,6 +232,7 @@
   I.up = '<path d="m6 15 6-6 6 6"/>';
   I.x = '<path d="M6 6l12 12M18 6 6 18"/>';
   I.minus = '<path d="M6 12h12"/>';
+  I.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
   I.link = '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>';
   I.plus = '<path d="M12 6v12M6 12h12"/>';
   I.cal = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
@@ -918,23 +919,46 @@
       var s0 = sw(); if (s0 && s0.on) s0.on('slideChange', function () { mark(s0.activeIndex); });
     };
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
+    if (slider && !$('.oc-zoom', side)) {
+      var zb = h('<button type="button" class="oc-zoom" aria-label="تكبير الصورة">' + ic('expand') + '</button>');
+      slider.appendChild(zb);
+      zb.addEventListener('click', function () {
+        var el = $('.swiper', slider), s1 = el && el.swiper;
+        var slides = $$('.swiper-slide img', slider), cur = s1 ? slides[s1.activeIndex] : slides[0];
+        var src = cur ? (cur.currentSrc || cur.src || cur.dataset.src) : ''; if (!src) return;
+        var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صورة المنتج"><button type="button" aria-label="إغلاق">' + ic('x') + '</button><img src="' + esc(src) + '" alt=""></div>');
+        document.body.appendChild(v);
+        var close = function () { v.remove(); document.removeEventListener('keydown', onK); };
+        var onK = function (e) { if (e.key === 'Escape') close(); };
+        v.addEventListener('click', function (e) { if (e.target.tagName !== 'IMG') close(); });
+        document.addEventListener('keydown', onK);
+      });
+    }
     // quick facts under the title
     var h1 = $('h1', info);
     var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'نجهز طلبك خلال يوم إلى يومين</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
     if (h1) h1.parentNode.insertBefore(facts, h1.nextSibling);
     var kick = h('<span class="oc-pkick"></span>');
     if (h1) h1.parentNode.insertBefore(kick, h1);
-    var cr = crumbs(); if (cr.length > 1) kick.textContent = cr[cr.length - 2][0];
+    var fillKick = function () { if (kick.textContent) return; var cr = crumbs(); if (cr.length > 1) kick.textContent = cr[cr.length - 2][0]; };
+    fillKick(); setTimeout(fillKick, 1200); setTimeout(fillKick, 3000);
     api('products/' + pid + '/details').then(function (r) {
       var p = r && r.data; if (!p) return;
       if (p.category && p.category.name) kick.textContent = p.category.name;
-      var specs = [];
+      var specs = [['الحالة', 'جديد']];
       if (p.sku) specs.push(['رمز المنتج', p.sku]);
       specs.push(['النوع', isOriginal(p.name) ? 'أصلي' : 'بديل']);
       if (p.weight) specs.push(['الوزن', num(p.weight) + ' كجم']);
-      specs.push(['الحالة', 'جديد']);
       var sp = h('<ul class="oc-pspecs">' + specs.map(function (x) { return '<li><b>' + x[0] + '</b><span' + (x[0] === 'رمز المنتج' ? ' dir="ltr"' : '') + '>' + esc(x[1]) + '</span></li>'; }).join('') + '</ul>');
-      var shortD = $('.oc-pshort', info) || facts; shortD.parentNode.insertBefore(sp, shortD.nextSibling);
+      var shortD = $('.oc-pshort', info) || facts, after = shortD;
+      if (p.is_on_sale && !$('.oc-ptimer', info)) {
+        var end = p.discount_ends ? p.discount_ends * 1000 : nextFriday().getTime();
+        if (end > Date.now()) {
+          var tm = h('<div class="oc-ptimer"><b>عرض لفترة محدودة</b><span class="oc-ptimer__t" data-end="' + end + '"><b data-u="d">٠</b><i>:</i><b data-u="h">٠</b><i>:</i><b data-u="m">٠</b><i>:</i><b data-u="s">٠</b></span></div>');
+          shortD.parentNode.insertBefore(tm, shortD.nextSibling); after = tm; tickAll();
+        }
+      }
+      after.parentNode.insertBefore(sp, after.nextSibling);
       var st = $('.oc-pstock', facts); st.hidden = false;
       if (p.is_out_of_stock || p.is_available === false) { st.textContent = 'نفدت الكمية'; st.classList.add('is-out'); }
       if (p.is_on_sale && p.regular_price && p.sale_price) {
@@ -947,6 +971,19 @@
     if (bar && quick && !bar.contains(quick)) { bar.appendChild(quick); bar.classList.add('oc-buyrow'); }
     // trust lines, payment options and returns link
     var form = $('form.product-form', info);
+    var shareRow = $('salla-social-share', info); if (shareRow) { var sr = shareRow.parentNode; if (sr && sr !== info) sr.classList.add('oc-hidden'); }
+    if (form && !$('.oc-pwish', info)) {
+      var wish = h('<div class="oc-pwish"><button type="button">' + ic('heart') + '<span>أضف للمفضلة</span></button></div>');
+      form.parentNode.insertBefore(wish, form.nextSibling);
+      $('button', wish).addEventListener('click', function () {
+        var wb = $('.btn--wishlist button, button.btn--wishlist', info);
+        if (wb) wb.click(); else { try { salla.wishlist.toggle(pid); } catch (e) {} }
+      });
+      try {
+        salla.event.on('wishlist::added', function () { $('span', wish).textContent = 'في المفضلة'; wish.classList.add('is-on'); });
+        salla.event.on('wishlist::removed', function () { $('span', wish).textContent = 'أضف للمفضلة'; wish.classList.remove('is-on'); });
+      } catch (e) {}
+    }
     if (form && !$('.oc-ptrust', info)) {
       form.parentNode.insertBefore(h('<div class="oc-ppay"><b>طرق الدفع</b><div>' + PAY.map(function (x) { return '<img src="' + IMG + 'pay/' + x + '.svg" alt="' + x + '" loading="lazy">'; }).join('') + '</div></div>'), form.nextSibling);
       form.parentNode.insertBefore(h('<ul class="oc-ptrust">' +
@@ -954,12 +991,26 @@
         '<li>' + ic('check') + '<span>نتأكد من مطابقة القطعة لموديل سيارتك قبل الشحن</span></li>' +
         '<li>' + ic('ret') + '<span>استبدال واسترجاع حسب <a href="' + RETURNS_URL + '">سياسة المتجر</a></span></li>' +
         '<li>' + ic('card') + '<span>قسّطها مع تابي وتمارا</span></li></ul>'), $('.oc-ppay', info).nextSibling);
+      var u = encodeURIComponent(location.origin + location.pathname), t = encodeURIComponent(h1 ? h1.textContent.trim() : document.title);
+      var tagsRow = h('<div class="oc-ptags"><div class="oc-ptags__t"><b>الوسوم</b><span class="oc-ptags__list"></span></div>' +
+        '<div class="oc-ptags__s"><b>شارك</b><a href="https://wa.me/?text=' + t + '%20' + u + '" target="_blank" rel="noopener" aria-label="شارك على واتساب">' + bic('whatsapp') + '</a>' +
+        '<a href="https://x.com/intent/post?url=' + u + '&text=' + t + '" target="_blank" rel="noopener" aria-label="شارك على إكس">' + bic('x') + '</a>' +
+        '<button type="button" data-copy aria-label="انسخ رابط المنتج">' + ic('link') + '</button></div></div>');
+      $('.oc-ptrust', info).parentNode.insertBefore(tagsRow, $('.oc-ptrust', info).nextSibling);
+      $('[data-copy]', tagsRow).addEventListener('click', function (e) { try { navigator.clipboard.writeText(location.origin + location.pathname); e.currentTarget.classList.add('is-done'); } catch (x) {} });
+      var fillTags = function () {
+        var list = $('.oc-ptags__list', tagsRow); if (list.childNodes.length) return;
+        var cr = crumbs().slice(1, -1); if (!cr.length) return;
+        list.innerHTML = cr.map(function (c) { return '<a href="' + (c[1] || '#') + '">#' + esc(c[0]) + '</a>'; }).join('');
+      };
+      fillTags(); setTimeout(fillTags, 1200); setTimeout(fillTags, 3000);
     }
     // description and reviews tabs under the product
     var desc = $('.product__description', info), comments = $('salla-comments', $('#main-content'));
     if (desc && !$('.oc-ptabs')) {
       var full = desc.cloneNode(true);
       var tabs = h('<section class="oc-ptabs"><div class="oc-container"><div class="oc-ptabs__nav" role="tablist"><button type="button" role="tab" class="is-on" data-t="d">الوصف</button><button type="button" role="tab" data-t="r">التقييمات</button></div><div class="oc-ptabs__body"><div data-p="d"></div><div data-p="r" hidden></div></div></div></section>');
+      $('[data-p=d]', tabs).appendChild(h('<h3 class="oc-ptabs__h">الوصف</h3>'));
       $('[data-p=d]', tabs).appendChild(full);
       if (comments) $('[data-p=r]', tabs).appendChild(comments); else $('[data-p=r]', tabs).innerHTML = '<p class="oc-empty">ما فيه تقييمات لهذا المنتج حاليا</p>';
       var after = box.closest('.s-blocks-wrapper, .container'); var anchor = after && after.parentNode === $('#main-content') ? after : box.parentNode;

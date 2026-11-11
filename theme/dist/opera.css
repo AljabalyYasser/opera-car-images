@@ -1499,3 +1499,72 @@ body.cart .no-content-placeholder a.btn:hover { background: var(--oc-black) !imp
 #main-content button.s-infinite-scroll-btn:hover { background: var(--oc-black) !important; color: #fff !important; }
 body.oc-cart-full .cart-item > div:first-of-type > * { margin: 0 !important; }
 body.oc-postpage .content-entry > div { margin: 0 !important; max-width: none !important; }
+
+/* ===== Product page matched to the reference product page ===== */
+body.product-single .oc-pkick { font-size: 14px; color: var(--oc-muted); line-height: 1.6; margin-bottom: 4px; }
+body.product-single .part-main-content h1 { font-size: 26px !important; font-weight: 600 !important; line-height: 1.6 !important; color: var(--oc-ink) !important; }
+body.product-single .part-main-content .part-price h4, body.product-single .part-main-content .part-price h2 { color: var(--oc-ink) !important; font-size: 26px !important; font-weight: 600 !important; line-height: 1.6 !important; }
+body.product-single .part-main-content .part-price .line-through { color: var(--oc-muted) !important; font-size: 14px !important; font-weight: 400 !important; }
+body.product-single .oc-pshort { padding: 0 !important; margin: 8px 0 0 !important; }
+body.product-single .oc-pshort p { font-size: 14px; line-height: 1.8; color: var(--oc-muted); }
+/* limited time offer */
+.oc-ptimer { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 20px 0 0; padding: 20px 24px; background: var(--oc-surface); border-radius: 8px; }
+.oc-ptimer > b { font-size: 16px; font-weight: 500; line-height: 1.7; color: var(--oc-ink); }
+.oc-ptimer__t { display: inline-flex; align-items: center; gap: 8px; direction: ltr; }
+.oc-ptimer__t b { min-width: 42px; height: 43px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; background: var(--oc-red); color: #FAFAFA; font-size: 16px; font-weight: 500; line-height: 1; }
+.oc-ptimer__t i { font-style: normal; color: var(--oc-ink); }
+/* condition and code lines */
+body.product-single .oc-pspecs { margin: 24px 0 0; gap: 14px; }
+body.product-single .oc-pspecs li { font-size: 16px; line-height: 1.6; color: var(--oc-ink); }
+body.product-single .oc-pspecs b { font-weight: 500; }
+/* quantity, add to cart and buy now in one row */
+body.product-single .part-main-content form.product-form { margin-top: 24px; }
+html body.product-single .oc-buyrow { display: flex !important; align-items: center; gap: 16px; background: transparent !important; padding: 20px 0 0 !important; border-top: 1px solid var(--oc-border-soft); box-shadow: none !important; border-radius: 0 !important; }
+html body.product-single .oc-buyrow .sticky-product-bar__quantity { margin: 0 !important; flex: none; width: auto !important; }
+html body.product-single .oc-buyrow .sticky-product-bar__quantity label { display: none !important; }
+html body.product-single .oc-buyrow salla-quantity-input .s-quantity-input-container { height: 45px !important; width: 120px !important; background: var(--oc-surface) !important; border: 0 !important; border-radius: 8px !important; }
+html body.product-single .oc-buyrow salla-quantity-input input, html body.product-single .oc-buyrow salla-quantity-input button { height: 45px !important; background: transparent !important; border: 0 !important; color: var(--oc-ink) !important; }
+html body.product-single .oc-buyrow salla-add-product-button { flex: 1; min-width: 0; margin: 0 !important; }
+html body.product-single .oc-buyrow .s-add-product-button-main { display: grid !important; grid-template-columns: 1fr 1fr; gap: 16px; }
+html body.product-single .oc-buyrow salla-add-product-button button.s-button-btn, html body.product-single .oc-buyrow salla-mini-checkout-widget { height: 45px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 500 !important; }
+html body.product-single .oc-buyrow salla-quick-order:empty { display: none !important; }
+/* wishlist line */
+.oc-pwish { display: flex; justify-content: center; margin: 16px 0 0; }
+.oc-pwish button { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; cursor: pointer; font-size: 14px; line-height: 1.7; color: var(--oc-ink); padding: 6px 10px; }
+.oc-pwish .oc-ic { width: 24px; height: 24px; }
+.oc-pwish button:hover, .oc-pwish.is-on button { color: var(--oc-red); }
+.oc-pwish.is-on .oc-ic { fill: currentColor; }
+/* payment options like the reference */
+body.product-single .oc-ppay { margin: 20px 0 0; padding: 20px 0 0; border-radius: 0; background: transparent; border-top: 1px solid var(--oc-border-soft); }
+body.product-single .oc-ppay b { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+body.product-single .oc-ppay img { height: 29px; padding: 3px 6px; background: var(--oc-surface); border: 1px solid var(--oc-border-soft); border-radius: 4px; }
+/* policy lines */
+body.product-single .oc-ptrust { border-top: 0; margin: 18px 0 0; padding: 0; gap: 8px; }
+body.product-single .oc-ptrust li { font-size: 16px; line-height: 1.7; color: var(--oc-muted); }
+body.product-single .oc-ptrust .oc-ic { color: var(--oc-ink); }
+/* tags and share row */
+.oc-ptags { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 22px; padding: 16px 0; border-top: 1px solid var(--oc-border-soft); border-bottom: 1px solid var(--oc-border-soft); }
+.oc-ptags__t, .oc-ptags__s { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.oc-ptags b { font-size: 18px; font-weight: 500; line-height: 1.6; color: var(--oc-ink); }
+.oc-ptags__list { display: inline-flex; gap: 10px; flex-wrap: wrap; }
+.oc-ptags__list a { font-size: 16px; line-height: 1.6; color: var(--oc-muted); }
+.oc-ptags__list a:hover { color: var(--oc-red); }
+.oc-ptags__s a, .oc-ptags__s button { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; background: var(--oc-surface); border: 0; border-radius: 4px; color: var(--oc-ink); cursor: pointer; transition: background-color .2s, color .2s; }
+.oc-ptags__s a:hover, .oc-ptags__s button:hover, .oc-ptags__s button.is-done { background: var(--oc-red); color: #fff; }
+.oc-ptags__s .oc-bic, .oc-ptags__s .oc-ic { width: 20px; height: 20px; }
+/* description heading inside the tab */
+.oc-ptabs__h { margin: 0 0 14px; font-family: var(--oc-font); font-size: 18px; font-weight: 600; line-height: 1.6; color: var(--oc-ink); }
+body.product-single .oc-ptabs__body { font-size: 16px; line-height: 1.8; }
+/* zoom over the main picture, no arrows like the reference */
+body.product-single .part-sidebar salla-slider .s-slider-block__title-nav { display: none !important; }
+.oc-zoom { position: absolute; top: 20px; left: 20px; z-index: 5; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--oc-ink); background: var(--oc-surface); color: var(--oc-ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color .2s, color .2s; }
+.oc-zoom:hover { background: var(--oc-ink); color: var(--oc-surface); }
+.oc-zoom .oc-ic { width: 20px; height: 20px; }
+.oc-viewer { position: fixed; inset: 0; z-index: 9999; background: rgba(10, 10, 12, .88); display: flex; align-items: center; justify-content: center; padding: 30px; cursor: zoom-out; }
+.oc-viewer img { max-width: 92vw; max-height: 90vh; object-fit: contain; border-radius: 8px; background: #fff; }
+.oc-viewer button { position: absolute; top: 20px; left: 20px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; color: #111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+@media (max-width: 640px) {
+  html body.product-single .oc-buyrow { flex-wrap: wrap; }
+  html body.product-single .oc-buyrow salla-add-product-button { flex-basis: 100%; }
+  .oc-ptimer { gap: 10px; padding: 16px; }
+}
