@@ -112,10 +112,10 @@
   function partsMega(node) {
     var kids = (node.s || []).map(function (k) { return [k.n, k.u]; });
     var kinds = KINDS.slice(0, kids.length).map(function (k) { return [k[0], '/search?q=' + encodeURIComponent(k[1])]; });
-    var lc = findNode(1838835433), hl = findNode(156083435);
+    var sh = findNode(1063290346), cm = findNode(579227632);
     return megaCol('حسب السيارة', node.u, kids) + megaCol('حسب القطعة', node.u, kinds) +
-      (lc ? megaCard('قطع لاندكروزر', lc.u, IMG + 'car_lc.webp') : '') +
-      (hl ? megaCard('قطع هايلوكس وفورشنر', hl.u, IMG + 'car_hilux.webp') : '');
+      (sh ? megaCard('قطع شاص وربع', sh.u, IMG + 'car_shas.webp') : '') +
+      (cm ? megaCard('قطع كامري', cm.u, IMG + 'car_camry.webp') : '');
   }
   function stripesMega(node) {
     var withYears = [], others = [];
@@ -124,9 +124,9 @@
       else others.push([k.n, k.u]);
     });
     others.push(['كل الخطوط', node.u]);
-    var shas = findNode(781708188);
+    var lc = findNode(358432919);
     return withYears.join('') + megaCol('المزيد', node.u, others) +
-      megaCard('خطوط شاص وربع', shas ? shas.u : node.u, IMG + 'car_shas.webp');
+      megaCard('خطوط لاندكروزر', lc ? lc.u : node.u, IMG + 'car_lc.webp');
   }
   function addMegaMenu() {
     var header = $('#part-store-header'); if (!header || !TREE || !TREE.length) return;
