@@ -1629,3 +1629,5 @@ body.product-single .part-sidebar .swiper-slide { cursor: crosshair; }
 .oc-viewer__thumbs button.is-on { border-color: #fff; opacity: 1; }
 .oc-viewer__thumbs img { width: 100%; height: 100%; object-fit: cover; }
 .oc-viewer.is-single .oc-viewer__nav, .oc-viewer.is-single .oc-viewer__thumbs { display: none; }
+.oc-pbar__old { margin-inline-start: 8px; font-size: 13px; color: var(--oc-muted); text-decoration: line-through; }
+.oc-pbar__old i { font-size: 11px; }
