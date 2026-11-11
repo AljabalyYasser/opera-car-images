@@ -1099,8 +1099,13 @@
         }
       }).catch(function () {});
       // keep a short line at the top
-      var first = $('p', desc); var txt = (first ? first.textContent : desc.textContent).trim();
-      desc.innerHTML = '<p>' + esc(txt.length > 160 ? txt.slice(0, 160) + '…' : txt) + '</p>';
+      // the summary under the price skips any line that only repeats the product name
+      var norm = function (x) { return (x || '').replace(/إلى/g, '-').replace(/[\s\-–]+/g, ''); };
+      var title = norm(h1 ? h1.textContent : '');
+      var parts = $$('p, li', desc).map(function (e) { return e.textContent.trim(); }).filter(function (x) { return x && norm(x) !== title; });
+      var txt = ''; for (var k = 0; k < parts.length && txt.length < 150; k++) txt += (txt ? ' ' : '') + parts[k];
+      if (!txt) txt = desc.textContent.trim();
+      desc.innerHTML = '<p>' + esc(txt.length > 220 ? txt.slice(0, 220) + '…' : txt) + '</p>';
       desc.classList.add('oc-pshort');
     }
     // sticky add to cart bar when the main button scrolls away
