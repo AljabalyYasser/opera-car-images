@@ -1018,6 +1018,6 @@
   ready(function () {
     init();
     // Salla web components hydrate late; retry header pieces once
-    setTimeout(addNavExtras, 1200); setTimeout(addNavExtras, 3500);
+    setTimeout(function () { addNavExtras(); addMegaMenu(); }, 1200); setTimeout(function () { addNavExtras(); addMegaMenu(); }, 3500);
   });
 })();
