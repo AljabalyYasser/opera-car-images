@@ -1109,7 +1109,7 @@
     var row = c.parentNode, entry = $('.content-entry', c), h1 = $('h1', c);
     var img = entry && $('img', entry);
     var head = h('<div class="oc-post__head"><div class="oc-post__meta"><span class="oc-pill oc-pill--g">' + esc(a.tag) + '</span><small>بواسطة <u>أوبرا كار</u><i></i>' + esc(a.date) + '</small></div></div>');
-    if (img) { var box = img.parentNode !== entry ? img.parentNode : img; box.classList.add('oc-post__img'); head.insertBefore(box, head.firstChild); }
+    if (img) { var box = img.parentNode !== entry && img.parentNode.children.length === 1 ? img.parentNode : img; box.classList.add('oc-post__img'); head.insertBefore(box, head.firstChild); }
     if (h1) head.appendChild(h1);
     c.insertBefore(head, c.firstChild);
     var i = ARTICLES.indexOf(a), prev = ARTICLES[i - 1], next = ARTICLES[i + 1];
