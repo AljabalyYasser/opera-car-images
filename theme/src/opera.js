@@ -782,7 +782,7 @@
 
   /* page banner like the reference: dark band with the page title and the trail */
   function pageBanner() {
-    if (bodyIs('index') || $('.oc-pbanner')) return;
+    if (bodyIs('index') || bodyIs('product-single') || $('.oc-pbanner')) return;
     var main = $('#main-content'); if (!main) return;
     var cr = crumbs(), title = '';
     var h1 = $('#page-main-title');
@@ -792,7 +792,7 @@
     else title = cr.length ? cr[cr.length - 1][0] : (document.title.split('|')[0] || '').trim();
     if (!title) title = (document.title.split('|')[0] || '').trim();
     var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
-    var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
+    var b = h('<section class="oc-pbanner"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
     document.body.classList.add('oc-has-banner');
     if (!trail) {
@@ -824,9 +824,7 @@
     var main = $('#main-content'); var wrap = $('.main-content', main); if (!wrap) return;
     var row = wrap.parentNode;
     // parts strip under the banner
-    var strip = h('<section class="oc-catstrip"><div class="oc-container"><div class="oc-kinds__row">' + KINDS.map(function (k) {
-      return '<a class="oc-kind" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-kind__img"><img loading="lazy" src="' + k[3] + '" alt=""></span><b>' + k[0] + '</b><small>' + num(k[2]) + ' منتج</small></a>';
-    }).join('') + '</div></div></section>');
+    var strip = kindsSection(); strip.classList.add('oc-catstrip');
     var banner = $('.oc-pbanner', main);
     main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
     // sidebar
@@ -837,12 +835,11 @@
     var cats = TREE.map(function (t, i) { var open = inTree(t) || (!anyOn && i === 0); return '<div class="oc-acat-group' + (open ? ' is-open' : '') + '">' + link(t) + '<div class="oc-acat-subs">' + t.s.map(link).join('') + '</div></div>'; }).join('');
     var models = MODELS.filter(function (m, i) { return MODELS.findIndex(function (x) { return x.parts === m.parts; }) === i; })
       .map(function (m) { return '<a class="oc-chip" href="' + m.parts + '">' + m.n + '</a>'; }).join('');
-    var aside = h('<aside class="oc-cat-aside">' +
-      '<form class="oc-abox oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-asq">ابحث في المتجر</label><input id="oc-asq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
-      '<div class="oc-abox"><h3>الأقسام</h3>' + cats + '</div>' +
-      '<div class="oc-abox"><h3>تسوق حسب الموديل</h3><div class="oc-chips">' + models + '</div></div>' +
-      '<a class="oc-apromo" href="/#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><b>عروض حصرية</b><small><em>وفر ١٥٪</em> على مختارات من القطع</small><span>تسوق الآن</span></a>' +
-      '</aside>');
+    var aside = h('<aside class="oc-cat-aside"><div class="oc-abox oc-abox--one">' +
+      '<form class="oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-asq">ابحث في المتجر</label><input id="oc-asq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
+      '<div class="oc-aside__part"><h3>الأقسام</h3>' + cats + '</div>' +
+      '<div class="oc-aside__part"><h3>تسوق حسب الموديل</h3><div class="oc-chips">' + models + '</div></div>' +
+      '</div></aside>');
     row.insertBefore(aside, row.firstChild);
     row.classList.add('oc-cat-row');
     // toolbar: count and view switcher
@@ -869,6 +866,19 @@
     apply(cur);
   }
 
+
+  /* Salla product cards: stripe and sticker pictures fill the image box like on the home page */
+  function tagPhotoCards() {
+    var mark = function () {
+      $$('.s-product-card-entry:not([data-oc])').forEach(function (c) {
+        c.dataset.oc = '1';
+        var t = $('.s-product-card-content-title', c);
+        if (t && /^(خط|ستيكر|شعار|ملصق)/.test(t.textContent.trim())) c.classList.add('oc-photo');
+      });
+    };
+    mark();
+    try { new MutationObserver(mark).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
 
   /* product page in the reference layout */
   var RETURNS_URL = '/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84-%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9/page-2003817800';
@@ -900,8 +910,19 @@
     var h1 = $('h1', info);
     var facts = h('<div class="oc-pinfo"><span class="oc-pfact oc-pfact--ship">' + ic('truck') + 'نجهز طلبك خلال يوم إلى يومين</span><span class="oc-pfact oc-pstock" hidden>متوفر</span><span class="oc-pdisc" hidden></span></div>');
     if (h1) h1.parentNode.insertBefore(facts, h1.nextSibling);
+    var kick = h('<span class="oc-pkick"></span>');
+    if (h1) h1.parentNode.insertBefore(kick, h1);
+    var cr = crumbs(); if (cr.length > 1) kick.textContent = cr[cr.length - 2][0];
     api('products/' + pid + '/details').then(function (r) {
       var p = r && r.data; if (!p) return;
+      if (p.category && p.category.name) kick.textContent = p.category.name;
+      var specs = [];
+      if (p.sku) specs.push(['رمز المنتج', p.sku]);
+      specs.push(['النوع', isOriginal(p.name) ? 'أصلي' : 'بديل']);
+      if (p.weight) specs.push(['الوزن', num(p.weight) + ' كجم']);
+      specs.push(['الحالة', 'جديد']);
+      var sp = h('<ul class="oc-pspecs">' + specs.map(function (x) { return '<li><b>' + x[0] + '</b><span' + (x[0] === 'رمز المنتج' ? ' dir="ltr"' : '') + '>' + esc(x[1]) + '</span></li>'; }).join('') + '</ul>');
+      var shortD = $('.oc-pshort', info) || facts; shortD.parentNode.insertBefore(sp, shortD.nextSibling);
       var st = $('.oc-pstock', facts); st.hidden = false;
       if (p.is_out_of_stock || p.is_available === false) { st.textContent = 'نفدت الكمية'; st.classList.add('is-out'); }
       if (p.is_on_sale && p.regular_price && p.sale_price) {
@@ -912,14 +933,15 @@
     // buy now next to add to cart
     var bar = $('.sticky-product-bar', box), quick = $('salla-quick-order', box);
     if (bar && quick && !bar.contains(quick)) { bar.appendChild(quick); bar.classList.add('oc-buyrow'); }
-    // trust lines and returns link
+    // trust lines, payment options and returns link
     var form = $('form.product-form', info);
     if (form && !$('.oc-ptrust', info)) {
+      form.parentNode.insertBefore(h('<div class="oc-ppay"><b>طرق الدفع</b><div>' + PAY.map(function (x) { return '<img src="' + IMG + 'pay/' + x + '.svg" alt="' + x + '" loading="lazy">'; }).join('') + '</div></div>'), form.nextSibling);
       form.parentNode.insertBefore(h('<ul class="oc-ptrust">' +
         '<li>' + ic('truck') + '<span>توصيل سريع داخل جدة وشحن لكل مناطق المملكة</span></li>' +
         '<li>' + ic('check') + '<span>نتأكد من مطابقة القطعة لموديل سيارتك قبل الشحن</span></li>' +
         '<li>' + ic('ret') + '<span>استبدال واسترجاع حسب <a href="' + RETURNS_URL + '">سياسة المتجر</a></span></li>' +
-        '<li>' + ic('card') + '<span>قسّطها مع تابي وتمارا</span></li></ul>'), form.nextSibling);
+        '<li>' + ic('card') + '<span>قسّطها مع تابي وتمارا</span></li></ul>'), $('.oc-ppay', info).nextSibling);
     }
     // description and reviews tabs under the product
     var desc = $('.product__description', info), comments = $('salla-comments', $('#main-content'));
@@ -944,14 +966,32 @@
     var addBtn = $('salla-add-product-button', box);
     if (addBtn && !$('.oc-pbar')) {
       var im0 = $('.swiper-slide img', box), price = $$('.part-price h2, .part-price h4', info).filter(function (x) { return x.offsetParent; })[0];
-      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.innerHTML : '') + '</span></div></div><button type="button" class="oc-btn oc-btn--primary">' + ic('bag') + 'أضف للسلة</button></div></div>');
+      var pbar = h('<div class="oc-pbar" aria-hidden="true"><div class="oc-container oc-pbar__in"><div class="oc-pbar__p"><img src="' + esc(im0 ? (im0.currentSrc || im0.src) : '') + '" alt=""><div><b>' + esc(h1 ? h1.textContent.trim() : '') + '</b><span class="oc-pbar__price">' + (price ? price.innerHTML : '') + '</span></div></div><div class="oc-pbar__act"><div class="oc-qty oc-pbar__qty"><button type="button" data-q="-1" aria-label="نقص">' + ic('minus') + '</button><input type="text" inputmode="numeric" value="1" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">' + ic('plus') + '</button></div><button type="button" class="oc-btn oc-btn--primary oc-pbar__add">' + ic('bag') + 'أضف للسلة</button></div></div></div>');
       document.body.appendChild(pbar);
-      $('button', pbar).addEventListener('click', function () { var b = $('button', addBtn); if (b) b.click(); });
+      $('.oc-pbar__add', pbar).addEventListener('click', function () {
+        var n = Math.max(1, parseInt($('input', pbar).value, 10) || 1);
+        var q = $('salla-quantity-input input, input[name=quantity]', box);
+        if (q) { q.value = n; q.dispatchEvent(new Event('input', { bubbles: true })); q.dispatchEvent(new Event('change', { bubbles: true })); }
+        var b = $('button', addBtn); if (b) b.click();
+      });
       var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
       window.addEventListener('scroll', onS, { passive: true });
     }
   }
 
+
+  function hideEmptySliders() {
+    var check = function () {
+      $$('salla-products-slider').forEach(function (sl) {
+        var has = $$('.s-product-card-entry, custom-salla-product-card', sl).length;
+        var sec = sl.closest('section') || sl;
+        if (!has && sl.dataset.ocSeen) sec.classList.add('oc-hidden');
+        if (has) sec.classList.remove('oc-hidden');
+        sl.dataset.ocSeen = '1';
+      });
+    };
+    setTimeout(check, 2500); setTimeout(check, 6000);
+  }
 
   /* ================= store, about, contact and faq pages ================= */
   function pageId() { var m = /\/page-(\d+)/.exec(location.pathname); return m ? m[1] : null; }
@@ -980,29 +1020,42 @@
     });
   }
   var WHY = [['check', 'نتأكد من المطابقة', 'نراجع موديل سيارتك وسنة الصنع قبل ما نشحن أي قطعة'], ['gear', 'أصلي وبديل', 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة'], ['truck', 'من جدة لكل المملكة', 'توصيل سريع داخل جدة وشحن لكل مناطق المملكة'], ['headset', 'معك قبل وبعد الطلب', 'نرد على استفساراتك ونساعدك تختار القطعة الصح']];
+  function storySection() {
+    return h('<section class="oc-sec oc-story"><div class="oc-container oc-story__in">' +
+      '<div class="oc-story__pic"><img loading="lazy" src="' + IMG + 'why.webp" alt="فريق أوبرا كار في المستودع"></div>' +
+      '<div class="oc-story__txt">' + HICON + '<small>قصتنا</small><h2>وجهتك الموثوقة لقطع وخطوط سيارات تويوتا</h2>' +
+      '<p>أوبرا كار متجر سعودي من جدة متخصص في قطع غيار واكسسوارات وخطوط سيارات تويوتا نوفر القطع الأصلية والبديلة لأشهر الموديلات مثل لاندكروزر وبرادو وهايلوكس وشاص وربع وكامري وكورولا</p>' +
+      '<p>نراجع موديل سيارتك وسنة صنعها قبل شحن أي قطعة ونشحن لكل مناطق المملكة مع توصيل سريع داخل جدة</p>' +
+      '<div class="oc-story__mv"><div><h3>رسالتنا</h3><p>نوصل لك القطعة الصحيحة لسيارتك بسرعة وبسعر منافس مع خدمة ترد عليك قبل الطلب وبعده</p></div>' +
+      '<div><h3>رؤيتنا</h3><p>نكون المتجر الأول لعشاق تويوتا في المملكة لكل ما تحتاجه سياراتهم من قطع وخطوط واكسسوارات</p></div></div>' +
+      '</div></div></section>');
+  }
   function aboutPage(host) {
+    host.appendChild(storySection());
     host.appendChild(aboutSection());
-    host.appendChild(h('<section class="oc-sec oc-why"><div class="oc-container">' + head('ليش أوبرا كار') + '<div class="oc-why__row">' +
-      WHY.map(function (w) { return '<div class="oc-whycard"><span class="oc-whycard__ic">' + ic(w[0]) + '</span><b>' + w[1] + '</b><p>' + w[2] + '</p></div>'; }).join('') + '</div></div></section>'));
     host.appendChild(reviewsSection());
+    host.appendChild(logosSection());
     host.appendChild(modelsSection());
   }
   var HOURS = [['كل أيام الأسبوع', 'مفتوح دائما'], ['الطلبات', 'تستقبل على مدار الساعة'], ['الرد على الاستفسارات', 'طوال أيام الأسبوع']];
   function contactPage(host) {
-    var s = h('<section class="oc-sec oc-contactp"><div class="oc-container"><div class="oc-contact__grid">' +
-      '<div class="oc-cbox"><h2>أوقات العمل</h2><p class="oc-cbox__sub">نخدمك طوال أيام الأسبوع</p><div class="oc-hours">' + HOURS.map(function (x) { return '<div><b>' + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join('') + '</div>' +
-      '<h2>تواصل معنا</h2><p class="oc-cbox__sub">اختر الطريقة اللي تناسبك</p>' +
-      '<a class="oc-ccard" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><div><b>رقم الاتصال</b><small dir="ltr">' + CONTACT.phone + '</small></div></a>' +
-      '<a class="oc-ccard" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener"><span class="is-wa">' + bic('whatsapp') + '</span><div><b>واتساب</b><small>راسلنا بموديل سيارتك ونساعدك</small></div></a>' +
-      '<div class="oc-ccard"><span>' + ic('pin') + '</span><div><b>موقع المتجر</b><small>جدة المملكة العربية السعودية</small></div></div>' +
+    var s = h('<section class="oc-contactp">' +
+      '<div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&output=embed"></iframe></div>' +
+      '<div class="oc-sec"><div class="oc-container oc-contact__grid">' +
+      '<div class="oc-contact__info">' + sHead('تواصل معنا') +
+      '<a class="oc-cline oc-cline--big" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><b dir="ltr">' + CONTACT.phone + '</b></a>' +
+      '<a class="oc-cline" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener"><span>' + bic('whatsapp') + '</span>واتساب راسلنا بموديل سيارتك ونساعدك</a>' +
+      '<div class="oc-cline"><span>' + ic('pin') + '</span>جدة المملكة العربية السعودية</div>' +
+      '<div class="oc-cline"><span>' + ic('clock') + '</span>نستقبل الطلبات على مدار الساعة طوال أيام الأسبوع</div>' +
+      '<h3 class="oc-follow">تابعنا</h3><div class="oc-social oc-social--line">' + SOCIAL.map(function (x) { return '<a href="' + x[2] + '" aria-label="' + x[1] + '" rel="noopener">' + bic(x[0]) + '</a>'; }).join('') + '</div>' +
       '</div>' +
-      '<form class="oc-cbox oc-cform"><h2>أرسل لنا رسالة</h2><p class="oc-cbox__sub">تصلنا رسالتك على واتساب ونرد عليك بسرعة</p>' +
-      '<label><span class="oc-sr">اسمك</span><input name="n" required placeholder="اسمك"></label>' +
-      '<label><span class="oc-sr">رقم جوالك</span><input name="p" inputmode="tel" placeholder="رقم جوالك"></label>' +
-      '<label><span class="oc-sr">موديل سيارتك</span><input name="c" placeholder="موديل سيارتك وسنة الصنع"></label>' +
-      '<label><span class="oc-sr">رسالتك</span><textarea name="m" rows="6" required placeholder="اكتب رسالتك"></textarea></label>' +
-      '<button type="submit" class="oc-btn oc-btn--primary">أرسل الرسالة</button></form>' +
-      '</div><div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&output=embed"></iframe></div></div></section>');
+      '<form class="oc-cform">' + sHead('أرسل لنا رسالة') +
+      '<div class="oc-cform__row"><label><span>اسمك</span><i>' + ic('user') + '<input name="n" required placeholder="اكتب اسمك"></i></label>' +
+      '<label><span>رقم جوالك</span><i>' + ic('phone') + '<input name="p" inputmode="tel" placeholder="05xxxxxxxx"></i></label></div>' +
+      '<label><span>موديل سيارتك</span><i>' + ic('car') + '<input name="c" placeholder="الموديل وسنة الصنع"></i></label>' +
+      '<label><span>رسالتك</span><textarea name="m" rows="6" required placeholder="اكتب رسالتك"></textarea></label>' +
+      '<button type="submit" class="oc-cform__btn">أرسل الرسالة</button></form>' +
+      '</div></div></section>');
     $('form', s).addEventListener('submit', function (e) {
       e.preventDefault(); var f = e.target;
       var t = 'الاسم ' + f.n.value + '\nالجوال ' + f.p.value + '\nالسيارة ' + f.c.value + '\n' + f.m.value;
@@ -1114,7 +1167,9 @@
     cartBar();
     pageBanner();
     categoryPage();
+    tagPhotoCards();
     productPage();
+    if (bodyIs('product-single')) hideEmptySliders();
     customPages();
     toTop();
     cartDrawer();
