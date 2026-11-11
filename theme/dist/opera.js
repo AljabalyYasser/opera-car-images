@@ -952,12 +952,12 @@
       });
       // magnifying lens over the main picture on hover
       if (window.matchMedia && matchMedia('(hover: hover)').matches) {
-        var lens = h('<span class="oc-lens" aria-hidden="true"></span>'); slider.appendChild(lens);
+        var lens = h('<span class="oc-lens" aria-hidden="true"></span>'); side.appendChild(lens);
         var cur = null;
         slider.addEventListener('mousemove', function (e) {
           var im = e.target.closest && e.target.closest('.swiper-slide') ? $('img', e.target.closest('.swiper-slide')) : null;
           if (!im || e.target.closest('.oc-zoom')) { lens.classList.remove('is-on'); return; }
-          var r = im.getBoundingClientRect(), sr = slider.getBoundingClientRect();
+          var r = im.getBoundingClientRect(), sr = side.getBoundingClientRect();
           var nw = im.naturalWidth || r.width, nh = im.naturalHeight || r.height;
           var sc = Math.min(r.width / nw, r.height / nh), w = nw * sc, hgt = nh * sc, ox = r.left + (r.width - w) / 2, oy = r.top + (r.height - hgt) / 2;
           var x = e.clientX - ox, y = e.clientY - oy;
