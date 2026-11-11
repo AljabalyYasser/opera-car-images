@@ -1280,4 +1280,6 @@ html.oc-dark .oc-flogo { background: linear-gradient(180deg, #F4F5F7, #D9DCE0); 
 .oc-sub__field input::placeholder { color: #9AA0A8; }
 .oc-sub__field:focus-within { box-shadow: 0 0 0 3px rgba(210, 31, 43, .45); }
 button.oc-sub__btn { border: 0; cursor: pointer; font-family: inherit; font-size: 15px; }
-.oc-sub__msg { margin-top: 10px; font-size: 14px; color: #fff; line-height: 1.7; }
+.oc-sub__field input { cursor: pointer; }
+.oc-sub__done { display: inline-flex; align-items: center; gap: 10px; font-size: 16px; color: #fff; line-height: 1.8; }
+.oc-sub__done .oc-ic { width: 22px; height: 22px; color: #1FAF38; }

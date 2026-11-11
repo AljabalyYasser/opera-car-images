@@ -658,32 +658,22 @@
   }
 
   /* ---------- subscribe band before the footer ---------- */
+  // subscribing means signing up with the mobile number in Salla's own secure sign in window
+  // so registered customers receive the store offers through Salla campaigns
   function subscribeBand() {
+    var guest = !(window.salla && salla.config && salla.config.isGuest) || salla.config.isGuest();
     var s = h('<section class="oc-sub" style="--oc-sub-img:url(' + IMG + 'sub_cars.webp)"><div class="oc-sub__in">' +
       '<div class="oc-sub__txt"><small>سجل رقم جوالك ويوصلك جديد القطع والخطوط والخصومات</small><h2>اشترك في <em>العروض الحصرية</em></h2>' +
-      '<form class="oc-sub__form" novalidate><label class="oc-sub__field">' + ic('phone') + '<input type="tel" inputmode="numeric" dir="ltr" placeholder="05xxxxxxxx" aria-label="رقم الجوال" maxlength="10"></label>' +
-      '<button type="submit" class="oc-sub__btn">اشترك</button></form><p class="oc-sub__msg" hidden></p></div>' +
-      '</div></section>');
-    var form = $('form', s), inp = $('input', s), msg = $('.oc-sub__msg', s);
-    var say = function (t) { msg.textContent = t; msg.hidden = false; };
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var guest = !(window.salla && salla.config && salla.config.isGuest) || salla.config.isGuest();
-      if (!guest) { say('أنت مشترك ويوصلك جديد العروض على رقمك المسجل'); return; }
-      var n = (inp.value || '').replace(/\D/g, '').replace(/^966/, '0');
-      if (!/^05\d{8}$/.test(n)) { say('اكتب رقم جوال صحيح يبدأ بـ 05'); inp.focus(); return; }
-      msg.hidden = true;
-      var m = $('salla-login-modal');
-      if (m && m.open) {
-        m.open();
-        // put the number in the sign in form once it shows
-        var tries = 0, fill = setInterval(function () {
-          var t = m.querySelector('input[type=tel], salla-tel-input input');
-          if (t || ++tries > 20) clearInterval(fill);
-          if (t) { t.value = n.replace(/^0/, ''); t.dispatchEvent(new Event('input', { bubbles: true })); }
-        }, 250);
-      } else location.href = '/login';
-    });
+      (guest ? '<form class="oc-sub__form" novalidate><label class="oc-sub__field">' + ic('phone') + '<input type="tel" readonly placeholder="اكتب رقم جوالك للاشتراك" aria-label="رقم الجوال"></label>' +
+        '<button type="submit" class="oc-sub__btn">اشترك</button></form>'
+        : '<p class="oc-sub__done">' + ic('okc') + 'أنت مشترك ويوصلك جديد العروض على رقمك المسجل</p>') +
+      '</div></div></section>');
+    var open = function (e) {
+      if (e) e.preventDefault();
+      try { salla.event.dispatch('login::open'); } catch (err) { location.href = '/login'; }
+    };
+    var form = $('form', s);
+    if (form) { form.addEventListener('submit', open); $('input', s).addEventListener('click', open); $('input', s).addEventListener('focus', function () { this.blur(); open(); }); }
     return s;
   }
 
