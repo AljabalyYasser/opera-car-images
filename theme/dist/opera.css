@@ -1632,3 +1632,6 @@ body.product-single .part-sidebar .swiper-slide { cursor: crosshair; }
 .oc-pbar__old { margin-inline-start: 8px; font-size: 13px; color: var(--oc-muted); text-decoration: line-through; }
 .oc-pbar__old i { font-size: 11px; }
 .oc-lens { border: 2px solid #CFCFCF !important; box-shadow: 0 6px 18px rgba(0, 0, 0, .18) !important; }
+/* the picture stays in view while the details scroll, like the reference */
+html body.product-single .oc-pbox { align-items: flex-start !important; }
+html body.product-single .oc-pbox .part-sidebar { position: sticky !important; top: 200px !important; align-self: flex-start !important; }
