@@ -1731,3 +1731,10 @@ body.menu-opened .oc-top, body.mm-ocd-opened .oc-top { display: none !important;
   .oc-arts__row::-webkit-scrollbar { display: none; }
   .oc-arts__row > * { flex: 0 0 84%; scroll-snap-align: start; }
 }
+/* 13 section tabs scroll inside the screen on phones */
+.oc-shead__t { max-width: 100%; min-width: 0; }
+@media (max-width: 767px) {
+  .oc-shead__t .oc-tabs { margin-inline-start: 0; flex-basis: 100%; }
+  .oc-hero2__dots { inset-inline-end: auto !important; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; }
+}
+@media (max-width: 1023px) { body.cart.oc-cart-full.oc-has-bb { padding-bottom: 200px; } }
