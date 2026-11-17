@@ -91,6 +91,10 @@
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--a root-level"><a href="/#oc-best">' + ic('rocket') + 'الأكثر طلبا</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--b root-level"><a href="/#oc-new">' + ic('tag') + 'وصل حديثا</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--c root-level"><a href="/#oc-deals">' + ic('pct') + 'العروض</a></li>'));
+      // the phone menu reads the same list but hides the desktop extras, so it gets its own copies
+      var mob = function (txt, url) { return h('<li class="oc-mob-extra lg:hidden text-sm font-bold"><a href="' + url + '">' + txt + '</a></li>'); };
+      ul.insertBefore(mob('الرئيسية', '/'), ul.firstChild);
+      [['الأكثر طلبا', '/#oc-best'], ['وصل حديثا', '/#oc-new'], ['العروض', '/#oc-deals'], ['من نحن', ABOUT_URL], ['تواصل معنا', CONTACT_URL], ['الأسئلة الشائعة', FAQ_URL]].forEach(function (x) { ul.appendChild(mob(x[0], x[1])); });
     }
 
   }
@@ -209,16 +213,17 @@
       if (k === 'user') { e.preventDefault(); var u = header && $$('button.header-btn', header).pop(); if (u) u.click(); }
     });
     function syncCount() {
-      var c = $('.s-cart-summary-count'), b = $('.oc-bb-count', bar);
-      if (!c || !b) return;
-      var t = c.textContent.trim();
+      var b = $('.oc-bb-count', bar);
+      var c = $$('.s-cart-summary-count').filter(function (x) { return x.textContent.trim(); })[0];
+      if (!b) return;
+      var t = c ? c.textContent.trim() : '';
       var zero = !t || t === '0' || t === '٠';
       b.textContent = t; b.hidden = zero;
       $$('#part-store-header .s-cart-summary-count').forEach(function (x) { x.classList.toggle('oc-zero', zero); });
     }
     syncCount();
-    var cc = $('.s-cart-summary-count');
-    if (cc) new MutationObserver(syncCount).observe(cc, { childList: true, characterData: true, subtree: true });
+    // the header count is filled late and can be replaced, so keep checking instead of watching one node
+    setInterval(syncCount, 1500);
   }
 
   /* ---------- extra icons ---------- */
@@ -230,6 +235,7 @@
   I.phone = '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>';
   I.mail = '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>';
   I.up = '<path d="m6 15 6-6 6 6"/>';
+  I.down = '<path d="m6 9 6 6 6-6"/>';
   I.x = '<path d="M6 6l12 12M18 6 6 18"/>';
   I.minus = '<path d="M6 12h12"/>';
   I.star = '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>';
@@ -746,6 +752,12 @@
       grid.insertBefore(storeCol, policies || brandCol.nextSibling);
       grid.insertBefore(pagesCol, storeCol);
       grid.appendChild(contactCol);
+      // on phones each column folds under its title so the footer is not one long list
+      [pagesCol, storeCol, policies, contactCol].forEach(function (c) { if (c) c.classList.add('oc-fold'); });
+      grid.addEventListener('click', function (e) {
+        var t = e.target.closest('.oc-fold h3'); if (!t || window.innerWidth > 767) return;
+        t.closest('.oc-fold').classList.toggle('is-open');
+      });
       if (!$('.oc-social', brandCol)) brandCol.appendChild(h('<div class="oc-social">' + SOCIAL.map(function (x) { return '<a href="' + x[2] + '" aria-label="' + x[1] + '" rel="noopener">' + bic(x[0]) + '</a>'; }).join('') + '</div>'));
     }
     // credit line
@@ -793,9 +805,11 @@
     if (bodyIs('product-index-search')) title = 'البحث';
     else if (bodyIs('product-index') && h1) title = (h1.childNodes[0] && h1.childNodes[0].textContent || '').replace(/[-–]\s*$/, '').trim();
     else if (bodyIs('product-single')) title = cr.length > 1 ? cr[cr.length - 2][0] : 'المنتجات';
-    else if (/\/cart(\/|$)/.test(location.pathname)) title = 'سلة المشتريات';
+    else if (/\/cart(\/|$)/.test(location.pathname)) title = 'سلة التسوق';
     else title = cr.length ? cr[cr.length - 1][0] : (document.title.split('|')[0] || '').trim();
     if (!title) title = (document.title.split('|')[0] || '').trim();
+    // the browser title carries the store name after a dash, the banner shows the page name only
+    title = title.replace(/\s*[-–|]\s*أوبرا كار\s*$/, '').trim();
     var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
     var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
@@ -856,11 +870,21 @@
       '</aside>');
     row.insertBefore(aside, row.firstChild);
     row.classList.add('oc-cat-row');
+    // on phones the sidebar sits above the products behind one button instead of under all of them
+    var ftg = h('<button type="button" class="oc-ftoggle" aria-expanded="false">' + ic('grid') + '<span>الأقسام وتسوق حسب الموديل</span><i>' + ic('down') + '</i></button>');
+    row.insertBefore(ftg, aside);
+    ftg.addEventListener('click', function () { var on = aside.classList.toggle('is-open'); ftg.classList.toggle('is-open', on); ftg.setAttribute('aria-expanded', on ? 'true' : 'false'); });
     // toolbar: count and view switcher
     var head = wrap.firstElementChild, h1 = $('#page-main-title', wrap);
     if (h1) {
       h1.classList.add('oc-count');
-      var strip1 = function () { var t = h1.firstChild; if (t && t.nodeType === 3 && /-/.test(t.textContent)) t.textContent = ''; };
+      // Salla writes "more than 15" because it loads 15 at a time, the real count is in the categories tree
+      var findNode = function (list) { for (var i = 0; i < list.length; i++) { if (decodeURIComponent(list[i].u) === here) return list[i]; var s = findNode(list[i].s || []); if (s) return s; } return null; };
+      var node = isSearch ? null : findNode(TREE);
+      var strip1 = function () {
+        if (node && node.c) { var want = num(node.c) + ' منتج'; if (h1.textContent.trim() !== want) h1.textContent = want; return; }
+        var t = h1.firstChild; if (t && t.nodeType === 3 && /-/.test(t.textContent)) t.textContent = '';
+      };
       strip1();
       try { new MutationObserver(strip1).observe(h1, { childList: true, characterData: true, subtree: true }); } catch (e) {}
     }
@@ -992,7 +1016,7 @@
       if (p.is_on_sale && !$('.oc-ptimer', info)) {
         var end = p.discount_ends ? p.discount_ends * 1000 : nextFriday().getTime();
         if (end > Date.now()) {
-          var tm = h('<div class="oc-ptimer"><b>عرض لفترة محدودة</b><span class="oc-ptimer__t" data-end="' + end + '"><b data-u="d">٠</b><i>:</i><b data-u="h">٠</b><i>:</i><b data-u="m">٠</b><i>:</i><b data-u="s">٠</b></span></div>');
+          var tm = h('<div class="oc-ptimer"><b>عرض لفترة محدودة</b><span class="oc-ptimer__t" data-end="' + end + '"><span class="oc-ptimer__u"><b data-u="d">٠</b><small>يوم</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="h">٠</b><small>ساعة</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="m">٠</b><small>دقيقة</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="s">٠</b><small>ثانية</small></span></span></div>');
           shortD.parentNode.insertBefore(tm, shortD.nextSibling); after = tm; tickAll();
         }
       }
@@ -1102,8 +1126,10 @@
       // the summary under the price skips any line that only repeats the product name
       var norm = function (x) { return (x || '').replace(/إلى/g, '-').replace(/[\s\-–]+/g, ''); };
       var title = norm(h1 ? h1.textContent : '');
-      var parts = $$('p, li', desc).map(function (e) { return e.textContent.trim(); }).filter(function (x) { return x && norm(x) !== title; });
-      var txt = ''; for (var k = 0; k < parts.length && txt.length < 150; k++) txt += (txt ? ' ' : '') + parts[k];
+      // the first paragraph already says which car it fits, the list repeats it, so the list is only a fallback
+      var pick = function (sel) { return $$(sel, desc).map(function (e) { return e.textContent.trim(); }).filter(function (x) { return x && norm(x) !== title; }); };
+      var parts = pick('p'); if (!parts.length) parts = pick('li');
+      var txt = parts[0] || '';
       if (!txt) txt = desc.textContent.trim();
       desc.innerHTML = '<p>' + esc(txt.length > 220 ? txt.slice(0, 220) + '…' : txt) + '</p>';
       desc.classList.add('oc-pshort');
@@ -1120,7 +1146,7 @@
         if (q) { q.value = n; q.dispatchEvent(new Event('input', { bubbles: true })); q.dispatchEvent(new Event('change', { bubbles: true })); }
         var b = $('button', addBtn); if (b) b.click();
       });
-      var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
+      var onS = function () { var r = addBtn.getBoundingClientRect(); var show = r.bottom < 0; pbar.classList.toggle('is-on', show); document.body.classList.toggle('oc-pbar-on', show); pbar.setAttribute('aria-hidden', show ? 'false' : 'true'); };
       window.addEventListener('scroll', onS, { passive: true });
     }
   }
@@ -1168,7 +1194,7 @@
   var WHY = [['check', 'نتأكد من المطابقة', 'نراجع موديل سيارتك وسنة الصنع قبل ما نشحن أي قطعة'], ['gear', 'أصلي وبديل', 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة'], ['truck', 'من جدة لكل المملكة', 'توصيل سريع داخل جدة وشحن لكل مناطق المملكة'], ['headset', 'معك قبل وبعد الطلب', 'نرد على استفساراتك ونساعدك تختار القطعة الصح']];
   function storySection() {
     return h('<section class="oc-sec oc-story"><div class="oc-container oc-story__in">' +
-      '<div class="oc-story__pic"><img loading="lazy" src="' + IMG + 'why.webp" alt="فريق أوبرا كار في المستودع"></div>' +
+      '<div class="oc-story__pic"><img loading="lazy" src="' + IMG + 'art_orig.webp" alt="قطع غيار تويوتا من أوبرا كار"></div>' +
       '<div class="oc-story__txt">' + HICON + '<small>قصتنا</small><h2>وجهتك الموثوقة لقطع وخطوط سيارات تويوتا</h2>' +
       '<p>أوبرا كار متجر سعودي من جدة متخصص في قطع غيار واكسسوارات وخطوط سيارات تويوتا نوفر القطع الأصلية والبديلة لأشهر الموديلات مثل لاندكروزر وبرادو وهايلوكس وشاص وربع وكامري وكورولا</p>' +
       '<p>نراجع موديل سيارتك وسنة صنعها قبل شحن أي قطعة ونشحن لكل مناطق المملكة مع توصيل سريع داخل جدة</p>' +
@@ -1186,7 +1212,7 @@
   var HOURS = [['كل أيام الأسبوع', 'مفتوح دائما'], ['الطلبات', 'تستقبل على مدار الساعة'], ['الرد على الاستفسارات', 'طوال أيام الأسبوع']];
   function contactPage(host) {
     var s = h('<section class="oc-contactp">' +
-      '<div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&output=embed"></iframe></div>' +
+      '<div class="oc-map"><iframe title="موقع أوبرا كار في جدة" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Jeddah&z=11&hl=ar&output=embed"></iframe></div>' +
       '<div class="oc-sec"><div class="oc-container oc-contact__grid">' +
       '<div class="oc-contact__info">' + sHead('تواصل معنا') +
       '<a class="oc-cline oc-cline--big" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><b dir="ltr">' + CONTACT.phone + '</b></a>' +
@@ -1283,6 +1309,19 @@
     map[id](host);
   }
 
+  /* the header search box opens Salla's search window, put the cursor in it so typing is not lost */
+  function searchFocus() {
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.s-search-placeholder-trig, .s-search-placeholder-wrapper, .s-search-input')) return;
+      var t0 = Date.now();
+      (function tryFocus() {
+        var inp = $$('.s-search-modal input, salla-search input[type=search], salla-search input[type=text], .s-search-container input').filter(function (x) { return x.offsetParent; })[0];
+        if (inp && document.activeElement !== inp) { inp.focus(); return; }
+        if (!inp && Date.now() - t0 < 1500) setTimeout(tryFocus, 60);
+      })();
+    }, true);
+  }
+
   /* cart drawer opened after adding to cart */
   function cartDrawer() {
     if ($('.oc-drawer')) return;
@@ -1304,7 +1343,9 @@
       $('.oc-drawer__items', d).innerHTML = items.length ? items.map(function (it) {
         var img = it.product_image || (it.image && it.image.url) || it.image || '';
         var price = it.price && it.price.amount != null ? it.price.amount : (it.total && it.total.amount != null ? it.total.amount : it.price);
-        return '<div class="oc-ditem"><img src="' + esc(img) + '" alt=""><div><a href="' + esc(it.url || '#') + '">' + esc(it.product_name || it.name) + '</a><small>' + num(it.quantity) + ' × ' + num(price) + ' ' + SAR + '</small></div></div>';
+        return '<div class="oc-ditem" data-id="' + esc(it.id) + '" data-q="' + (+it.quantity || 1) + '"><img src="' + esc(img) + '" alt=""><div><a href="' + esc(it.url || '#') + '">' + esc(it.product_name || it.name) + '</a><small>' + num(price) + ' ' + SAR + '</small>' +
+          '<div class="oc-ditem__row"><div class="oc-ditem__qty"><button type="button" data-step="1" aria-label="زيادة">' + ic('plus') + '</button><span>' + num(it.quantity) + '</span><button type="button" data-step="-1" aria-label="نقص">' + ic('minus') + '</button></div>' +
+          '<button type="button" class="oc-ditem__del" data-del aria-label="حذف من السلة">' + ic('x') + '</button></div></div></div>';
       }).join('') : '<p class="oc-empty">سلتك فاضية</p>';
       var total = +(c && (c.sub_total || c.total)) || 0;
       $('.oc-drawer__sum b', d).innerHTML = num(total) + ' ' + SAR;
@@ -1312,10 +1353,27 @@
       $('.oc-ship__track i', d).style.width = Math.min(100, total / FREE_SHIP * 100) + '%';
       $('.oc-ship__txt span', d).innerHTML = left > 0 ? 'باقي لك <b>' + num(left) + ' ' + SAR + '</b> وتحصل على <b>شحن مجاني</b>' : 'مبروك طلبك صار عليه <b>شحن مجاني</b>';
     }
-    window.ocOpenCart = function () {
-      d.classList.add('is-open'); d.setAttribute('aria-hidden', 'false');
+    var reload = function () {
       try { salla.cart.api.details().then(function (r) { var c = r && r.data && (r.data.cart || r.data); render(c); }).catch(function () { render(null); }); } catch (e) { render(null); }
     };
+    window.ocOpenCart = function () {
+      d.classList.add('is-open'); d.setAttribute('aria-hidden', 'false');
+      reload();
+    };
+    // change the amount or remove a line straight from the drawer
+    $('.oc-drawer__items', d).addEventListener('click', function (e) {
+      var row = e.target.closest('.oc-ditem'); if (!row) return;
+      var id = row.dataset.id, q = +row.dataset.q || 1, step = e.target.closest('[data-step]'), del = e.target.closest('[data-del]');
+      if (!step && !del) return;
+      var nq = del ? 0 : q + (+step.dataset.step);
+      row.classList.add('is-busy');
+      var done = function () { reload(); };
+      try {
+        var api = salla.cart.api || salla.cart;
+        var p = nq <= 0 ? (api.deleteItem ? api.deleteItem(id) : salla.cart.deleteItem(id)) : (api.updateItem ? api.updateItem({ id: id, quantity: nq }) : salla.cart.updateItem({ id: id, quantity: nq }));
+        if (p && p.then) p.then(done, done); else done();
+      } catch (x) { done(); }
+    });
     try { salla.event.on('cart::item.added', function () { window.ocOpenCart(); }); } catch (e) {}
   }
 
@@ -1391,6 +1449,7 @@
     customPages();
     toTop();
     cartDrawer();
+    searchFocus();
     var foot = $('footer.store-footer');
     if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), $('.oc-feats-wrap') || foot);
     tickAll();
@@ -1401,7 +1460,7 @@
     var t0 = Date.now();
     (function wait() {
       var menu = $('#part-store-header custom-main-menu li.root-level');
-      if (menu || Date.now() - t0 > 1800) {
+      if (menu || Date.now() - t0 > 900) {
         addNavExtras(); addMegaMenu();
         document.documentElement.classList.add('oc-on');
       } else setTimeout(wait, 40);
