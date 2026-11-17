@@ -987,7 +987,9 @@
     var slider = side && $('salla-slider', side);
     var buildThumbs = function () {
       if (!slider || $('.oc-thumbs', side)) return;
-      var imgs = $$('.swiper-slide img', slider); if (imgs.length < 2) return;
+      // the slider repeats slides when it loops, so keep each picture once
+      var seen = [], imgs = $$('.swiper-slide:not(.swiper-slide-duplicate) img', slider).filter(function (im) { var u = im.currentSrc || im.src || im.dataset.src; if (!u || seen.indexOf(u) > -1) return false; seen.push(u); return true; });
+      if (imgs.length < 2) return;
       var th = h('<div class="oc-thumbs"><button type="button" class="oc-thumbs__nav" data-d="-1" aria-label="الصورة السابقة">' + ic('up') + '</button><div class="oc-thumbs__list">' +
         imgs.map(function (im, i) { return '<button type="button" data-i="' + i + '" class="' + (i ? '' : 'is-on') + '" aria-label="صورة ' + (i + 1) + '"><img src="' + esc(im.currentSrc || im.src || im.dataset.src) + '" alt=""></button>'; }).join('') +
         '</div><button type="button" class="oc-thumbs__nav oc-thumbs__nav--down" data-d="1" aria-label="الصورة التالية">' + ic('up') + '</button></div>');
@@ -996,11 +998,11 @@
       var mark = function (i) { $$('.oc-thumbs__list button', th).forEach(function (b, j) { b.classList.toggle('is-on', j === i); }); };
       th.addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b) return; var s1 = sw(); if (!s1) return;
-        var to = b.dataset.i != null ? +b.dataset.i : Math.max(0, Math.min(imgs.length - 1, s1.activeIndex + (+b.dataset.d)));
-        s1.slideTo(to); mark(to);
+        var to = b.dataset.i != null ? +b.dataset.i : Math.max(0, Math.min(imgs.length - 1, (s1.realIndex != null ? s1.realIndex : s1.activeIndex) + (+b.dataset.d)));
+        if (s1.slideToLoop && s1.params && s1.params.loop) s1.slideToLoop(to); else s1.slideTo(to); mark(to);
       });
       // the swiper may not be ready yet, so hook the slide change once it is
-      var hook = function () { var s0 = sw(); if (s0 && s0.on && !s0.__oc) { s0.__oc = 1; s0.on('slideChange', function () { mark(s0.activeIndex); }); } else if (!s0) setTimeout(hook, 500); };
+      var hook = function () { var s0 = sw(); if (s0 && s0.on && !s0.__oc) { s0.__oc = 1; s0.on('slideChange', function () { mark(s0.realIndex != null ? s0.realIndex : s0.activeIndex); }); } else if (!s0) setTimeout(hook, 500); };
       hook();
     };
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
@@ -1011,7 +1013,7 @@
         var el = $('.swiper', slider), s1 = el && el.swiper;
         var srcs = $$('.swiper-slide img', slider).map(function (im) { return im.currentSrc || im.src || im.dataset.src; }).filter(function (u, k, a) { return u && a.indexOf(u) === k; });
         if (!srcs.length) return;
-        var i = s1 ? Math.min(s1.activeIndex, srcs.length - 1) : 0;
+        var i = s1 ? Math.min(s1.realIndex != null ? s1.realIndex : s1.activeIndex, srcs.length - 1) : 0;
         var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صور المنتج"><button type="button" class="oc-viewer__x" aria-label="إغلاق">' + ic('x') + '</button>' +
           '<button type="button" class="oc-viewer__nav oc-viewer__prev" aria-label="الصورة السابقة">' + ic('right') + '</button><img class="oc-viewer__img" alt="">' +
           '<button type="button" class="oc-viewer__nav oc-viewer__next" aria-label="الصورة التالية">' + ic('left') + '</button>' +
