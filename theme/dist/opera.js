@@ -564,6 +564,9 @@
       '<div class="oc-wdeals__grid">' + new Array(10).join('<div class="oc-mini oc-mini--skel"></div>') + '</div>' +
       '<button type="button" class="oc-wdeals__arrow oc-wdeals__arrow--next" aria-label="التالي">' + ic('left') + '</button></div></div></div></section>');
     var grid = $('.oc-wdeals__grid', s), prev = $('.oc-wdeals__arrow--prev', s), next = $('.oc-wdeals__arrow--next', s);
+    // the arrows sit in the title row beside shop all instead of over the cards
+    var wh = $('.oc-wdeals__main .oc-shead', s), wall = wh && $('.oc-shopall', wh);
+    if (wh) { var side = h('<div class="oc-wdeals__side"></div>'); side.appendChild(prev); side.appendChild(next); if (wall) side.appendChild(wall); wh.appendChild(side); }
     var colW = function () { var c = grid.querySelector('.oc-mini'); return c ? c.getBoundingClientRect().width + 16 : 300; };
     var sync = function () {
       var max = grid.scrollWidth - grid.clientWidth, x = Math.abs(grid.scrollLeft);
