@@ -1635,3 +1635,116 @@ body.product-single .part-sidebar .swiper-slide { cursor: crosshair; }
 /* the picture stays in view while the details scroll, like the reference */
 html body.product-single .oc-pbox { align-items: flex-start !important; }
 html body.product-single .oc-pbox .part-sidebar { position: sticky !important; top: 200px !important; align-self: flex-start !important; }
+
+/* ===== Review fixes 17 Nov ===== */
+/* 1 product cards in category pages match the home cards */
+/* Salla sets the card title size from a cascade layer, so ours sits in a layer too */
+@layer ocfix {
+html body .s-product-card-entry .s-product-card-content-title, html body .s-product-card-entry .s-product-card-content-title a { font-size: 15px !important; font-weight: 600 !important; line-height: 1.8 !important; }
+html body salla-products-list[data-oc-view="4"] .s-product-card-entry .s-product-card-content-title a { font-size: 14px !important; }
+html body salla-products-list[data-oc-view="1"] .s-product-card-entry .s-product-card-content-title a { font-size: 17px !important; }
+}
+html body .s-product-card-entry .s-product-card-content-title a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+html body salla-products-list[data-oc-view="1"] .s-product-card-entry .s-product-card-content-title a { -webkit-line-clamp: 3; }
+/* 2 hero button reads as a button on the dark picture */
+.oc-hslide__btn { background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .55); backdrop-filter: blur(2px); }
+/* 3 footer policy links had Salla's faded look */
+html body footer.store-footer salla-menu a, html body footer.store-footer salla-menu .s-menu-footer-item { opacity: 1 !important; }
+/* 4 dark mode: logo without the white box, menu bar in one colour */
+html.oc-dark #part-store-header .navbar-brand img, html.oc-dark .oc-flogo { background: none !important; padding: 0 !important; filter: invert(1) hue-rotate(180deg) brightness(1.15); }
+@media (min-width: 1024px) { html.oc-dark #part-store-header #mobile-menu, html.oc-dark #part-store-header #mobile-menu > ul { background: transparent !important; } }
+/* 5 shop by model tiles keep the years on one line */
+.oc-make { padding: 6px 2px; }
+.oc-make b { font-size: 13px; white-space: nowrap; letter-spacing: -.2px; }
+/* 6 product page: picture box follows the picture, timer labels, readable description width */
+html body.product-single .oc-pbox .part-sidebar .swiper.s-slider-container { aspect-ratio: 1 / 1 !important; }
+.oc-ptimer__t { direction: rtl; align-items: flex-start; }
+.oc-ptimer__u { display: inline-flex; flex-direction: column; align-items: center; gap: 5px; }
+.oc-ptimer__u small { font-size: 12px; line-height: 1.4; color: var(--oc-muted); }
+.oc-ptimer__t > i { line-height: 43px; }
+body.product-single .oc-ptabs__body [data-p="d"] { max-width: 900px; }
+/* 7 back to top stays above the add to cart bar and the phone menu */
+body.oc-pbar-on .oc-top { bottom: 104px; }
+body.menu-opened .oc-top, body.mm-ocd-opened .oc-top { display: none !important; }
+@media (max-width: 1023px) { body.oc-pbar-on .oc-top { bottom: 150px; } }
+/* 8 drawer cart lines with amount and remove */
+.oc-ditem { position: relative; }
+.oc-ditem.is-busy { opacity: .5; pointer-events: none; }
+.oc-ditem__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.oc-ditem__qty { display: inline-flex; align-items: center; height: 32px; border: 1px solid var(--oc-rule); border-radius: 6px; overflow: hidden; }
+.oc-ditem__qty button { width: 30px; height: 100%; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--oc-ink); cursor: pointer; }
+.oc-ditem__qty button:hover { color: var(--oc-red); }
+.oc-ditem__qty .oc-ic { width: 15px; height: 15px; }
+.oc-ditem__qty span { min-width: 26px; text-align: center; font-size: 14px; font-weight: 600; color: var(--oc-ink); }
+.oc-ditem__del { width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--oc-box); color: var(--oc-muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color .2s, color .2s; }
+.oc-ditem__del:hover { background: var(--oc-red); color: #fff; }
+.oc-ditem__del .oc-ic { width: 14px; height: 14px; }
+/* 9 weekly deals never wider than the screen */
+.oc-wdeals__in > * { min-width: 0; }
+@media (max-width: 899px) { .oc-wdeals__in { grid-template-columns: minmax(0, 1fr); } }
+.oc-wdeals__main .oc-shead__t { min-width: 0; }
+/* 10 phone menu extras */
+@media (min-width: 1024px) { .oc-mob-extra { display: none !important; } }
+/* 11 category sidebar behind a button on phones */
+.oc-ftoggle { display: none; }
+@media (max-width: 1023px) {
+  .oc-ftoggle { display: flex; align-items: center; gap: 10px; width: 100%; height: 48px; padding: 0 16px; border: 1px solid var(--oc-rule); border-radius: 8px; background: var(--oc-surface); color: var(--oc-ink); font-size: 15px; font-weight: 600; cursor: pointer; order: 0; }
+  .oc-ftoggle .oc-ic { width: 18px; height: 18px; }
+  .oc-ftoggle i { margin-inline-start: auto; display: inline-flex; transition: transform .25s; }
+  .oc-ftoggle.is-open i { transform: rotate(180deg); }
+  html body .oc-cat-row .oc-cat-aside { order: 1; display: none; }
+  html body .oc-cat-row .oc-cat-aside.is-open { display: flex; }
+  html body .oc-cat-row .oc-cat-aside .oc-apromo { display: none; }
+  html body .oc-cat-row > :not(.oc-ftoggle):not(.oc-cat-aside) { order: 2; }
+}
+/* 12 phone fixes */
+.oc-bb-count[hidden] { display: none !important; }
+@media (max-width: 1023px) {
+  /* product picture scrolls with the page, the details are under it */
+  html body.product-single .oc-pbox .part-sidebar { position: relative !important; top: auto !important; }
+  html body.product-single:not(.oc-has-banner) #main-content { padding-top: 16px !important; }
+  /* cart summary sits above the bottom bar so the checkout button shows */
+  html body .s-cart-summary-card--mobile { bottom: calc(66px + env(safe-area-inset-bottom)) !important; z-index: 61 !important; }
+  body.cart .oc-top, body.cart-index .oc-top { display: none !important; }
+  /* top bar: the week deal with its timer, not a lonely link */
+  html body .oc-topbar__sale > .oc-topbar__ctd { display: inline-flex !important; gap: 8px; }
+  .oc-topbar__sale { gap: 10px; }
+  .oc-topbar__sale::before { content: 'عروض الأسبوع'; font-size: 12px; color: #E3E5E8; }
+  .oc-topbar__ctd b { font-size: 15px; min-width: 20px; }
+  /* colour banners: shade behind the words */
+  .oc-cban::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(270deg, rgba(10, 10, 12, .82) 32%, rgba(10, 10, 12, .1) 78%); }
+}
+@media (max-width: 767px) {
+  /* hero indicators under the words, not on the button */
+  .oc-hslide__txt { padding-bottom: 44px; }
+  .oc-hero2__dots { bottom: 14px !important; }
+  /* footer columns fold under their titles */
+  html body footer.store-footer .oc-fold h3 { display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 0; padding: 12px 0; }
+  html body footer.store-footer .oc-fold h3::after { content: '+'; font-size: 22px; font-weight: 400; color: var(--oc-muted); }
+  html body footer.store-footer .oc-fold.is-open h3::after { content: '−'; }
+  html body footer.store-footer .oc-fold:not(.is-open) > :not(h3) { display: none !important; }
+  html body footer.store-footer .oc-fold { border-bottom: 1px solid var(--oc-rule); }
+}
+@media (max-width: 559px) {
+  /* latest articles slide sideways */
+  .oc-arts__row { display: flex; grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 14px; padding-bottom: 6px; }
+  .oc-arts__row::-webkit-scrollbar { display: none; }
+  .oc-arts__row > * { flex: 0 0 84%; scroll-snap-align: start; }
+}
+/* 13 section tabs scroll inside the screen on phones */
+.oc-shead__t { max-width: 100%; min-width: 0; }
+@media (max-width: 767px) {
+  .oc-shead__t .oc-tabs { margin-inline-start: 0; flex-basis: 100%; }
+  .oc-hero2__dots { inset-inline-end: auto !important; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; }
+}
+@media (max-width: 1023px) { body.cart.oc-cart-full.oc-has-bb { padding-bottom: 200px; } }
+/* 14 weekly deals arrows in the title row, related products arrows outside the cards */
+.oc-wdeals__side { display: flex; align-items: center; gap: 8px; }
+.oc-wdeals__side .oc-shopall { margin-inline-start: 10px; }
+html body .oc-wdeals__side .oc-wdeals__arrow { position: static; transform: none; width: 38px; height: 38px; inset: auto; }
+html body .oc-wdeals__side .oc-wdeals__arrow .oc-ic { width: 18px; height: 18px; }
+html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-left { position: absolute !important; left: 0 !important; right: auto !important; top: -62px !important; width: auto !important; }
+html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-nav { position: static !important; inset: auto !important; width: auto !important; display: flex !important; gap: 8px; transform: none !important; margin: 0 !important; }
+@media (max-width: 767px) { html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-nav { display: none !important; } }
+/* 15 empty cart: no red zero on the cart icon */
+#part-store-header .s-cart-summary-count.oc-zero { display: none !important; }
