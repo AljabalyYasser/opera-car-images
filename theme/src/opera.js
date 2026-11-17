@@ -349,9 +349,12 @@
       res.hidden = false;
       res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       var id = catId(url);
-      api('products?source=categories&source_value[]=' + id + '&per_page=12').then(function (r) {
+      api('products?source=categories&source_value[]=' + id + '&per_page=30').then(function (r) {
         var list = (r && r.data) || [];
-        track.innerHTML = list.length ? list.map(card).join('') : '<p class="oc-empty">ما فيه منتجات لهذا الاختيار حاليا</p>';
+        // the year picked comes first, then the rest of the range
+        var yy = String(+fy.value || '');
+        if (yy) { var hit = list.filter(function (p) { return String(p.name || '').indexOf(yy) > -1; }); list = hit.concat(list.filter(function (p) { return hit.indexOf(p) < 0; })); }
+        track.innerHTML = list.length ? list.slice(0, 12).map(card).join('') : '<p class="oc-empty">ما فيه منتجات لهذا الاختيار حاليا</p>';
       }).catch(function () { location.href = url; });
     });
     return s;
@@ -467,6 +470,8 @@
     var track = $('.oc-track', s), cache = {};
     function load(i) {
       $$('.oc-tabs button', s).forEach(function (b) { var on = +b.dataset.i === i; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on); });
+      // shop all follows the open tab
+      var sa = $('.oc-shopall', s); if (sa) sa.setAttribute('href', o.tabs[i].u || o.all);
       if (cache[i]) { track.innerHTML = cache[i]; track.scrollLeft = 0; return; }
       track.innerHTML = skeleton(6);
       var t = o.tabs[i];
@@ -481,10 +486,14 @@
         });
       };
       more(t.q, 1).then(function (r) {
+        // a second source mixed in so the newest row is not one product line
+        return t.extra ? api(t.extra).then(function (x) { return { data: ((r && r.data) || []).concat((x && x.data) || []) }; }, function () { return r; }) : r;
+      }).then(function (r) {
         var list = (r && r.data) || [];
         if (t.order) list.sort(function (a, b) { return t.order.indexOf(+a.id) - t.order.indexOf(+b.id); });
         var ok = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
         list = uniq(ok.concat(list.filter(function (p) { return ok.indexOf(p) < 0; })));
+        if (t.mix) list = mixKinds(list);
         cache[i] = list.length ? list.slice(0, 12).map(card).join('') : '<p class="oc-empty">ما فيه منتجات في هذا القسم حاليا</p>';
         track.innerHTML = cache[i]; track.scrollLeft = 0;
       }).catch(function () { if (!i) s.remove(); });
@@ -493,19 +502,27 @@
     load(0);
     return s;
   }
+  // newest products came in batches of the same item, so take turns between kinds (first two words of the name)
+  function mixKinds(list) {
+    var groups = {}, order = [];
+    list.forEach(function (p) { var k = String(p.name || '').trim().split(/\s+/).slice(0, 2).join(' '); if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(p); });
+    var out = [], round = 0, added = true;
+    while (added) { added = false; order.forEach(function (k) { if (groups[k][round]) { out.push(groups[k][round]); added = true; } }); round++; }
+    return out;
+  }
   function featuredSection() {
     return tabRow({ id: 'oc-best', title: 'الأكثر طلبا', all: C['قطع الغيار والاكسسوارات'], tabs: [
-      { n: 'كل المنتجات', q: sel(FEATURED), order: FEATURED },
-      { n: 'قطع لاندكروزر', q: inCat('لاندكروزر') },
-      { n: 'قطع هايلوكس', q: inCat('هايلوكس وفورشنر') },
-      { n: 'اكسسوارات عامة', q: inCat('اكسسوارات تويوتا عامة') }] });
+      { n: 'كل المنتجات', q: sel(FEATURED), order: FEATURED, u: STORE_URL },
+      { n: 'قطع لاندكروزر', q: inCat('لاندكروزر'), u: C['لاندكروزر'] },
+      { n: 'قطع هايلوكس', q: inCat('هايلوكس وفورشنر'), u: C['هايلوكس وفورشنر'] },
+      { n: 'اكسسوارات عامة', q: inCat('اكسسوارات تويوتا عامة'), u: C['اكسسوارات تويوتا عامة'] }] });
   }
   function latestSection() {
     return tabRow({ id: 'oc-new', below: true, title: 'وصل حديثا', all: C['الخطوط'], tabs: [
-      { n: 'كل المنتجات', q: 'products?source=latest&per_page=50' },
-      { n: 'خطوط هايلوكس', q: inCat('خطوط هايلوكس') },
-      { n: 'خطوط شاص', q: inCat('خطوط شاص') },
-      { n: 'ستيكرات وشعارات', q: inCat('ستيكرات وشعارات') }] });
+      { n: 'كل المنتجات', q: 'products?source=latest&per_page=50', extra: inCat('قطع الغيار والاكسسوارات'), mix: true, u: STORE_URL },
+      { n: 'خطوط هايلوكس', q: inCat('خطوط هايلوكس'), u: C['خطوط هايلوكس'] },
+      { n: 'خطوط شاص', q: inCat('خطوط شاص'), u: C['خطوط شاص'] },
+      { n: 'ستيكرات وشعارات', q: inCat('ستيكرات وشعارات'), u: C['ستيكرات وشعارات'] }] });
   }
 
   /* ---------- three colour banners with a badge, a title, a white button and a product picture ---------- */
@@ -582,7 +599,11 @@
       if (list.length >= 18) return list;
       return api(sel(DEALS_FALLBACK.concat(FEATURED))).then(function (x) {
         var ids = list.map(function (p) { return p.id; });
-        return list.concat(((x && x.data) || []).filter(function (p) { return ids.indexOf(p.id) < 0; }));
+        var extra = ((x && x.data) || []).filter(function (p) { return ids.indexOf(p.id) < 0; });
+        // a deals row shows discounted products only, the rest fill in only when there are almost none
+        var onSale = extra.filter(function (p) { return p.is_on_sale; });
+        var all = list.concat(onSale);
+        return all.length >= 3 ? all : all.concat(extra.filter(function (p) { return onSale.indexOf(p) < 0; }));
       });
     }).then(function (list) {
       list = uniq(list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); }));
@@ -677,7 +698,7 @@
     var guest = !(window.salla && salla.config && salla.config.isGuest) || salla.config.isGuest();
     var s = h('<section class="oc-sub" style="--oc-sub-img:url(' + IMG + 'sub_cars.webp)"><div class="oc-sub__in">' +
       '<div class="oc-sub__txt"><small>سجل رقم جوالك ويوصلك جديد القطع والخطوط والخصومات</small><h2>اشترك في <em>العروض الحصرية</em></h2>' +
-      (guest ? '<form class="oc-sub__form" novalidate><label class="oc-sub__field">' + ic('phone') + '<input type="tel" readonly placeholder="اكتب رقم جوالك للاشتراك" aria-label="رقم الجوال"></label>' +
+      (guest ? '<form class="oc-sub__form" novalidate><label class="oc-sub__field">' + ic('phone') + '<input type="tel" readonly placeholder="اضغط هنا وسجل برقم جوالك" aria-label="سجل برقم جوالك"></label>' +
         '<button type="submit" class="oc-sub__btn">اشترك</button></form>'
         : '<p class="oc-sub__done">' + ic('okc') + 'أنت مشترك ويوصلك جديد العروض على رقمك المسجل</p>') +
       '</div></div></section>');
@@ -813,6 +834,8 @@
     if (!title) title = (document.title.split('|')[0] || '').trim();
     // the browser title carries the store name after a dash, the banner shows the page name only
     title = title.replace(/\s*[-–|]\s*أوبرا كار\s*$/, '').trim();
+    // a sub category title comes as parent | child, the banner keeps the child
+    if (title.indexOf('|') > -1) title = title.split('|').pop().trim();
     var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
     var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
@@ -842,8 +865,8 @@
   /* category page: parts strip, sidebar, grid switcher */
   var VIEW_KEY = 'oc-view';
   function categoryPage() {
-    var isSearch = bodyIs('product-index-search');
-    if (!(bodyIs('product-index') || isSearch) || $('.oc-cat-aside')) return;
+    var isSearch = bodyIs('product-index-search'), isOffers = bodyIs('product-index-offers');
+    if (!(bodyIs('product-index') || isSearch || isOffers) || $('.oc-cat-aside')) return;
     var main = $('#main-content'); var wrap = $('.main-content', main); if (!wrap) return;
     var row = wrap.parentNode;
     var banner = $('.oc-pbanner', main);
@@ -851,9 +874,15 @@
       // search results heading centered above the results like the reference
       var q = ''; try { q = new URLSearchParams(location.search).get('q') || ''; } catch (e) {}
       row.parentNode.insertBefore(h('<h2 class="oc-sres">نتائج البحث عن <em>' + esc(q) + '</em></h2>'), row);
-    } else {
-      // parts strip under the banner
-      var strip = kindsSection(); strip.classList.add('oc-catstrip');
+    } else if (!isOffers) {
+      // strip under the banner: stripe models inside the stripes tree, part kinds everywhere else
+      var stNode = findNode(997204374), pid0 = (/\/c(\d+)/.exec(decodeURIComponent(location.pathname)) || [])[1];
+      var inSt = function (t) { return (/\/c(\d+)/.exec(t.u) || [])[1] === pid0 || (t.s || []).some(inSt); };
+      var strip = stNode && pid0 && inSt(stNode) ? h('<section class="oc-sec oc-cols oc-cols--st"><div class="oc-container"><div class="oc-cols__row">' + stNode.s.map(function (k) {
+        var on = (/\/c(\d+)/.exec(k.u) || [])[1] === pid0 || (k.s || []).some(function (y) { return (/\/c(\d+)/.exec(y.u) || [])[1] === pid0; });
+        return '<a class="oc-col' + (on ? ' is-on' : '') + '" href="' + k.u + '"><span class="oc-col__pic"><img loading="lazy" src="' + esc(k.i || '') + '" alt=""></span><b>' + esc(k.n) + '</b><small>' + num(k.c) + ' منتج</small></a>';
+      }).join('') + '</div></div></section>') : kindsSection();
+      strip.classList.add('oc-catstrip');
       main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
     }
     // sidebar
@@ -885,10 +914,14 @@
     if (h1) {
       h1.classList.add('oc-count');
       // Salla writes "more than 15" because it loads 15 at a time, the real count is in the categories tree
-      var findNode = function (list) { for (var i = 0; i < list.length; i++) { if (cid(list[i].u) === hereId) return list[i]; var s = findNode(list[i].s || []); if (s) return s; } return null; };
-      var node = isSearch ? null : findNode(TREE);
+      var findHere = function (list) { for (var i = 0; i < list.length; i++) { if (cid(list[i].u) === hereId) return list[i]; var s = findHere(list[i].s || []); if (s) return s; } return null; };
+      var node = isSearch || isOffers ? null : findHere(TREE);
       var strip1 = function () {
         if (node && node.c) { var want = num(node.c) + ' منتج'; if (h1.textContent.trim() !== want) h1.textContent = want; return; }
+        // search only knows the first 15, so no count there, offers shows its own number in our wording
+        if (isSearch) { if (h1.textContent.trim()) h1.textContent = ''; return; }
+        var m = /(\d+)\s*منتج/.exec(h1.textContent.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }));
+        if (isOffers && m) { var w2 = num(+m[1]) + ' منتج'; if (h1.textContent.trim() !== w2) h1.textContent = w2; return; }
         var t = h1.firstChild; if (t && t.nodeType === 3 && /-/.test(t.textContent)) t.textContent = '';
       };
       strip1();
@@ -908,6 +941,17 @@
     };
     sw.addEventListener('click', function (e) { var b = e.target.closest('button[data-v]'); if (b) apply(+b.dataset.v); });
     apply(cur);
+    // a search with no results gets a way forward instead of an empty box
+    if (isSearch) {
+      var noRes = function () {
+        if (!list || $('.oc-noresult') || $('.s-product-card-entry', list) || !/لا توجد/.test(list.textContent)) return;
+        sw.style.display = 'none'; list.style.display = 'none'; if (tools) tools.style.visibility = 'hidden';
+        var chips = TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + '</a>' + (t.s || []).slice(0, 6).map(function (k) { return '<a class="oc-chip" href="' + k.u + '">' + esc(k.n) + '</a>'; }).join(''); }).join('');
+        list.parentNode.insertBefore(h('<div class="oc-noresult"><b>ما لقينا منتجات بهذا الاسم</b><p>جرب كلمة ثانية أو اسم القطعة مع موديل سيارتك أو اختر من الأقسام تحت</p><div class="oc-chips">' + chips + '</div>' +
+          '<a class="oc-btn oc-btn--primary" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener">' + bic('whatsapp') + 'راسلنا ونساعدك تلقى القطعة</a></div>'), list.nextSibling);
+      };
+      setTimeout(noRes, 1500); setTimeout(noRes, 3500); setTimeout(noRes, 6000);
+    }
   }
 
 
@@ -918,6 +962,13 @@
         c.dataset.oc = '1';
         var t = $('.s-product-card-content-title', c);
         if (t && /^(خط|ستيكر|شعار|ملصق)/.test(t.textContent.trim())) c.classList.add('oc-photo');
+        // discount badge like the home cards
+        var sp = $('.s-product-card-sale-price', c), im = $('.s-product-card-image', c);
+        if (sp && im && !$('.oc-cbadge', c)) {
+          var val = function (e) { return e ? +e.textContent.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[^\d.]/g, '') : 0; };
+          var now = val($('h4', sp)), was = val($('span', sp));
+          if (now && was > now) im.appendChild(h('<span class="oc-cbadge">خصم ' + num(Math.round((was - now) / was * 100)) + '٪</span>'));
+        }
       });
     };
     mark();
@@ -936,7 +987,9 @@
     var slider = side && $('salla-slider', side);
     var buildThumbs = function () {
       if (!slider || $('.oc-thumbs', side)) return;
-      var imgs = $$('.swiper-slide img', slider); if (imgs.length < 2) return;
+      // the slider repeats slides when it loops, so keep each picture once
+      var seen = [], imgs = $$('.swiper-slide:not(.swiper-slide-duplicate) img', slider).filter(function (im) { var u = im.currentSrc || im.src || im.dataset.src; if (!u || seen.indexOf(u) > -1) return false; seen.push(u); return true; });
+      if (imgs.length < 2) return;
       var th = h('<div class="oc-thumbs"><button type="button" class="oc-thumbs__nav" data-d="-1" aria-label="الصورة السابقة">' + ic('up') + '</button><div class="oc-thumbs__list">' +
         imgs.map(function (im, i) { return '<button type="button" data-i="' + i + '" class="' + (i ? '' : 'is-on') + '" aria-label="صورة ' + (i + 1) + '"><img src="' + esc(im.currentSrc || im.src || im.dataset.src) + '" alt=""></button>'; }).join('') +
         '</div><button type="button" class="oc-thumbs__nav oc-thumbs__nav--down" data-d="1" aria-label="الصورة التالية">' + ic('up') + '</button></div>');
@@ -945,11 +998,11 @@
       var mark = function (i) { $$('.oc-thumbs__list button', th).forEach(function (b, j) { b.classList.toggle('is-on', j === i); }); };
       th.addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b) return; var s1 = sw(); if (!s1) return;
-        var to = b.dataset.i != null ? +b.dataset.i : Math.max(0, Math.min(imgs.length - 1, s1.activeIndex + (+b.dataset.d)));
-        s1.slideTo(to); mark(to);
+        var to = b.dataset.i != null ? +b.dataset.i : Math.max(0, Math.min(imgs.length - 1, (s1.realIndex != null ? s1.realIndex : s1.activeIndex) + (+b.dataset.d)));
+        if (s1.slideToLoop && s1.params && s1.params.loop) s1.slideToLoop(to); else s1.slideTo(to); mark(to);
       });
       // the swiper may not be ready yet, so hook the slide change once it is
-      var hook = function () { var s0 = sw(); if (s0 && s0.on && !s0.__oc) { s0.__oc = 1; s0.on('slideChange', function () { mark(s0.activeIndex); }); } else if (!s0) setTimeout(hook, 500); };
+      var hook = function () { var s0 = sw(); if (s0 && s0.on && !s0.__oc) { s0.__oc = 1; s0.on('slideChange', function () { mark(s0.realIndex != null ? s0.realIndex : s0.activeIndex); }); } else if (!s0) setTimeout(hook, 500); };
       hook();
     };
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
@@ -960,7 +1013,7 @@
         var el = $('.swiper', slider), s1 = el && el.swiper;
         var srcs = $$('.swiper-slide img', slider).map(function (im) { return im.currentSrc || im.src || im.dataset.src; }).filter(function (u, k, a) { return u && a.indexOf(u) === k; });
         if (!srcs.length) return;
-        var i = s1 ? Math.min(s1.activeIndex, srcs.length - 1) : 0;
+        var i = s1 ? Math.min(s1.realIndex != null ? s1.realIndex : s1.activeIndex, srcs.length - 1) : 0;
         var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صور المنتج"><button type="button" class="oc-viewer__x" aria-label="إغلاق">' + ic('x') + '</button>' +
           '<button type="button" class="oc-viewer__nav oc-viewer__prev" aria-label="الصورة السابقة">' + ic('right') + '</button><img class="oc-viewer__img" alt="">' +
           '<button type="button" class="oc-viewer__nav oc-viewer__next" aria-label="الصورة التالية">' + ic('left') + '</button>' +
@@ -1023,7 +1076,8 @@
       var sp = h('<ul class="oc-pspecs">' + specs.map(function (x) { return '<li><b>' + x[0] + '</b><span' + (x[0] === 'رمز المنتج' ? ' dir="ltr"' : '') + '>' + esc(x[1]) + '</span></li>'; }).join('') + '</ul>');
       var shortD = $('.oc-pshort', info) || facts, after = shortD;
       if (p.is_on_sale && !$('.oc-ptimer', info)) {
-        var end = p.discount_ends ? p.discount_ends * 1000 : nextFriday().getTime();
+        // same weekly countdown as the top bar and the deals row, sooner only when the discount itself ends sooner
+        var fri = nextFriday().getTime(), end = p.discount_ends && p.discount_ends * 1000 > Date.now() ? Math.min(p.discount_ends * 1000, fri) : fri;
         if (end > Date.now()) {
           var tm = h('<div class="oc-ptimer"><b>عرض لفترة محدودة</b><span class="oc-ptimer__t" data-end="' + end + '"><span class="oc-ptimer__u"><b data-u="d">٠</b><small>يوم</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="h">٠</b><small>ساعة</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="m">٠</b><small>دقيقة</small></span><i>:</i><span class="oc-ptimer__u"><b data-u="s">٠</b><small>ثانية</small></span></span></div>');
           shortD.parentNode.insertBefore(tm, shortD.nextSibling); after = tm; tickAll();
@@ -1237,6 +1291,11 @@
       '<label><span>رسالتك</span><textarea name="m" rows="6" required placeholder="اكتب رسالتك"></textarea></label>' +
       '<button type="submit" class="oc-cform__btn">أرسل الرسالة</button></form>' +
       '</div></div></section>');
+    // browser messages come in the device language, so the required fields say it in Arabic
+    $$('[required]', s).forEach(function (x) {
+      x.addEventListener('invalid', function () { x.setCustomValidity(x.name === 'n' ? 'اكتب اسمك' : 'اكتب رسالتك'); });
+      x.addEventListener('input', function () { x.setCustomValidity(''); });
+    });
     $('form', s).addEventListener('submit', function (e) {
       e.preventDefault(); var f = e.target;
       var t = 'الاسم ' + f.n.value + '\nالجوال ' + f.p.value + '\nالسيارة ' + f.c.value + '\n' + f.m.value;
@@ -1363,7 +1422,7 @@
         return '<div class="oc-ditem" data-id="' + esc(it.id) + '" data-q="' + (+it.quantity || 1) + '"><img src="' + esc(img) + '" alt=""><div><a href="' + esc(it.url || '#') + '">' + esc(it.product_name || it.name) + '</a><small>' + num(price) + ' ' + SAR + '</small>' +
           '<div class="oc-ditem__row"><div class="oc-ditem__qty"><button type="button" data-step="1" aria-label="زيادة">' + ic('plus') + '</button><span>' + num(it.quantity) + '</span><button type="button" data-step="-1" aria-label="نقص">' + ic('minus') + '</button></div>' +
           '<button type="button" class="oc-ditem__del" data-del aria-label="حذف من السلة">' + ic('x') + '</button></div></div></div>';
-      }).join('') : '<p class="oc-empty">سلتك فاضية</p>';
+      }).join('') : '<p class="oc-empty">سلتك فارغة</p>';
       var total = +(c && (c.sub_total || c.total)) || 0;
       $('.oc-drawer__sum b', d).innerHTML = num(total) + ' ' + SAR;
       var left = Math.max(0, FREE_SHIP - total);
