@@ -1746,3 +1746,5 @@ html body .oc-wdeals__side .oc-wdeals__arrow .oc-ic { width: 18px; height: 18px;
 html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-left { position: absolute !important; left: 0 !important; right: auto !important; top: -62px !important; width: auto !important; }
 html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-nav { position: static !important; inset: auto !important; width: auto !important; display: flex !important; gap: 8px; transform: none !important; margin: 0 !important; }
 @media (max-width: 767px) { html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-nav { display: none !important; } }
+/* 15 empty cart: no red zero on the cart icon */
+#part-store-header .s-cart-summary-count.oc-zero { display: none !important; }
