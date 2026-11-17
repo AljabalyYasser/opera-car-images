@@ -3,6 +3,32 @@
   if (window.__OC_LOADED) return;
   window.__OC_LOADED = true;
 
+  /* ---------- store preview ----------
+     while the store is closed the owner previews it under salla.sa/<store>, but every link points at the real domain
+     (which shows the under construction page) or at the site root, so send them back inside the preview */
+  var PREVIEW = location.hostname === 'salla.sa' ? '/' + (location.pathname.split('/')[1] || '') : '';
+  function fixUrl(u) {
+    if (!PREVIEW || !u) return u;
+    var m = u.match(/^(?:https?:)?\/\/(?:www\.)?operacar\.store(\/.*)?$/i);
+    if (m) u = m[1] || '/';
+    else if (/^https?:\/\/salla\.sa\//i.test(u)) return u;
+    if (u.charAt(0) !== '/' || u.charAt(1) === '/') return u;
+    if (u === PREVIEW || u.indexOf(PREVIEW + '/') === 0 || u.indexOf(PREVIEW + '?') === 0) return u;
+    return PREVIEW + (u === '/' ? '' : u);
+  }
+  if (PREVIEW) {
+    var fixLink = function (e) {
+      var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+      var h = a.getAttribute('href'), f = fixUrl(h);
+      if (f !== h) a.setAttribute('href', f);
+    };
+    ['mousedown', 'touchstart', 'focusin', 'click', 'auxclick'].forEach(function (t) { document.addEventListener(t, fixLink, true); });
+    document.addEventListener('submit', function (e) {
+      var f = e.target, act = f.getAttribute && f.getAttribute('action');
+      if (act) { var x = fixUrl(act); if (x !== act) f.setAttribute('action', x); }
+    }, true);
+  }
+
   var IMG = '__IMG__';
   var API = 'https://api.salla.dev/store/v1/';
   var SID = '1590934287';
@@ -175,7 +201,7 @@
     var sw = $('.part-header-search', header) || $('salla-search', header);
     if (sw && !$('.oc-scat', header)) {
       var sc = h('<label class="oc-scat">' + ic('grid') + '<select aria-label="الأقسام"><option value="">كل الأقسام</option>' + TREE.map(function (n) { return '<option value="' + n.u + '">' + n.n + '</option>' + (n.s || []).map(function (k) { return '<option value="' + k.u + '">&nbsp;&nbsp;' + k.n + '</option>'; }).join(''); }).join('') + '</select></label>');
-      $('select', sc).addEventListener('change', function () { if (this.value) location.href = this.value; });
+      $('select', sc).addEventListener('change', function () { if (this.value) location.href = fixUrl(this.value); });
       sw.classList.add('oc-has-scat'); sw.insertBefore(sc, sw.firstChild);
     }
     // mode toggle (desktop)
@@ -355,7 +381,7 @@
         var yy = String(+fy.value || '');
         if (yy) { var hit = list.filter(function (p) { return String(p.name || '').indexOf(yy) > -1; }); list = hit.concat(list.filter(function (p) { return hit.indexOf(p) < 0; })); }
         track.innerHTML = list.length ? list.slice(0, 12).map(card).join('') : '<p class="oc-empty">ما فيه منتجات لهذا الاختيار حاليا</p>';
-      }).catch(function () { location.href = url; });
+      }).catch(function () { location.href = fixUrl(url); });
     });
     return s;
   }
@@ -704,7 +730,7 @@
       '</div></div></section>');
     var open = function (e) {
       if (e) e.preventDefault();
-      try { salla.event.dispatch('login::open'); } catch (err) { location.href = '/login'; }
+      try { salla.event.dispatch('login::open'); } catch (err) { location.href = fixUrl('/login'); }
     };
     var form = $('form', s);
     if (form) { form.addEventListener('submit', open); $('input', s).addEventListener('click', open); $('input', s).addEventListener('focus', function () { this.blur(); open(); }); }
