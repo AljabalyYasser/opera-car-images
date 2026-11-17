@@ -1748,3 +1748,9 @@ html body.product-single salla-products-slider .s-slider-v-centered .s-slider-bl
 @media (max-width: 767px) { html body.product-single salla-products-slider .s-slider-v-centered .s-slider-block__title-nav { display: none !important; } }
 /* 15 empty cart: no red zero on the cart icon */
 #part-store-header .s-cart-summary-count.oc-zero { display: none !important; }
+/* 16 full screen viewer: arrows at the sides, thumbnails in a row (the general viewer button rule pinned them to the corner) */
+html body .oc-viewer .oc-viewer__nav { top: 50%; left: auto; right: auto; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff; }
+html body .oc-viewer .oc-viewer__prev { right: 18px; }
+html body .oc-viewer .oc-viewer__next { left: 18px; }
+html body .oc-viewer .oc-viewer__nav:hover { background: var(--oc-red); }
+html body .oc-viewer .oc-viewer__thumbs button { position: static; width: 64px; height: 48px; border-radius: 4px; background: #111; padding: 2px; }

@@ -945,9 +945,12 @@
       var mark = function (i) { $$('.oc-thumbs__list button', th).forEach(function (b, j) { b.classList.toggle('is-on', j === i); }); };
       th.addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b) return; var s1 = sw(); if (!s1) return;
-        if (b.dataset.i != null) s1.slideTo(+b.dataset.i); else s1.slideTo(Math.max(0, Math.min(imgs.length - 1, s1.activeIndex + (+b.dataset.d))));
+        var to = b.dataset.i != null ? +b.dataset.i : Math.max(0, Math.min(imgs.length - 1, s1.activeIndex + (+b.dataset.d)));
+        s1.slideTo(to); mark(to);
       });
-      var s0 = sw(); if (s0 && s0.on) s0.on('slideChange', function () { mark(s0.activeIndex); });
+      // the swiper may not be ready yet, so hook the slide change once it is
+      var hook = function () { var s0 = sw(); if (s0 && s0.on && !s0.__oc) { s0.__oc = 1; s0.on('slideChange', function () { mark(s0.activeIndex); }); } else if (!s0) setTimeout(hook, 500); };
+      hook();
     };
     buildThumbs(); setTimeout(buildThumbs, 1500); setTimeout(buildThumbs, 4000);
     if (slider && !$('.oc-zoom', side)) {
@@ -955,7 +958,7 @@
       slider.appendChild(zb);
       zb.addEventListener('click', function () {
         var el = $('.swiper', slider), s1 = el && el.swiper;
-        var srcs = $$('.swiper-slide img', slider).map(function (im) { return im.currentSrc || im.src || im.dataset.src; }).filter(Boolean);
+        var srcs = $$('.swiper-slide img', slider).map(function (im) { return im.currentSrc || im.src || im.dataset.src; }).filter(function (u, k, a) { return u && a.indexOf(u) === k; });
         if (!srcs.length) return;
         var i = s1 ? Math.min(s1.activeIndex, srcs.length - 1) : 0;
         var v = h('<div class="oc-viewer" role="dialog" aria-modal="true" aria-label="صور المنتج"><button type="button" class="oc-viewer__x" aria-label="إغلاق">' + ic('x') + '</button>' +
