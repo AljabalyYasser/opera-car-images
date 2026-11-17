@@ -855,8 +855,11 @@
     }
     // sidebar
     var here = decodeURIComponent(location.pathname);
-    var link = function (n) { var on = here === decodeURIComponent(n.u) ? ' is-on' : ''; return '<a class="oc-acat' + on + '" href="' + n.u + '"><span>' + esc(n.n) + '</span><em>(' + num(n.c) + ')</em></a>'; };
-    var inTree = function (t) { return decodeURIComponent(t.u) === here || t.s.some(inTree); };
+    // compare by category number so it also works under a preview path
+    var cid = function (u) { var m = /\/c(\d+)/.exec(decodeURIComponent(u || '')); return m ? m[1] : decodeURIComponent(u || ''); };
+    var hereId = cid(here);
+    var link = function (n) { var on = hereId === cid(n.u) ? ' is-on' : ''; return '<a class="oc-acat' + on + '" href="' + n.u + '"><span>' + esc(n.n) + '</span><em>(' + num(n.c) + ')</em></a>'; };
+    var inTree = function (t) { return cid(t.u) === hereId || (t.s || []).some(inTree); };
     var anyOn = TREE.some(inTree);
     var cats = TREE.map(function (t, i) { var open = inTree(t) || (!anyOn && i === 0); return '<div class="oc-acat-group' + (open ? ' is-open' : '') + '">' + link(t) + '<div class="oc-acat-subs">' + t.s.map(link).join('') + '</div></div>'; }).join('');
     var models = MODELS.filter(function (m, i) { return MODELS.findIndex(function (x) { return x.parts === m.parts; }) === i; })
@@ -879,7 +882,7 @@
     if (h1) {
       h1.classList.add('oc-count');
       // Salla writes "more than 15" because it loads 15 at a time, the real count is in the categories tree
-      var findNode = function (list) { for (var i = 0; i < list.length; i++) { if (decodeURIComponent(list[i].u) === here) return list[i]; var s = findNode(list[i].s || []); if (s) return s; } return null; };
+      var findNode = function (list) { for (var i = 0; i < list.length; i++) { if (cid(list[i].u) === hereId) return list[i]; var s = findNode(list[i].s || []); if (s) return s; } return null; };
       var node = isSearch ? null : findNode(TREE);
       var strip1 = function () {
         if (node && node.c) { var want = num(node.c) + ' منتج'; if (h1.textContent.trim() !== want) h1.textContent = want; return; }

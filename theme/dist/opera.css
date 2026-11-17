@@ -1638,10 +1638,14 @@ html body.product-single .oc-pbox .part-sidebar { position: sticky !important; t
 
 /* ===== Review fixes 17 Nov ===== */
 /* 1 product cards in category pages match the home cards */
+/* Salla sets the card title size from a cascade layer, so ours sits in a layer too */
+@layer ocfix {
 html body .s-product-card-entry .s-product-card-content-title, html body .s-product-card-entry .s-product-card-content-title a { font-size: 15px !important; font-weight: 600 !important; line-height: 1.8 !important; }
-html body .s-product-card-entry .s-product-card-content-title a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 html body salla-products-list[data-oc-view="4"] .s-product-card-entry .s-product-card-content-title a { font-size: 14px !important; }
-html body salla-products-list[data-oc-view="1"] .s-product-card-entry .s-product-card-content-title a { font-size: 17px !important; -webkit-line-clamp: 3; }
+html body salla-products-list[data-oc-view="1"] .s-product-card-entry .s-product-card-content-title a { font-size: 17px !important; }
+}
+html body .s-product-card-entry .s-product-card-content-title a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+html body salla-products-list[data-oc-view="1"] .s-product-card-entry .s-product-card-content-title a { -webkit-line-clamp: 3; }
 /* 2 hero button reads as a button on the dark picture */
 .oc-hslide__btn { background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .55); backdrop-filter: blur(2px); }
 /* 3 footer policy links had Salla's faded look */
