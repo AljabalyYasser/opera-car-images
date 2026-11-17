@@ -486,6 +486,9 @@
         });
       };
       more(t.q, 1).then(function (r) {
+        // a second source mixed in so the newest row is not one product line
+        return t.extra ? api(t.extra).then(function (x) { return { data: ((r && r.data) || []).concat((x && x.data) || []) }; }, function () { return r; }) : r;
+      }).then(function (r) {
         var list = (r && r.data) || [];
         if (t.order) list.sort(function (a, b) { return t.order.indexOf(+a.id) - t.order.indexOf(+b.id); });
         var ok = list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); });
@@ -516,7 +519,7 @@
   }
   function latestSection() {
     return tabRow({ id: 'oc-new', below: true, title: 'وصل حديثا', all: C['الخطوط'], tabs: [
-      { n: 'كل المنتجات', q: 'products?source=latest&per_page=50', mix: true, u: STORE_URL },
+      { n: 'كل المنتجات', q: 'products?source=latest&per_page=50', extra: inCat('قطع الغيار والاكسسوارات'), mix: true, u: STORE_URL },
       { n: 'خطوط هايلوكس', q: inCat('خطوط هايلوكس'), u: C['خطوط هايلوكس'] },
       { n: 'خطوط شاص', q: inCat('خطوط شاص'), u: C['خطوط شاص'] },
       { n: 'ستيكرات وشعارات', q: inCat('ستيكرات وشعارات'), u: C['ستيكرات وشعارات'] }] });
@@ -942,7 +945,7 @@
     if (isSearch) {
       var noRes = function () {
         if (!list || $('.oc-noresult') || $('.s-product-card-entry', list) || !/لا توجد/.test(list.textContent)) return;
-        sw.style.display = 'none'; list.style.display = 'none';
+        sw.style.display = 'none'; list.style.display = 'none'; if (tools) tools.style.visibility = 'hidden';
         var chips = TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + '</a>' + (t.s || []).slice(0, 6).map(function (k) { return '<a class="oc-chip" href="' + k.u + '">' + esc(k.n) + '</a>'; }).join(''); }).join('');
         list.parentNode.insertBefore(h('<div class="oc-noresult"><b>ما لقينا منتجات بهذا الاسم</b><p>جرب كلمة ثانية أو اسم القطعة مع موديل سيارتك أو اختر من الأقسام تحت</p><div class="oc-chips">' + chips + '</div>' +
           '<a class="oc-btn oc-btn--primary" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener">' + bic('whatsapp') + 'راسلنا ونساعدك تلقى القطعة</a></div>'), list.nextSibling);
