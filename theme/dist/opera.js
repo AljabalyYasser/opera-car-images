@@ -1316,11 +1316,19 @@
   function searchFocus() {
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.s-search-placeholder-trig, .s-search-placeholder-wrapper, .s-search-input')) return;
-      var t0 = Date.now();
+      var t0 = Date.now(), buf = '';
+      // keep what is typed while the window opens and hand it to the real box
+      var grab = function (k) { if (k.key && k.key.length === 1 && !k.ctrlKey && !k.metaKey) { buf += k.key; k.preventDefault(); } };
+      document.addEventListener('keydown', grab, true);
       (function tryFocus() {
-        var inp = $$('.s-search-modal input, salla-search input[type=search], salla-search input[type=text], .s-search-container input').filter(function (x) { return x.offsetParent; })[0];
-        if (inp && document.activeElement !== inp) { inp.focus(); return; }
-        if (!inp && Date.now() - t0 < 1500) setTimeout(tryFocus, 60);
+        var inp = $$('input.s-search-input:not(.s-search-placeholder-trigger), .s-search-modal input').filter(function (x) { return x.offsetParent; })[0];
+        if (inp) {
+          document.removeEventListener('keydown', grab, true);
+          inp.focus();
+          if (buf) { inp.value += buf; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: buf.slice(-1) })); }
+          return;
+        }
+        if (Date.now() - t0 < 2000) setTimeout(tryFocus, 50); else document.removeEventListener('keydown', grab, true);
       })();
     }, true);
   }
