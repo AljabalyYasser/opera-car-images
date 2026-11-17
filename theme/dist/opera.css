@@ -1791,3 +1791,6 @@ html.oc-dark .oc-prev__write { background: #2B3038; }
   .oc-makes__grid::-webkit-scrollbar { display: none; }
   .oc-makes__grid > * { scroll-snap-align: start; }
 }
+.oc-cols--st .oc-cols__row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 639px) { .oc-cols--st .oc-cols__row { display: flex; } }
+.oc-noresult { width: 100%; flex: 1 1 100%; }

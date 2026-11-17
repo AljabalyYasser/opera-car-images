@@ -831,6 +831,8 @@
     if (!title) title = (document.title.split('|')[0] || '').trim();
     // the browser title carries the store name after a dash, the banner shows the page name only
     title = title.replace(/\s*[-–|]\s*أوبرا كار\s*$/, '').trim();
+    // a sub category title comes as parent | child, the banner keeps the child
+    if (title.indexOf('|') > -1) title = title.split('|').pop().trim();
     var trail = cr.map(function (c, i) { return (i ? '<i>' + ic('left') + '</i>' : '') + (c[1] && i < cr.length - 1 ? '<a href="' + c[1] + '">' + esc(c[0]) + '</a>' : '<span>' + esc(c[0]) + '</span>'); }).join('');
     var b = h('<section class="oc-pbanner" style="background-image:linear-gradient(rgba(12,13,16,.78),rgba(12,13,16,.86)),url(' + IMG + 'ban_parts.webp)"><div class="oc-container"><h1>' + esc(title) + '</h1>' + (trail ? '<nav class="oc-trail" aria-label="مسار الصفحة">' + trail + '</nav>' : '') + '</div></section>');
     main.insertBefore(b, main.firstChild);
@@ -914,7 +916,7 @@
       var strip1 = function () {
         if (node && node.c) { var want = num(node.c) + ' منتج'; if (h1.textContent.trim() !== want) h1.textContent = want; return; }
         // search only knows the first 15, so no count there, offers shows its own number in our wording
-        if (isSearch) { if (/منتج/.test(h1.textContent)) h1.textContent = ''; return; }
+        if (isSearch) { if (h1.textContent.trim()) h1.textContent = ''; return; }
         var m = /(\d+)\s*منتج/.exec(h1.textContent.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }));
         if (isOffers && m) { var w2 = num(+m[1]) + ' منتج'; if (h1.textContent.trim() !== w2) h1.textContent = w2; return; }
         var t = h1.firstChild; if (t && t.nodeType === 3 && /-/.test(t.textContent)) t.textContent = '';
@@ -940,7 +942,7 @@
     if (isSearch) {
       var noRes = function () {
         if (!list || $('.oc-noresult') || $('.s-product-card-entry', list) || !/لا توجد/.test(list.textContent)) return;
-        sw.style.display = 'none';
+        sw.style.display = 'none'; list.style.display = 'none';
         var chips = TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + '</a>' + (t.s || []).slice(0, 6).map(function (k) { return '<a class="oc-chip" href="' + k.u + '">' + esc(k.n) + '</a>'; }).join(''); }).join('');
         list.parentNode.insertBefore(h('<div class="oc-noresult"><b>ما لقينا منتجات بهذا الاسم</b><p>جرب كلمة ثانية أو اسم القطعة مع موديل سيارتك أو اختر من الأقسام تحت</p><div class="oc-chips">' + chips + '</div>' +
           '<a class="oc-btn oc-btn--primary" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener">' + bic('whatsapp') + 'راسلنا ونساعدك تلقى القطعة</a></div>'), list.nextSibling);
