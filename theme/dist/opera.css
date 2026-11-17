@@ -226,10 +226,10 @@ html.oc-dark .s-product-card-content-footer .s-button-element { background: #2E3
 .oc-bottombar { display: none; }
 @media (max-width: 1023px) {
   .oc-bottombar { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; background: var(--oc-surface); border-top: 1px solid var(--oc-line); box-shadow: 0 -10px 30px -18px rgba(0, 0, 0, .35); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
-  .oc-bottombar a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--oc-muted); position: relative; padding: 4px 0; }
+  .oc-bottombar a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; line-height: 1.5; color: var(--oc-muted); position: relative; padding: 4px 0; }
   .oc-bottombar a .oc-ic { width: 23px; height: 23px; }
   .oc-bottombar a:hover, .oc-bottombar a:active { color: var(--oc-red); }
-  .oc-bb-count { position: absolute; top: 0; left: calc(50% - 20px); min-width: 18px; height: 18px; border-radius: 9px; background: var(--oc-red); color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+  .oc-bb-count { position: absolute; top: 0; left: calc(50% - 20px); min-width: 18px; height: 18px; border-radius: 9px; background: var(--oc-red); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
   body.oc-has-bb { padding-bottom: 68px; }
 }
 

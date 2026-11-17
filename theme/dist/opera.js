@@ -1397,21 +1397,25 @@
         if (inp) {
           document.removeEventListener('keydown', grab, true);
           inp.focus();
-          // quick picks under the box until the customer types
-          var panel = inp.closest('.s-search-panel');
-          if (panel && !$('.oc-squick', panel)) {
-            var qk = h('<div class="oc-squick"><b>الأكثر بحثا</b><div class="oc-chips">' + KINDS.map(function (k) { return '<a class="oc-chip" href="/search?q=' + encodeURIComponent(k[1]) + '">' + k[0] + '</a>'; }).join('') +
-              '<a class="oc-chip" href="' + C['الخطوط'] + '">الخطوط</a></div></div>');
-            panel.appendChild(qk);
-            var sync = function () { qk.hidden = !!inp.value.trim(); };
-            inp.addEventListener('input', sync); sync();
-          }
           if (buf) { inp.value += buf; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: buf.slice(-1) })); }
           return;
         }
-        if (Date.now() - t0 < 2000) setTimeout(tryFocus, 50); else document.removeEventListener('keydown', grab, true);
+        if (Date.now() - t0 < 6000) setTimeout(tryFocus, 50); else document.removeEventListener('keydown', grab, true);
       })();
     }, true);
+    // quick picks under the search box until the customer types; the box is built late the first time so keep watching for it
+    setInterval(function () {
+      $$('.s-search-panel').forEach(function (panel) {
+        if ($('.oc-squick', panel)) return;
+        var inp = $('input.s-search-input:not(.s-search-placeholder-trigger)', panel);
+        if (!inp) return;
+        var qk = h('<div class="oc-squick"><b>الأكثر بحثا</b><div class="oc-chips">' + KINDS.map(function (k) { return '<a class="oc-chip" href="/search?q=' + encodeURIComponent(k[1]) + '">' + k[0] + '</a>'; }).join('') +
+          '<a class="oc-chip" href="' + C['الخطوط'] + '">الخطوط</a></div></div>');
+        panel.appendChild(qk);
+        var sync = function () { qk.hidden = !!inp.value.trim(); };
+        inp.addEventListener('input', sync); inp.addEventListener('keyup', sync); sync();
+      });
+    }, 500);
   }
 
   /* cart drawer opened after adding to cart */
