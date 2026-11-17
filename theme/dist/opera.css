@@ -843,14 +843,14 @@ body.oc-textpage .content-entry h2, body.oc-textpage .content-entry h3 { font-fa
 .oc-storetop .oc-chip { font-size: 15px; padding: 8px 18px; }
 .oc-storetop em { font-style: normal; color: var(--oc-muted); }
 .oc-storegrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
-.oc-scat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; border: 1px solid var(--oc-border-soft); border-radius: 12px; padding: 16px 12px 18px; background: var(--oc-surface); transition: transform .3s, box-shadow .3s, border-color .3s; }
-.oc-scat:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .25); border-color: var(--oc-border); }
-.oc-scat__img { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
-.oc-scat__img img { width: 88%; height: 88%; object-fit: contain; transition: transform .5s; }
-.oc-scat:hover .oc-scat__img img { transform: scale(1.06); }
-.oc-scat__img .oc-skel { width: 100%; height: 100%; }
-.oc-scat b { font-size: 16px; line-height: 1.6; color: var(--oc-ink); }
-.oc-scat small { font-size: 14px; color: var(--oc-muted); }
+.oc-stile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; border: 1px solid var(--oc-border-soft); border-radius: 12px; padding: 16px 12px 18px; background: var(--oc-surface); transition: transform .3s, box-shadow .3s, border-color .3s; }
+.oc-stile:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .25); border-color: var(--oc-border); }
+.oc-stile__img { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.oc-stile__img img { width: 88%; height: 88%; object-fit: contain; transition: transform .5s; }
+.oc-stile:hover .oc-stile__img img { transform: scale(1.06); }
+.oc-stile__img .oc-skel { width: 100%; height: 100%; }
+.oc-stile b { font-size: 16px; line-height: 1.6; color: var(--oc-ink); }
+.oc-stile small { font-size: 14px; color: var(--oc-muted); }
 .oc-why__row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .oc-whycard { border: 1px solid var(--oc-border-soft); border-radius: 12px; padding: 26px 22px; background: var(--oc-surface); display: flex; flex-direction: column; gap: 10px; transition: transform .3s, box-shadow .3s; }
 .oc-whycard:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .25); }
@@ -1794,3 +1794,14 @@ html.oc-dark .oc-prev__write { background: #2B3038; }
 .oc-cols--st .oc-cols__row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 @media (max-width: 639px) { .oc-cols--st .oc-cols__row { display: flex; } }
 .oc-noresult { width: 100%; flex: 1 1 100%; }
+
+/* ===== Third review fixes 17 Nov ===== */
+.oc-ctd small { font-size: 12px; }
+.oc-cbadge { white-space: nowrap; }
+.oc-post__tags span { color: var(--oc-muted); }
+span.oc-chip { cursor: default; }
+/* quick picks inside the search window */
+.oc-squick { padding: 16px 4px 6px; }
+.oc-squick b { display: block; margin-bottom: 10px; font-size: 15px; font-weight: 600; line-height: 1.6; color: var(--oc-ink); }
+.oc-squick .oc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.oc-squick[hidden] { display: none; }

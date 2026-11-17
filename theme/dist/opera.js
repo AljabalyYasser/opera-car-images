@@ -1244,13 +1244,13 @@
       '<div class="oc-storetop">' + TREE.map(function (t) { return '<a class="oc-chip" href="' + t.u + '">' + esc(t.n) + ' <em>(' + num(t.c) + ')</em></a>'; }).join('') + '</div>' +
       '<div class="oc-storegrid">' + cats.map(function (x) {
         var car = CARIMG[x.n];
-        return '<a class="oc-scat" href="' + x.u + '"' + (car ? '' : ' data-cid="' + (catId(x.u) || '') + '"') + '><span class="oc-scat__img">' + (car ? '<img loading="lazy" src="' + IMG + car + '" alt="">' : '<span class="oc-skel"></span>') + '</span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
+        return '<a class="oc-stile" href="' + x.u + '"' + (car ? '' : ' data-cid="' + (catId(x.u) || '') + '"') + '><span class="oc-stile__img">' + (car ? '<img loading="lazy" src="' + IMG + car + '" alt="">' : '<span class="oc-skel"></span>') + '</span><b>' + esc(x.n) + '</b><small>' + num(x.c) + ' منتج</small></a>';
       }).join('') + '</div></div></section>'));
-    $$('.oc-scat', host).forEach(function (a) {
+    $$('.oc-stile', host).forEach(function (a) {
       var id = a.dataset.cid; if (!id) return;
       api('products?source=categories&source_value[]=' + id + '&per_page=1').then(function (r) {
         var p = r && r.data && r.data[0]; var u = p && p.image && p.image.url;
-        $('.oc-scat__img', a).innerHTML = u ? '<img loading="lazy" src="' + esc(u) + '" alt="">' : '';
+        $('.oc-stile__img', a).innerHTML = u ? '<img loading="lazy" src="' + esc(u) + '" alt="">' : '';
       }).catch(function () {});
     });
   }
@@ -1343,7 +1343,14 @@
     var i = ARTICLES.indexOf(a), prev = ARTICLES[i - 1], next = ARTICLES[i + 1];
     var u = encodeURIComponent(location.origin + location.pathname), t = encodeURIComponent(a.title);
     var tags = ART_TAGS[a.id] || [a.tag];
-    var tagLink = function (x) { return '<a href="/search?q=' + encodeURIComponent(x) + '">#' + esc(x) + '</a>'; };
+    // tags lead somewhere useful: product tags to their section, article tags to another article with the same tag
+    var tagHref = function (g) {
+      var map = { 'خطوط': C['الخطوط'], 'قطع غيار': C['قطع الغيار والاكسسوارات'], 'تويوتا': STORE_URL, 'أصلي': '/search?q=' + encodeURIComponent('أصلي'), 'بديل': '/search?q=' + encodeURIComponent('بديل') };
+      if (map[g]) return map[g];
+      var other = ARTICLES.filter(function (x) { return x.id !== a.id && (ART_TAGS[x.id] || [x.tag]).indexOf(g) > -1; })[0];
+      return other ? other.url : null;
+    };
+    var tagLink = function (x) { var u = tagHref(x); return u ? '<a href="' + u + '">#' + esc(x) + '</a>' : '<span>#' + esc(x) + '</span>'; };
     var foot = h('<div class="oc-post__foot"><div class="oc-post__tags"><b>الوسوم</b>' + tags.map(tagLink).join('') + '</div>' +
       '<div class="oc-post__share"><b>شارك المقال</b><a href="https://wa.me/?text=' + t + '%20' + u + '" target="_blank" rel="noopener" aria-label="شارك على واتساب">' + bic('whatsapp') + '</a>' +
       '<a href="https://x.com/intent/post?url=' + u + '&text=' + t + '" target="_blank" rel="noopener" aria-label="شارك على إكس">' + bic('x') + '</a>' +
@@ -1360,7 +1367,7 @@
       '<form class="oc-asearch" action="/search" method="get" role="search"><label class="oc-sr" for="oc-psq">ابحث في المتجر</label><input id="oc-psq" name="q" type="search" placeholder="ابحث هنا"><button type="submit" aria-label="بحث">' + ic('search') + '</button></form>' +
       '<div class="oc-aside__part"><h3>التصنيفات</h3><ul class="oc-post__cats">' + Object.keys(groups).map(function (g) { return '<li><a href="/#oc-articles">' + esc(g) + '</a><span>(' + (groups[g] < 10 ? '٠' : '') + num(groups[g]) + ')</span></li>'; }).join('') + '</ul></div>' +
       '<div class="oc-aside__part"><h3>أحدث المقالات</h3>' + ARTICLES.slice(0, 3).map(function (x) { return '<a class="oc-post__recent" href="' + x.url + '"><img loading="lazy" src="' + IMG + x.img + '" alt=""><span><b>' + esc(x.title) + '</b><small>' + esc(x.date) + '</small></span></a>'; }).join('') + '</div>' +
-      '<div class="oc-aside__part"><h3>الوسوم</h3><div class="oc-chips">' + allTags.map(function (g) { return '<a class="oc-chip" href="/search?q=' + encodeURIComponent(g) + '">' + esc(g) + '</a>'; }).join('') + '</div></div>' +
+      '<div class="oc-aside__part"><h3>الوسوم</h3><div class="oc-chips">' + allTags.map(function (g) { var u = tagHref(g); return u ? '<a class="oc-chip" href="' + u + '">' + esc(g) + '</a>' : '<span class="oc-chip">' + esc(g) + '</span>'; }).join('') + '</div></div>' +
       '</div></aside>');
     row.appendChild(aside); row.classList.add('oc-post');
     var rel = articlesSection('مقالات ذات صلة', a.id);
@@ -1390,6 +1397,15 @@
         if (inp) {
           document.removeEventListener('keydown', grab, true);
           inp.focus();
+          // quick picks under the box until the customer types
+          var panel = inp.closest('.s-search-panel');
+          if (panel && !$('.oc-squick', panel)) {
+            var qk = h('<div class="oc-squick"><b>الأكثر بحثا</b><div class="oc-chips">' + KINDS.map(function (k) { return '<a class="oc-chip" href="/search?q=' + encodeURIComponent(k[1]) + '">' + k[0] + '</a>'; }).join('') +
+              '<a class="oc-chip" href="' + C['الخطوط'] + '">الخطوط</a></div></div>');
+            panel.appendChild(qk);
+            var sync = function () { qk.hidden = !!inp.value.trim(); };
+            inp.addEventListener('input', sync); sync();
+          }
           if (buf) { inp.value += buf; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: buf.slice(-1) })); }
           return;
         }
@@ -1402,7 +1418,7 @@
   function cartDrawer() {
     if ($('.oc-drawer')) return;
     var d = h('<div class="oc-drawer" aria-hidden="true"><div class="oc-drawer__bg" data-close></div>' +
-      '<aside class="oc-drawer__panel" role="dialog" aria-modal="true" aria-label="سلة المشتريات"><div class="oc-drawer__head"><b>سلة المشتريات</b><button type="button" data-close aria-label="إغلاق">' + ic('x') + '</button></div>' +
+      '<aside class="oc-drawer__panel" role="dialog" aria-modal="true" aria-label="سلة التسوق"><div class="oc-drawer__head"><b>سلة التسوق</b><button type="button" data-close aria-label="إغلاق">' + ic('x') + '</button></div>' +
       '<div class="oc-drawer__items"></div>' +
       '<div class="oc-drawer__foot"><div class="oc-ship oc-ship--mini"><div class="oc-ship__txt">' + ic('truck') + '<span></span></div><div class="oc-ship__track"><i></i></div></div>' +
       '<div class="oc-drawer__sum"><span>المجموع</span><b></b></div>' +
@@ -1526,6 +1542,8 @@
     toTop();
     cartDrawer();
     searchFocus();
+    // social accounts are not filled in yet, so their icons do not jump to the top of the page
+    document.addEventListener('click', function (e) { var a = e.target.closest('a[href="#"]'); if (a && a.closest('.oc-social, .oc-follow, .oc-contact')) e.preventDefault(); });
     var foot = $('footer.store-footer');
     if (foot && !$('.oc-sub')) foot.parentNode.insertBefore(subscribeBand(), $('.oc-feats-wrap') || foot);
     tickAll();
