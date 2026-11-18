@@ -130,11 +130,27 @@
       var logo = window.salla && salla.config && salla.config.get('store.logo');
       var hd = h('<div class="oc-mm-head">' + (logo ? '<img src="' + logo + '" alt="أوبرا كار">' : '<b>أوبرا كار</b>') + '<button type="button" aria-label="إغلاق القائمة">' + ic('x') + '</button></div>');
       nav.insertBefore(hd, nav.firstChild);
-      $('button', hd).addEventListener('click', function () { var bd = $('.mm-ocd__backdrop'); if (bd) bd.click(); else { var o = $('.mm-ocd--open'); if (o) o.classList.remove('mm-ocd--open'); } });
+      $('button', hd).addEventListener('click', closeMobMenu);
     };
     menuHead(); setTimeout(menuHead, 1500); setTimeout(menuHead, 4000);
-    if (!window.__ocMH) { window.__ocMH = 1; document.addEventListener('click', function (e) { if (e.target.closest('a.mburger')) setTimeout(menuHead, 50); }, true); }
+    if (!window.__ocMH) {
+      window.__ocMH = 1;
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('a.mburger')) setTimeout(menuHead, 50);
+        // links to a section of the home page: close the menu so the page can scroll to it
+        var a = e.target.closest('#mobile-menu a[href*="#oc-"]'); if (!a) return;
+        var id = a.getAttribute('href').split('#')[1], here = location.pathname === '/' || location.pathname === '';
+        closeMobMenu();
+        if (here) { e.preventDefault(); setTimeout(function () { var t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: 'smooth' }); history.replaceState(null, '', '#' + id); }, 320); }
+      }, true);
+    }
 
+  }
+
+  // the slide menu closes on a press of its backdrop
+  function closeMobMenu() {
+    var bd = $('.mm-ocd__backdrop');
+    if (bd) ['mousedown', 'touchstart'].forEach(function (t) { try { bd.dispatchEvent(new Event(t, { bubbles: true })); } catch (x) {} });
   }
 
   /* mega menu like the reference: red column titles, link lists and image cards */
