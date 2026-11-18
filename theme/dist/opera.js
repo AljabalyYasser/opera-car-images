@@ -105,10 +105,11 @@
   }
 
   function addNavExtras() {
-    var header = $('#part-store-header'); if (!header || $('.oc-nav-extra', header)) return;
+    var header = $('#part-store-header'); if (!header) return;
     var rootLi = $('custom-main-menu li.root-level', header);
-    if (rootLi && rootLi.parentNode) {
-      var ul = rootLi.parentNode;
+    // on phones the slide menu can take the list out of the header before this runs, so look for it there too
+    var ul = rootLi && rootLi.parentNode ? rootLi.parentNode : $('#mobile-menu ul.main-menu');
+    if (ul && !$('.oc-nav-extra', ul) && !$('.oc-mob-extra', ul)) {
       var home = h('<li class="oc-nav-extra root-level"><a href="/">الرئيسية</a></li>');
       ul.insertBefore(home, ul.firstChild);
       ul.appendChild(h('<li class="oc-nav-extra root-level"><a href="' + ABOUT_URL + '">من نحن</a></li>'));
@@ -132,7 +133,7 @@
       $('button', hd).addEventListener('click', function () { var bd = $('.mm-ocd__backdrop'); if (bd) bd.click(); else { var o = $('.mm-ocd--open'); if (o) o.classList.remove('mm-ocd--open'); } });
     };
     menuHead(); setTimeout(menuHead, 1500); setTimeout(menuHead, 4000);
-    document.addEventListener('click', function (e) { if (e.target.closest('a.mburger')) setTimeout(menuHead, 50); }, true);
+    if (!window.__ocMH) { window.__ocMH = 1; document.addEventListener('click', function (e) { if (e.target.closest('a.mburger')) setTimeout(menuHead, 50); }, true); }
 
   }
 
