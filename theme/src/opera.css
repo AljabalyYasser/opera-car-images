@@ -1805,3 +1805,82 @@ span.oc-chip { cursor: default; }
 .oc-squick b { display: block; margin-bottom: 10px; font-size: 15px; font-weight: 600; line-height: 1.6; color: var(--oc-ink); }
 .oc-squick .oc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .oc-squick[hidden] { display: none; }
+
+/* ---------- Fourth review fixes 18 Nov ---------- */
+/* empty cart drawer: a clear message and a way back to the products */
+.oc-dempty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 46px 10px; }
+.oc-dempty .oc-ic { width: 54px; height: 54px; color: var(--oc-muted); stroke-width: 1.4; }
+.oc-dempty b { font-size: 18px; font-weight: 700; color: var(--oc-ink); line-height: 1.6; }
+.oc-dempty p { margin: 0 0 8px; font-size: 14px; color: var(--oc-muted); line-height: 1.8; }
+.oc-drawer.is-empty .oc-drawer__foot { display: none; }
+/* white product photos sit on a white tile in dark mode instead of a small white square inside a dark frame */
+html.oc-dark .oc-card:not(.is-photo) .oc-card__img, html.oc-dark .s-product-card-entry:not(.oc-photo) .s-product-card-image, html.oc-dark .oc-mini:not(.is-photo) .oc-mini__img, html.oc-dark .oc-col__pic, html.oc-dark .oc-ditem img { background: #fff !important; }
+/* back to top on phones: smaller, with a white ring so it shows on the red band too */
+@media (max-width: 1023px) { .oc-top { width: 40px; height: 40px; bottom: 90px; box-shadow: 0 0 0 2px #fff, 0 8px 20px -8px rgba(0, 0, 0, .5); } }
+.oc-top { box-shadow: 0 0 0 2px #fff, 0 10px 24px -10px rgba(210, 31, 43, .8); }
+/* sections reached from the menu start below the fixed header */
+html body [id^="oc-"] { scroll-margin-top: 200px !important; }
+@media (max-width: 1023px) { html body [id^="oc-"] { scroll-margin-top: 140px !important; } }
+/* footer logo without the grey box */
+html body .oc-flogo { background: none !important; padding: 0 !important; border-radius: 0 !important; }
+/* copyright as the last line */
+.oc-rights { border-top: 1px solid var(--oc-rule); background: var(--oc-surface); color: var(--oc-muted); font-size: 13px; line-height: 1.8; text-align: center; padding: 14px 0; }
+@media (max-width: 1023px) { .oc-rights { padding-bottom: 84px; } }
+/* top bar timer with its units */
+.oc-topbar__ctd > span { align-items: baseline; gap: 4px; }
+html body .oc-topbar__ctd small { display: inline; font-size: 12px; font-weight: 500; color: #C9CDD2; }
+@media (max-width: 767px) {
+  html body .oc-topbar__ctd small { display: none; }
+  .oc-topbar__ctd > span + span::before { content: ':'; color: #8A9096; font-weight: 700; margin-inline-end: 4px; }
+}
+/* reviews: one heading and a plain line when there are none */
+.oc-prev__none { display: none; text-align: center; font-size: 15px; line-height: 1.9; color: var(--oc-muted); margin: 0 0 18px; }
+.oc-prev.is-none .oc-prev__none { display: block; }
+.oc-prev.is-none .oc-prev__avg, .oc-prev.is-none .oc-prev__bars { display: none; }
+.oc-prev.is-none .oc-prev__grid { display: flex; justify-content: center; }
+/* payment logos keep their colours in dark mode */
+html.oc-dark .oc-logos__track img { filter: none; opacity: .95; }
+/* Salla cards carry the model line like the home cards */
+.oc-cmodel { display: block; margin-bottom: 4px; }
+/* weekly sale banner on phones: darker top so the text reads over the car */
+@media (max-width: 767px) { .oc-flash::before { background: linear-gradient(180deg, rgba(5, 5, 6, .9) 0%, rgba(5, 5, 6, .7) 45%, rgba(5, 5, 6, .15) 80%); } }
+/* phone menu: logo, close button and contact links */
+.oc-mm-head { display: none; }
+#mobile-menu.mm-spn--main .oc-mm-head { display: flex; align-items: center; justify-content: space-between; position: absolute; top: 0; inset-inline: 0; height: 50px; padding: 0 16px; background: var(--oc-surface); z-index: 3; border-bottom: 1px solid var(--oc-line); }
+.oc-mm-head img { height: 36px; width: auto; }
+html.oc-dark .oc-mm-head img { filter: invert(1) hue-rotate(180deg) brightness(1.15); }
+.oc-mm-head button { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--oc-ink); background: var(--oc-box); }
+.oc-mm-head button .oc-ic { width: 20px; height: 20px; }
+#mobile-menu.mm-spn--main::after { opacity: 0; }
+#mobile-menu li.oc-mob-contact { display: flex; gap: 10px; padding: 16px 20px !important; }
+#mobile-menu li.oc-mob-contact::after { display: none !important; }
+#mobile-menu li.oc-mob-contact a { flex: 1; display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 10px !important; border-radius: 6px; border: 1px solid var(--oc-line); font-size: 14px; color: var(--oc-ink) !important; }
+#mobile-menu li.oc-mob-contact a:last-child { background: #25D366; border-color: #25D366; color: #fff !important; }
+#mobile-menu li.oc-mob-contact .oc-ic, #mobile-menu li.oc-mob-contact .oc-bic { width: 18px; height: 18px; }
+/* sections sheet from the bottom bar */
+.oc-csheet { position: fixed; inset: 0; z-index: 2147483000; visibility: hidden; pointer-events: none; }
+.oc-csheet.is-open { visibility: visible; pointer-events: auto; }
+.oc-csheet__bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .5); opacity: 0; transition: opacity .25s; }
+.oc-csheet.is-open .oc-csheet__bg { opacity: 1; }
+.oc-csheet__panel { position: absolute; inset-inline: 0; bottom: 0; max-height: 86vh; display: flex; flex-direction: column; background: var(--oc-surface); border-radius: 18px 18px 0 0; transform: translateY(100%); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.oc-csheet.is-open .oc-csheet__panel { transform: none; }
+.oc-csheet__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--oc-line); }
+.oc-csheet__head b { font-size: 18px; font-weight: 700; color: var(--oc-ink); line-height: 1.6; }
+.oc-csheet__head button { width: 36px; height: 36px; border-radius: 50%; background: var(--oc-box); color: var(--oc-ink); display: inline-flex; align-items: center; justify-content: center; }
+.oc-csheet__body { overflow: auto; padding: 16px 18px 28px; }
+.oc-csheet__body h4 { margin: 20px 0 12px; font-size: 16px; font-weight: 700; color: var(--oc-ink); line-height: 1.6; }
+.oc-csheet__main { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.oc-csheet__main a { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; border-radius: 10px; background: var(--oc-box); color: var(--oc-ink); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.oc-csheet__main a .oc-ic { width: 22px; height: 22px; color: var(--oc-red); flex: none; }
+.oc-csheet__cars, .oc-csheet__kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.oc-csheet__cars a, .oc-csheet__kinds a { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: var(--oc-ink); }
+.oc-csheet__cars span, .oc-csheet__kinds span { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #fff; border: 1px solid var(--oc-line); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.oc-csheet__cars img, .oc-csheet__kinds img { max-width: 86%; max-height: 80%; object-fit: contain; }
+.oc-csheet__cars b, .oc-csheet__kinds b { font-size: 13px; font-weight: 600; line-height: 1.6; }
+html.oc-lock, html.oc-lock body { overflow: hidden; }
+/* keep shopping is a quiet outline button so the checkout button leads */
+html body .oc-cart__cont { background: transparent; color: var(--oc-ink) !important; border: 1.5px solid var(--oc-ink); }
+html body .oc-cart__cont:hover { background: var(--oc-ink); color: var(--oc-surface) !important; }
+/* phone cart summary follows dark mode */
+html.oc-dark .s-cart-summary-card--mobile, html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-sheet-wrap, html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-bar { background: var(--oc-surface) !important; border-color: var(--oc-line) !important; color: var(--oc-ink) !important; }
+html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-bar *:not(.s-button-element):not(.s-button-element *) { color: var(--oc-ink); }
