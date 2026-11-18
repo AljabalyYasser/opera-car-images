@@ -116,12 +116,23 @@
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-sep" aria-hidden="true"></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--a root-level"><a href="/#oc-best">' + ic('rocket') + 'الأكثر طلبا</a></li>'));
       ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--b root-level"><a href="/#oc-new">' + ic('tag') + 'وصل حديثا</a></li>'));
-      ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--c root-level"><a href="/#oc-deals">' + ic('pct') + 'العروض</a></li>'));
+      ul.appendChild(h('<li class="oc-nav-extra oc-nav-ic oc-nav-ic--c root-level"><a href="/offers">' + ic('pct') + 'العروض</a></li>'));
       // the phone menu reads the same list but hides the desktop extras, so it gets its own copies
       var mob = function (txt, url) { return h('<li class="oc-mob-extra lg:hidden text-sm font-bold"><a href="' + url + '">' + txt + '</a></li>'); };
       ul.insertBefore(mob('الرئيسية', '/'), ul.firstChild);
-      [['الأكثر طلبا', '/#oc-best'], ['وصل حديثا', '/#oc-new'], ['العروض', '/#oc-deals'], ['من نحن', ABOUT_URL], ['تواصل معنا', CONTACT_URL], ['الأسئلة الشائعة', FAQ_URL]].forEach(function (x) { ul.appendChild(mob(x[0], x[1])); });
+      [['الأكثر طلبا', '/#oc-best'], ['وصل حديثا', '/#oc-new'], ['العروض', '/offers'], ['المتجر', STORE_URL], ['اختر سيارتك', '/#oc-finder'], ['من نحن', ABOUT_URL], ['تواصل معنا', CONTACT_URL], ['الأسئلة الشائعة', FAQ_URL]].forEach(function (x) { ul.appendChild(mob(x[0], x[1])); });
+      ul.appendChild(h('<li class="oc-mob-extra oc-mob-contact lg:hidden"><a href="tel:' + CONTACT.phone + '">' + ic('phone') + '<span dir="ltr">' + CONTACT.phone + '</span></a><a href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener">' + bic('whatsapp') + '<span>واتساب</span></a></li>'));
     }
+    // the phone menu gets the logo and a close button in place of its plain title
+    var menuHead = function () {
+      var nav = $('#mobile-menu.mm-spn'); if (!nav || $('.oc-mm-head', nav)) return;
+      var logo = window.salla && salla.config && salla.config.get('store.logo');
+      var hd = h('<div class="oc-mm-head">' + (logo ? '<img src="' + logo + '" alt="أوبرا كار">' : '<b>أوبرا كار</b>') + '<button type="button" aria-label="إغلاق القائمة">' + ic('x') + '</button></div>');
+      nav.insertBefore(hd, nav.firstChild);
+      $('button', hd).addEventListener('click', function () { var bd = $('.mm-ocd__backdrop'); if (bd) bd.click(); else { var o = $('.mm-ocd--open'); if (o) o.classList.remove('mm-ocd--open'); } });
+    };
+    menuHead(); setTimeout(menuHead, 1500); setTimeout(menuHead, 4000);
+    document.addEventListener('click', function (e) { if (e.target.closest('a.mburger')) setTimeout(menuHead, 50); }, true);
 
   }
 
@@ -139,11 +150,11 @@
       links.map(function (l) { return '<li><a href="' + l[1] + '">' + esc(l[0]) + '</a></li>'; }).join('') + '</ul></div>';
   }
   function megaCard(title, url, img, cover) {
-    return '<a class="oc-mega__card' + (cover ? ' is-cover' : '') + '" href="' + url + '"><span class="oc-mega__pic"><img loading="lazy" src="' + img + '" alt=""></span><b>' + esc(title) + '</b></a>';
+    return '<a class="oc-mega__card' + (cover ? ' is-cover' : '') + '" href="' + url + '"><span class="oc-mega__pic"><img loading="lazy" src="' + img + '" alt="' + esc(title) + '"></span><b>' + esc(title) + '</b></a>';
   }
   function partsMega(node) {
     var kids = (node.s || []).map(function (k) { return [k.n, k.u]; });
-    var kinds = KINDS.slice(0, kids.length).map(function (k) { return [k[0], '/search?q=' + encodeURIComponent(k[1])]; });
+    var kinds = KINDS.map(function (k) { return [k[0], '/search?q=' + encodeURIComponent(k[1])]; });
     var sh = findNode(1063290346), cm = findNode(579227632);
     return megaCol('حسب السيارة', node.u, kids) + megaCol('حسب القطعة', node.u, kinds) +
       (sh ? megaCard('قطع شاص وربع', sh.u, IMG + 'car_shas.webp') : '') +
@@ -234,7 +245,7 @@
     bar.addEventListener('click', function (e) {
       var a = e.target.closest('a'); if (!a) return;
       var k = a.dataset.k, header = $('#part-store-header');
-      if (k === 'menu') { var m = header && $('a[href="#mobile-menu"]', header); if (m) { e.preventDefault(); m.click(); } }
+      if (k === 'menu') { e.preventDefault(); catSheet(); }
       if (k === 'search') { e.preventDefault(); var s = header && ($('#part-mobile-search .s-search-input') || $('.sicon-search', header)); if (s) (s.closest('button') || s).click(); }
       if (k === 'user') { e.preventDefault(); var u = header && $$('button.header-btn', header).pop(); if (u) u.click(); }
     });
@@ -250,6 +261,24 @@
     syncCount();
     // the header count is filled late and can be replaced, so keep checking instead of watching one node
     setInterval(syncCount, 1500);
+  }
+
+  function catSheet() {
+    var sh = $('.oc-csheet');
+    if (!sh) {
+      sh = h('<div class="oc-csheet" aria-hidden="true"><div class="oc-csheet__bg" data-close></div><div class="oc-csheet__panel" role="dialog" aria-modal="true" aria-label="الأقسام">' +
+        '<div class="oc-csheet__head"><b>الأقسام</b><button type="button" data-close aria-label="إغلاق">' + ic('x') + '</button></div><div class="oc-csheet__body">' +
+        '<div class="oc-csheet__main"><a href="' + C['الخطوط'] + '">' + ic('car') + '<span>الخطوط</span></a><a href="' + C['قطع الغيار والاكسسوارات'] + '">' + ic('gear') + '<span>قطع الغيار والاكسسوارات</span></a><a href="/offers">' + ic('pct') + '<span>العروض</span></a><a href="/#oc-finder" data-close>' + ic('search') + '<span>اختر سيارتك</span></a></div>' +
+        '<h4>تسوق حسب سيارتك</h4><div class="oc-csheet__cars">' + CARS.map(function (c) { return '<a href="' + c[2] + '"><span><img loading="lazy" src="' + IMG + c[1] + '" alt="قطع وخطوط ' + c[0] + '"></span><b>' + c[0] + '</b></a>'; }).join('') + '</div>' +
+        '<h4>حسب القطعة</h4><div class="oc-csheet__kinds">' + KINDS.map(function (k) { return '<a href="/search?q=' + encodeURIComponent(k[1]) + '"><span><img loading="lazy" src="' + k[3] + '" alt="' + k[0] + '"></span><b>' + k[0] + '</b></a>'; }).join('') + '</div>' +
+        '</div></div></div>');
+      document.body.appendChild(sh);
+      sh.addEventListener('click', function (e) {
+        if (!e.target.closest('[data-close]')) return;
+        sh.classList.remove('is-open'); sh.setAttribute('aria-hidden', 'true'); document.documentElement.classList.remove('oc-lock');
+      });
+    }
+    sh.classList.add('is-open'); sh.setAttribute('aria-hidden', 'false'); document.documentElement.classList.add('oc-lock');
   }
 
   /* ---------- extra icons ---------- */
@@ -481,7 +510,7 @@
   /* ---------- categories: white cards with the picture in a grey circle and the item count ---------- */
   function kindsSection() {
     return h('<section class="oc-sec oc-cols"><div class="oc-container"><div class="oc-cols__row">' + KINDS.map(function (k) {
-      return '<a class="oc-col" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-col__pic"><img loading="lazy" src="' + k[3] + '" alt=""></span><b>' + k[0] + '</b><small>' + num(k[2]) + ' منتج</small></a>';
+      return '<a class="oc-col" href="/search?q=' + encodeURIComponent(k[1]) + '"><span class="oc-col__pic"><img loading="lazy" src="' + k[3] + '" alt="' + k[0] + '"></span><b>' + k[0] + '</b><small>' + num(k[2]) + ' منتج</small></a>';
     }).join('') + '</div></div></section>');
   }
 
@@ -571,7 +600,7 @@
   ];
   function modelsSection() {
     return h('<section class="oc-sec oc-cars"><div class="oc-container">' + sHead('تسوق حسب سيارتك', { center: true }) +
-      '<div class="oc-cars__row">' + CARS.map(function (c) { return '<a class="oc-carc" href="' + c[2] + '"><span class="oc-carc__pic"><img loading="lazy" src="' + IMG + c[1] + '" alt=""></span><b>' + c[0] + '</b></a>'; }).join('') +
+      '<div class="oc-cars__row">' + CARS.map(function (c) { return '<a class="oc-carc" href="' + c[2] + '"><span class="oc-carc__pic"><img loading="lazy" src="' + IMG + c[1] + '" alt="قطع وخطوط ' + c[0] + '"></span><b>' + c[0] + '</b></a>'; }).join('') +
       '</div></div></section>');
   }
 
@@ -710,7 +739,7 @@
     if (!list.length) return null;
     return h('<section class="oc-sec oc-arts"' + (skip ? '' : ' id="oc-articles"') + '><div class="oc-container">' + sHead(title || 'أحدث المقالات', { center: !title }) +
       '<div class="oc-arts__row">' + list.map(function (a) {
-        return '<article class="oc-art"><a class="oc-art__img" href="' + a.url + '"><img loading="lazy" src="' + IMG + a.img + '" alt=""></a>' +
+        return '<article class="oc-art"><a class="oc-art__img" href="' + a.url + '"><img loading="lazy" src="' + IMG + a.img + '" alt="' + esc(a.title) + '"></a>' +
           '<span class="oc-pill oc-pill--g">' + a.tag + '</span><a class="oc-art__t" href="' + a.url + '">' + a.title + '</a>' +
           '<small class="oc-art__meta">بواسطة <u>أوبرا كار</u><i></i>' + a.date + '</small>' +
           '<a class="oc-art__more" href="' + a.url + '">اقرأ المزيد' + ic('left') + '</a></article>';
@@ -766,7 +795,7 @@
     if (menu) {
       setTimeout(function () {
         if ($('.oc-flinks', f) || $$('a', menu).length) return;
-        var links = [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '/#oc-finder'], ['العروض', '/#oc-deals'], ['من نحن', ABOUT_URL]].concat(PAGES);
+        var links = [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اختر سيارتك', '/#oc-finder'], ['العروض', '/offers'], ['من نحن', ABOUT_URL]].concat(PAGES);
         menu.parentNode.appendChild(h('<div class="oc-flinks">' + links.map(function (l) { return '<a href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div>'));
       }, 1500);
     }
@@ -787,7 +816,7 @@
     if (grid && !$('.oc-fcol', f)) {
       var col = function (title, links, cls) { return h('<div class="oc-fcol ' + (cls || '') + '"><h3>' + title + '</h3><div class="s-menu-footer-list">' + links.map(function (l) { return '<a class="s-menu-footer-item" href="' + l[1] + '">' + l[0] + '</a>'; }).join('') + '</div></div>'); };
       var pagesCol = col('الصفحات', [['الرئيسية', '/'], ['المتجر', STORE_URL], ['من نحن', ABOUT_URL], ['الأسئلة الشائعة', FAQ_URL], ['تواصل معنا', CONTACT_URL]]);
-      var storeCol = col('المتجر', [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اكسسوارات تويوتا عامة', C['اكسسوارات تويوتا عامة']], ['العروض', '/#oc-deals'], ['اختر سيارتك', '/#oc-finder']]);
+      var storeCol = col('المتجر', [['الخطوط', C['الخطوط']], ['قطع الغيار والاكسسوارات', C['قطع الغيار والاكسسوارات']], ['اكسسوارات تويوتا عامة', C['اكسسوارات تويوتا عامة']], ['العروض', '/offers'], ['اختر سيارتك', '/#oc-finder']]);
       var contactCol = h('<div class="oc-fcol oc-fcontact" id="oc-contact"><h3>تواصل معنا</h3>' +
         '<a class="oc-fc" href="tel:' + CONTACT.phone + '"><span class="oc-fc__ic">' + ic('phone') + '</span><span dir="ltr">' + CONTACT.phone + '</span></a>' +
         '<a class="oc-fc" href="https://wa.me/' + CONTACT.whatsapp + '" target="_blank" rel="noopener"><span class="oc-fc__ic oc-fc__ic--wa">' + bic('whatsapp') + '</span><span>واتساب</span></a>' +
@@ -818,6 +847,10 @@
       c.innerHTML = '<p>صنع بإتقان بواسطة <a class="oc-credit" href="https://yasforcode.com/" target="_blank" rel="noopener">Yasforcode</a></p>';
     };
     credit(); setTimeout(credit, 1500); setTimeout(credit, 4000);
+    if (!$('.oc-rights', f)) {
+      var yr = String(new Date().getFullYear()).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[d]; });
+      f.appendChild(h('<div class="oc-rights"><div class="oc-container">جميع الحقوق محفوظة لمتجر أوبرا كار ' + yr + '</div></div>'));
+    }
     var pays = $('salla-payments', f);
     if (pays && !$('li', pays)) {
       pays.style.display = 'none';
@@ -884,7 +917,13 @@
     var b = h('<button type="button" class="oc-top" aria-label="العودة لأعلى الصفحة">' + ic('up') + '</button>');
     document.body.appendChild(b);
     b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    var on = function () { b.classList.toggle('is-on', window.scrollY > 500); };
+    var lastY = window.scrollY, shown = false;
+    var on = function () {
+      var y = window.scrollY;
+      if (window.innerWidth >= 1024) shown = y > 500;
+      else { if (y > lastY + 4) shown = false; else if (y < lastY - 4 && y > 900) shown = true; if (y < 500) shown = false; }
+      lastY = y; b.classList.toggle('is-on', shown);
+    };
     window.addEventListener('scroll', on, { passive: true }); on();
   }
 
@@ -906,7 +945,7 @@
       var inSt = function (t) { return (/\/c(\d+)/.exec(t.u) || [])[1] === pid0 || (t.s || []).some(inSt); };
       var strip = stNode && pid0 && inSt(stNode) ? h('<section class="oc-sec oc-cols oc-cols--st"><div class="oc-container"><div class="oc-cols__row">' + stNode.s.map(function (k) {
         var on = (/\/c(\d+)/.exec(k.u) || [])[1] === pid0 || (k.s || []).some(function (y) { return (/\/c(\d+)/.exec(y.u) || [])[1] === pid0; });
-        return '<a class="oc-col' + (on ? ' is-on' : '') + '" href="' + k.u + '"><span class="oc-col__pic"><img loading="lazy" src="' + esc(k.i || '') + '" alt=""></span><b>' + esc(k.n) + '</b><small>' + num(k.c) + ' منتج</small></a>';
+        return '<a class="oc-col' + (on ? ' is-on' : '') + '" href="' + k.u + '"><span class="oc-col__pic"><img loading="lazy" src="' + esc(k.i || '') + '" alt="' + esc(k.n) + '"></span><b>' + esc(k.n) + '</b><small>' + num(k.c) + ' منتج</small></a>';
       }).join('') + '</div></div></section>') : kindsSection();
       strip.classList.add('oc-catstrip');
       main.insertBefore(strip, banner ? banner.nextSibling : main.firstChild);
@@ -927,7 +966,7 @@
       '<div class="oc-aside__part"><h3>الأقسام</h3>' + cats + '</div>' +
       '<div class="oc-aside__part"><h3>تسوق حسب الموديل</h3><div class="oc-chips">' + models + '</div></div>' +
       '</div>' +
-      '<a class="oc-apromo" href="/#oc-deals" style="background-image:url(' + IMG + 'deals_tall.webp)"><b>عروض حصرية</b><small><em>وفر ١٥٪</em> على مختارات من القطع</small><span>تسوق الآن</span></a>' +
+      '<a class="oc-apromo" href="/offers" style="background-image:url(' + IMG + 'deals_tall.webp)"><b>عروض حصرية</b><small><em>وفر ١٥٪</em> على مختارات من القطع</small><span>تسوق الآن</span></a>' +
       '</aside>');
     row.insertBefore(aside, row.firstChild);
     row.classList.add('oc-cat-row');
@@ -988,6 +1027,8 @@
         c.dataset.oc = '1';
         var t = $('.s-product-card-content-title', c);
         if (t && /^(خط|ستيكر|شعار|ملصق)/.test(t.textContent.trim())) c.classList.add('oc-photo');
+        var pc = c.product && c.product.category && c.product.category.name;
+        if (t && pc && !$('.oc-cmodel', c)) t.parentNode.insertBefore(h('<span class="oc-card__cat oc-cmodel">' + esc(pc) + '</span>'), t);
         // discount badge like the home cards
         var sp = $('.s-product-card-sale-price', c), im = $('.s-product-card-image', c);
         if (sp && im && !$('.oc-cbadge', c)) {
@@ -997,8 +1038,15 @@
         }
       });
     };
-    mark();
-    try { new MutationObserver(mark).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+    // Salla writes its own wording on the button after the card is drawn
+    var words = function () {
+      $$('.s-product-card-entry .s-button-text, .s-product-card-entry salla-add-product-button button').forEach(function (b) {
+        for (var n = b.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /أضف إلى السلة/.test(n.textContent)) n.textContent = n.textContent.replace('أضف إلى السلة', 'أضف للسلة');
+      });
+    };
+    var both = function () { mark(); words(); };
+    both();
+    try { new MutationObserver(both).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
   }
 
   /* product page in the reference layout */
@@ -1173,7 +1221,7 @@
       var full = desc.cloneNode(true);
       var tabs = h('<section class="oc-ptabs"><div class="oc-container"><div class="oc-ptabs__nav" role="tablist"><button type="button" role="tab" class="is-on" data-t="d">الوصف</button><button type="button" role="tab" data-t="r">التقييمات</button></div><div class="oc-ptabs__body"><div data-p="d"></div><div data-p="r" hidden></div></div></div></section>');
       $('[data-p=d]', tabs).appendChild(h('<h3 class="oc-ptabs__h">الوصف</h3>'));
-      var rev = h('<div class="oc-prev"><h3 class="oc-ptabs__h">التقييمات</h3><div class="oc-prev__box"><h4>تقييمات العملاء</h4><div class="oc-prev__grid">' +
+      var rev = h('<div class="oc-prev is-none"><h3 class="oc-ptabs__h">التقييمات</h3><div class="oc-prev__box"><p class="oc-prev__none">ما فيه تقييمات لهذا المنتج حتى الآن وتقدر تكون أول من يقيمه بعد الشراء</p><div class="oc-prev__grid">' +
         '<div class="oc-prev__avg"><span class="oc-stars" data-v="0"></span><b><span data-avg>٠</span> من ٥</b><small>بناء على <span data-cnt>٠</span> تقييم</small></div>' +
         '<div class="oc-prev__bars">' + [5, 4, 3, 2, 1].map(function (n) { return '<div data-n="' + n + '"><span class="oc-stars" data-v="' + n + '"></span><i><em></em></i><small>٠</small></div>'; }).join('') + '</div>' +
         '<div class="oc-prev__act"><button type="button" class="oc-prev__write">اكتب تقييمك</button></div></div></div></div>');
@@ -1203,6 +1251,7 @@
         var avg = st.length ? st.reduce(function (a, b) { return a + b; }, 0) / st.length : 0;
         $('[data-avg]', tabs).textContent = num(Math.round(avg * 10) / 10); $('[data-cnt]', tabs).textContent = num(total);
         var av = $('.oc-prev__avg .oc-stars', tabs); av.innerHTML = starsHtml(avg);
+        rev.classList.toggle('is-none', !total);
         [5, 4, 3, 2, 1].forEach(function (n) {
           var c = st.filter(function (x) { return Math.round(x) === n; }).length, row = $('[data-n="' + n + '"]', tabs);
           $('em', row).style.width = (st.length ? c / st.length * 100 : 0) + '%'; $('small', row).textContent = num(c);
@@ -1468,7 +1517,9 @@
         return '<div class="oc-ditem" data-id="' + esc(it.id) + '" data-q="' + (+it.quantity || 1) + '"><img src="' + esc(img) + '" alt=""><div><a href="' + esc(it.url || '#') + '">' + esc(it.product_name || it.name) + '</a><small>' + num(price) + ' ' + SAR + '</small>' +
           '<div class="oc-ditem__row"><div class="oc-ditem__qty"><button type="button" data-step="1" aria-label="زيادة">' + ic('plus') + '</button><span>' + num(it.quantity) + '</span><button type="button" data-step="-1" aria-label="نقص">' + ic('minus') + '</button></div>' +
           '<button type="button" class="oc-ditem__del" data-del aria-label="حذف من السلة">' + ic('x') + '</button></div></div></div>';
-      }).join('') : '<p class="oc-empty">سلتك فارغة</p>';
+      }).join('') : '<div class="oc-dempty">' + ic('bag') + '<b>سلتك فارغة</b><p>تصفح القطع والخطوط وأضف اللي يناسب سيارتك</p><a class="oc-btn oc-btn--primary" href="' + STORE_URL + '">تسوق الآن</a></div>';
+      // nothing to pay for, so hide the total, the free shipping bar and the checkout buttons
+      d.classList.toggle('is-empty', !items.length);
       var total = +(c && (c.sub_total || c.total)) || 0;
       $('.oc-drawer__sum b', d).innerHTML = num(total) + ' ' + SAR;
       var left = Math.max(0, FREE_SHIP - total);
