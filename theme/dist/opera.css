@@ -1878,3 +1878,9 @@ html.oc-dark .oc-mm-head img { filter: invert(1) hue-rotate(180deg) brightness(1
 .oc-csheet__cars img, .oc-csheet__kinds img { max-width: 86%; max-height: 80%; object-fit: contain; }
 .oc-csheet__cars b, .oc-csheet__kinds b { font-size: 13px; font-weight: 600; line-height: 1.6; }
 html.oc-lock, html.oc-lock body { overflow: hidden; }
+/* keep shopping is a quiet outline button so the checkout button leads */
+html body .oc-cart__cont { background: transparent; color: var(--oc-ink) !important; border: 1.5px solid var(--oc-ink); }
+html body .oc-cart__cont:hover { background: var(--oc-ink); color: var(--oc-surface) !important; }
+/* phone cart summary follows dark mode */
+html.oc-dark .s-cart-summary-card--mobile, html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-sheet-wrap, html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-bar { background: var(--oc-surface) !important; border-color: var(--oc-line) !important; color: var(--oc-ink) !important; }
+html.oc-dark .s-cart-summary-card--mobile .s-cart-summary-card-bar *:not(.s-button-element):not(.s-button-element *) { color: var(--oc-ink); }

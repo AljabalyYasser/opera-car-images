@@ -1057,7 +1057,7 @@
     };
     // Salla writes its own wording on the button after the card is drawn
     var words = function () {
-      $$('.s-product-card-entry .s-button-text, .s-product-card-entry salla-add-product-button button').forEach(function (b) {
+      $$('.s-product-card-entry .s-button-text span, .s-product-card-entry .s-button-text').forEach(function (b) {
         for (var n = b.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /أضف إلى السلة/.test(n.textContent)) n.textContent = n.textContent.replace('أضف إلى السلة', 'أضف للسلة');
       });
     };
