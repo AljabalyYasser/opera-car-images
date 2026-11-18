@@ -252,7 +252,7 @@
     if ($('.oc-bottombar')) return;
     var bar = h('<nav class="oc-bottombar" aria-label="تنقل سريع">' +
       '<a href="/" data-k="home">' + ic('home') + '<span>الرئيسية</span></a>' +
-      '<a href="#mobile-menu" data-k="menu">' + ic('grid') + '<span>الأقسام</span></a>' +
+      '<a href="#" data-k="menu">' + ic('grid') + '<span>الأقسام</span></a>' +
       '<a href="#" data-k="search">' + ic('search') + '<span>بحث</span></a>' +
       '<a href="/cart" data-k="cart">' + ic('bag') + '<span>السلة</span><b class="oc-bb-count" hidden></b></a>' +
       '<a href="#" data-k="user">' + ic('user') + '<span>حسابي</span></a>' +
@@ -285,7 +285,7 @@
     if (!sh) {
       sh = h('<div class="oc-csheet" aria-hidden="true"><div class="oc-csheet__bg" data-close></div><div class="oc-csheet__panel" role="dialog" aria-modal="true" aria-label="الأقسام">' +
         '<div class="oc-csheet__head"><b>الأقسام</b><button type="button" data-close aria-label="إغلاق">' + ic('x') + '</button></div><div class="oc-csheet__body">' +
-        '<div class="oc-csheet__main"><a href="' + C['الخطوط'] + '">' + ic('car') + '<span>الخطوط</span></a><a href="' + C['قطع الغيار والاكسسوارات'] + '">' + ic('gear') + '<span>قطع الغيار والاكسسوارات</span></a><a href="/offers">' + ic('pct') + '<span>العروض</span></a><a href="/#oc-finder" data-close>' + ic('search') + '<span>اختر سيارتك</span></a></div>' +
+        '<div class="oc-csheet__main"><a href="' + C['الخطوط'] + '">' + ic('car') + '<span>الخطوط</span></a><a href="' + C['قطع الغيار والاكسسوارات'] + '">' + ic('grid') + '<span>قطع الغيار والاكسسوارات</span></a><a href="/offers">' + ic('pct') + '<span>العروض</span></a><a href="/#oc-finder" data-close>' + ic('search') + '<span>اختر سيارتك</span></a></div>' +
         '<h4>تسوق حسب سيارتك</h4><div class="oc-csheet__cars">' + CARS.map(function (c) { return '<a href="' + c[2] + '"><span><img loading="lazy" src="' + IMG + c[1] + '" alt="قطع وخطوط ' + c[0] + '"></span><b>' + c[0] + '</b></a>'; }).join('') + '</div>' +
         '<h4>حسب القطعة</h4><div class="oc-csheet__kinds">' + KINDS.map(function (k) { return '<a href="/search?q=' + encodeURIComponent(k[1]) + '"><span><img loading="lazy" src="' + k[3] + '" alt="' + k[0] + '"></span><b>' + k[0] + '</b></a>'; }).join('') + '</div>' +
         '</div></div></div>');
