@@ -216,7 +216,7 @@
 
     var bar = h('<div class="oc-topbar"><div class="oc-container oc-topbar__in">' +
       '<a class="oc-topbar__phone" href="tel:' + CONTACT.phone + '"><span>' + ic('phone') + '</span><b dir="ltr">' + CONTACT.phone + '</b></a>' +
-      '<div class="oc-topbar__sale"><span>عروض الأسبوع على القطع والخطوط</span>' + timerHtml('oc-topbar__ctd') + '<a href="/offers">تسوق الآن' + ic('left') + '</a></div>' +
+      '<div class="oc-topbar__sale"><span>عروض الأسبوع على القطع والاكسسوارات</span>' + timerHtml('oc-topbar__ctd') + '<a href="/offers">تسوق الآن' + ic('left') + '</a></div>' +
       '<div class="oc-topbar__side"><a href="' + C['الخطوط'] + '">الخطوط</a><a href="' + C['قطع الغيار والاكسسوارات'] + '">قطع الغيار</a><a href="' + FAQ_URL + '">الأسئلة الشائعة</a></div>' +
       '</div></div>');
     inner.insertBefore(bar, inner.firstChild);
@@ -647,7 +647,7 @@
   }
   function dealsSection() {
     var s = h('<section class="oc-sec oc-wdeals" id="oc-deals"><div class="oc-container oc-wdeals__in">' +
-      '<a class="oc-wdeals__promo" href="/offers" style="background-image:url(' + IMG + 'deal_tall.webp)"><span class="oc-pill oc-pill--g">هذا الأسبوع فقط</span><b>وفر حتى<br><em>١٥٪</em> خصم</b><small>على مختارات من القطع والخطوط</small><span class="oc-wdeals__btn">تسوق الآن</span></a>' +
+      '<a class="oc-wdeals__promo" href="/offers" style="background-image:url(' + IMG + 'deal_tall.webp)"><span class="oc-pill oc-pill--g">هذا الأسبوع فقط</span><b>وفر حتى<br><em>١٥٪</em> خصم</b><small>على مختارات من القطع والاكسسوارات</small><span class="oc-wdeals__btn">تسوق الآن</span></a>' +
       '<div class="oc-wdeals__main">' + sHead('عروض الأسبوع', { all: '/offers', after: '<span class="oc-wdeals__time">ينتهي خلال' + timerHtml('oc-ctd') + '</span>' }) +
       '<div class="oc-wdeals__slide"><button type="button" class="oc-wdeals__arrow oc-wdeals__arrow--prev" aria-label="السابق">' + ic('right') + '</button>' +
       '<div class="oc-wdeals__grid">' + new Array(10).join('<div class="oc-mini oc-mini--skel"></div>') + '</div>' +
@@ -678,7 +678,8 @@
         return all.length >= 3 ? all : all.concat(extra.filter(function (p) { return onSale.indexOf(p) < 0; }));
       });
     }).then(function (list) {
-      list = uniq(list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out'); }));
+      // offers are on parts and accessories only, stripe prices are fixed
+      list = uniq(list.filter(function (p) { return !(p.is_out_of_stock || p.status === 'out') && !isStripe(p); }));
       grid.innerHTML = list.slice(0, 18).map(miniCard).join('');
       tickAll(); sync();
     }).catch(function () { s.remove(); });
@@ -928,6 +929,12 @@
     }
   }
 
+  // stripes and stickers have fixed prices and never take part in offers
+  function isStripe(p) {
+    var c = p && p.category && p.category.name || '';
+    return /^(خط|ستيكر|ملصق)/.test(((p && p.name) || '').trim()) || /خطوط|ستيكرات/.test(c);
+  }
+
   /* back to top */
   function toTop() {
     if ($('.oc-top')) return;
@@ -1166,7 +1173,7 @@
       if (p.weight) specs.push(['الوزن', num(p.weight) + ' كجم']);
       var sp = h('<ul class="oc-pspecs">' + specs.map(function (x) { return '<li><b>' + x[0] + '</b><span' + (x[0] === 'رمز المنتج' ? ' dir="ltr"' : '') + '>' + esc(x[1]) + '</span></li>'; }).join('') + '</ul>');
       var shortD = $('.oc-pshort', info) || facts, after = shortD;
-      if (p.is_on_sale && !$('.oc-ptimer', info)) {
+      if (p.is_on_sale && !isStripe(p) && !$('.oc-ptimer', info)) {
         // same weekly countdown as the top bar and the deals row, sooner only when the discount itself ends sooner
         var fri = nextFriday().getTime(), end = p.discount_ends && p.discount_ends * 1000 > Date.now() ? Math.min(p.discount_ends * 1000, fri) : fri;
         if (end > Date.now()) {
