@@ -29,7 +29,7 @@
     }, true);
   }
 
-  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@071fd123/theme/img/';
+  var IMG = 'https://cdn.jsdelivr.net/gh/AljabalyYasser/opera-car-images@77f5e665/theme/img/';
   var API = 'https://api.salla.dev/store/v1/';
   var SID = '1590934287';
   var FREE_SHIP = 600;
@@ -493,7 +493,7 @@
 
   /* ---------- hero: dark rounded banner with a photo, badge, title, price line and button ---------- */
   var SLIDES = [
-    { b: 'تصاميم حصرية', t: ['خطوط تويوتا', 'تعطي سيارتك', 'هوية جديدة'], f: 'تبدأ من ١٤٩&nbsp;ريال', p: 'خطوط لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_st2.webp', u: C['الخطوط'] },
+    { b: 'تصاميم حصرية', t: ['خطوط تويوتا', 'تعطي سيارتك', 'هوية جديدة'], f: 'تبدأ من ١٤٩&nbsp;ريال', p: 'خطوط لاندكروزر وهايلوكس وشاص وربع حسب موديل سيارتك وسنة صنعها', img: 'hero_st3.webp', u: C['الخطوط'] },
     { b: 'أصلية وبديلة', t: ['قطع غيار', 'لكل موديلات', 'تويوتا'], f: 'نتأكد من المطابقة قبل الشحن', p: 'قطع أصلية وبديلة لأشهر موديلات تويوتا بأسعار منافسة', img: 'hero_parts2.webp', u: C['قطع الغيار والاكسسوارات'] },
     { b: 'عروض أوبرا كار', t: ['اكسسوارات', 'تفرق في', 'سيارتك'], f: 'شحن مجاني فوق ٦٠٠&nbsp;ريال', p: 'ديكورات ومسجلات وفرشات ودركسونات لسيارات تويوتا', img: 'hero_acc2.webp', u: C['اكسسوارات تويوتا عامة'] }
   ];
